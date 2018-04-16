@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: discovery
+  profiles:
+    active: dev
+  cloud:
+    config:
+      uri: http://192.168.1.7:8080
+      enabled: true
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    server:
+      waitTimeInMsWhenSyncEmpty: 0

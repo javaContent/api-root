@@ -1,8 +1,9 @@
 package com.wd.cloud.commons.model;
 
 /**
- * api返回的response对象
- * Created by DimonHo on 2018/4/9.
+ * @author He Zhigang
+ * @date 2018/5/3
+ * @remark api返回的response对象
  */
 public class ResponseModel<T> {
     private int code;

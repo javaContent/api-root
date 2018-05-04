@@ -1,7 +1,8 @@
 package com.wd.cloud.documentdelivery.config;
 
 /**
- * Created by DimonHo on 2018/4/9.
+ * @author He Zhigang
+ * @date 2018/5/3
  */
 public class DeliveryConfig {
 

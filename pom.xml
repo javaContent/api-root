@@ -15,7 +15,7 @@
 		<module>api-gateway</module>
         <module>config-server</module>
 		<module>discovery</module>
-        <module>document-delivery</module>
+        <module>doc-delivery</module>
     </modules>
 
 	<parent>
@@ -30,6 +30,8 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Finchley.M9</spring-cloud.version>
+		<com.alibaba.druid>1.1.9</com.alibaba.druid>
+		<cn.hutool.all>4.0.12</cn.hutool.all>
 	</properties>
 
 	<dependencyManagement>
@@ -40,6 +42,16 @@
 				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid</artifactId>
+				<version>${com.alibaba.druid}</version>
+			</dependency>
+			<dependency>
+				<groupId>cn.hutool</groupId>
+				<artifactId>hutool-all</artifactId>
+				<version>${cn.hutool.all}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,9 +1,16 @@
 spring:
   application:
-    name: api-gateway
+    name: doc-delivery
   profiles:
     active: dev
   cloud:
     config:
       uri: http://localhost:8888
       enabled: true
+    discovery:
+      client:
+        health-indicator:
+          enabled: true
+
+
+

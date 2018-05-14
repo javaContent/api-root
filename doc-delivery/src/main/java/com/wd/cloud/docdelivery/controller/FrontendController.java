@@ -2,6 +2,10 @@ package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.extra.mail.Mail;
+import cn.hutool.extra.mail.MailAccount;
+import cn.hutool.extra.mail.MailUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.DeliveryConfig;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
@@ -29,11 +33,15 @@ import java.util.zip.Checksum;
 public class FrontendController {
 
     @Autowired
+    DeliveryConfig deliveryConfig;
+
+    @Autowired
     FrontService frontService;
 
     @GetMapping("/hello")
     public ResponseModel hello() {
-        frontService.save();
+        //frontService.save();
+        MailUtil.send("hezhigang@hnwdkj.com","hello dimon","hello zhengwen",true);
         return ResponseModel.success("惊不惊喜？意不意外？");
     }
 
@@ -68,18 +76,27 @@ public class FrontendController {
     @PostMapping("/upload")
     public ResponseModel upload(MultipartFile file,HttpServletResponse response) throws IOException {
         FileTypeUtil.putFileType("255044462D312E", "pdf");
-
         if (file == null){
             return ResponseModel.fail();
-        }else if (!DeliveryConfig.FILE_TYPES.contains(FileTypeUtil.getType(file.getInputStream()))){
+        }else if (!deliveryConfig.getFileTypes().contains(FileTypeUtil.getType(file.getInputStream()))){
             return ResponseModel.fail("不支持的文件类型");
         }
         //创建文件目录
-        File dir = FileUtil.mkdir(DeliveryConfig.SAVE_PATH);
+        File dir = FileUtil.mkdir(deliveryConfig.getSavePath());
+        //文件MD5值
+        String md5File = DigestUtil.md5Hex(file.getInputStream());
+        //文件后缀
+        String extName = FileTypeUtil.getType(file.getInputStream());
+        //组装成新的文件名
+        String md5Filename = md5File+"."+extName;
+        if (FileUtil.exist(new File(dir,md5Filename))){
+            return ResponseModel.fail("请不要重复上传");
+        }
         //创建一个新文件
-        File attachFile = FileUtil.touch(dir, file.getOriginalFilename());
+        File attachFile = FileUtil.touch(dir, md5Filename);
         //将文件流写入文件中
         FileUtil.writeFromStream(file.getInputStream(), attachFile);
+
         return ResponseModel.success(attachFile.getAbsolutePath());
     }
 

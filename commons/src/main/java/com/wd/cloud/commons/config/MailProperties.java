@@ -8,14 +8,21 @@ import java.io.Serializable;
  * @since
  */
 public class MailProperties implements Serializable {
+
     private boolean enable = true;
-    //有效期，十分钟有效
+    /**
+     * 有效期，十分钟有效
+     */
     private long effective;
-    //邮件内容，例如：你的验证码为%s
+    /**
+     * 邮件内容，例如：你的验证码为%s
+     */
     private String content;
 
     private String subject;
-    //来自哪个用户发送
+    /**
+     * 来自哪个用户发送
+     */
     private String from;
 
     public long getEffective() {

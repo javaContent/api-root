@@ -30,8 +30,9 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<spring-cloud.version>Finchley.M9</spring-cloud.version>
-		<com.alibaba.druid>1.1.9</com.alibaba.druid>
-		<cn.hutool.all>4.0.12</cn.hutool.all>
+		<com.alibaba.druid.version>1.1.9</com.alibaba.druid.version>
+		<cn.hutool.all.version>4.0.12</cn.hutool.all.version>
+		<javax.mail.version>1.4.7</javax.mail.version>
 	</properties>
 
 	<dependencyManagement>
@@ -46,12 +47,17 @@
 			<dependency>
 				<groupId>com.alibaba</groupId>
 				<artifactId>druid</artifactId>
-				<version>${com.alibaba.druid}</version>
+				<version>${com.alibaba.druid.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>cn.hutool</groupId>
 				<artifactId>hutool-all</artifactId>
-				<version>${cn.hutool.all}</version>
+				<version>${cn.hutool.all.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.mail</groupId>
+				<artifactId>mail</artifactId>
+				<version>${javax.mail.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

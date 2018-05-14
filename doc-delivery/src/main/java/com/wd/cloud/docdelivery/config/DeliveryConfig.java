@@ -1,5 +1,8 @@
 package com.wd.cloud.docdelivery.config;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,18 +10,46 @@ import java.util.List;
  * @author He Zhigang
  * @date 2018/5/3
  */
+@Component
+@ConfigurationProperties(value = "delivery")
 public class DeliveryConfig {
-
 
     /**
      * 求助的来源渠道
      */
-    public static final List<String> CHANNELS = Arrays.asList(new String[]{"QQ","SPIS","CRS","ZHY","XK"});
+    private List<String> channels;
 
-    public static final String SAVE_PATH = "F:/upload";
+    /**
+     * 文件保存路径
+     */
+    private String savePath;
 
-    public static final List<String> FILE_TYPES = Arrays.asList(new String[]{"pdf","doc","docx"});
+    /**
+     * 上传文件类型
+     */
+    private List<String> fileTypes;
 
+    public List<String> getChannels() {
+        return channels;
+    }
 
+    public void setChannels(List<String> channels) {
+        this.channels = channels;
+    }
 
+    public String getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(String savePath) {
+        this.savePath = savePath;
+    }
+
+    public List<String> getFileTypes() {
+        return fileTypes;
+    }
+
+    public void setFileTypes(List<String> fileTypes) {
+        this.fileTypes = fileTypes;
+    }
 }

@@ -33,6 +33,7 @@ public class FrontendController {
 
     @GetMapping("/hello")
     public ResponseModel hello() {
+        frontService.save();
         return ResponseModel.success("惊不惊喜？意不意外？");
     }
 

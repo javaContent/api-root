@@ -12,4 +12,6 @@ import java.util.List;
  */
 public interface FrontService {
     List<HelpRecord> getLiteratureForUser(String email);
+
+    void save();
 }

@@ -28,4 +28,22 @@ public class BackendController {
     public ResponseModel upload(){
         return ResponseModel.success("文件上传成功");
     }
+
+    /**
+     * 审核通过
+     * @return
+     */
+    @PatchMapping("/audit/pass")
+    public ResponseModel auditPass(){
+        return ResponseModel.success();
+    }
+
+    /**
+     * 审核不通过
+     * @return
+     */
+    @PatchMapping("/audit/nopass")
+    public ResponseModel auditNoPass(){
+        return ResponseModel.success();
+    }
 }

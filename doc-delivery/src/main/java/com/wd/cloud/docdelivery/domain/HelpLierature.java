@@ -1,78 +1,92 @@
 package com.wd.cloud.docdelivery.domain;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.bson.types.ObjectId;
+import org.hibernate.annotations.FetchProfile;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @author He Zhigang
- * @date 2018/5/3
- * @Description: 文献元数据
+ * @date 2018/5/11
+ * @Description: 文献互助
  */
-@Entity
-@Table(name="literature")
-public class Literature {
+@Document(collection = "help_lierature")
+public class HelpLierature {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Integer id;
+    private ObjectId id;
 
     /**
      * 创建时间
      */
-    @Column(name = "gmt_create")
+    @Field("gmt_create")
     private Date gmtCreate;
 
     /**
      * 更新时间
      */
-    @Column(name = "gmt_modified")
+    @Field("gmt_modified")
     private Date gmtModified;
-
 
     /**
      * 期刊名称
      */
-    @Column(name = "journal_name")
+    @Field("journal_name")
     private String journalName;
 
     /**
      * 文献的链接地址
      */
-    @Column(name = "doc_href")
+    @Field("doc_href")
     private String docHref;
     /**
      * 文献标题
      */
-    @Column(name = "doc_title")
+    @Field("doc_title")
     private String docTitle;
-
     /**
      * 文献作者
      */
-    private String authors;
+    @Field("author_list")
+    private String[] authorList;
 
     /**
      * 发表年份
      */
-    @Column(name = "year_of_publication")
+    @Field("year_of_publication")
     private String yearOfPublication;
     /**
      * dio
      */
+    @Field("doi")
     private String doi;
     /**
      * 摘要
      */
+    @Field("summary")
     private String summary;
 
-    public Integer getId() {
+    /**
+     * 文献全文的文件名称
+     */
+    @Field("doc_filename")
+    private String docFilename;
+    /**
+     * 求助记录
+     */
+    @Field("help_records")
+    private List<HelpRecord> helpRecords;
+
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 
@@ -116,12 +130,12 @@ public class Literature {
         this.docTitle = docTitle;
     }
 
-    public String getAuthors() {
-        return authors;
+    public String[] getAuthorList() {
+        return authorList;
     }
 
-    public void setAuthors(String authors) {
-        this.authors = authors;
+    public void setAuthorList(String[] authorList) {
+        this.authorList = authorList;
     }
 
     public String getYearOfPublication() {
@@ -148,19 +162,19 @@ public class Literature {
         this.summary = summary;
     }
 
-    @Override
-    public String toString() {
-        return "Literature{" +
-                "id=" + id +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                ", journalName='" + journalName + '\'' +
-                ", docHref='" + docHref + '\'' +
-                ", docTitle='" + docTitle + '\'' +
-                ", authors='" + authors + '\'' +
-                ", yearOfPublication='" + yearOfPublication + '\'' +
-                ", doi='" + doi + '\'' +
-                ", summary='" + summary + '\'' +
-                '}';
+    public String getDocFilename() {
+        return docFilename;
+    }
+
+    public void setDocFilename(String docFilename) {
+        this.docFilename = docFilename;
+    }
+
+    public List<HelpRecord> getHelpRecords() {
+        return helpRecords;
+    }
+
+    public void setHelpRecords(List<HelpRecord> helpRecords) {
+        this.helpRecords = helpRecords;
     }
 }

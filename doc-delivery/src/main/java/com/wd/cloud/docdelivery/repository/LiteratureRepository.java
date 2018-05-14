@@ -10,7 +10,7 @@ import java.util.List;
  * @date 2018/5/7
  * @Description:
  */
-public interface LiteratureRepository extends JpaRepository<Literature, String> {
+public interface LiteratureRepository extends JpaRepository<Literature, Integer> {
 
 
 }

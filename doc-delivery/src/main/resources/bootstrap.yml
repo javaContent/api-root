@@ -11,6 +11,8 @@ spring:
       client:
         health-indicator:
           enabled: true
-
+  data:
+    mongodb:
+      uri: mongodb://192.168.1.51:27017,192.168.1.52:27017,192.168.1.53:27017/wd_temp_test
 
 

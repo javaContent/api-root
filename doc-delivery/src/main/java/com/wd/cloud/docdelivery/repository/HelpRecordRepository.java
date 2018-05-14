@@ -10,7 +10,7 @@ import java.util.List;
  * @date 2018/5/7
  * @Description:
  */
-public interface HelpRecordRepository extends JpaRepository<HelpRecord,String>{
+public interface HelpRecordRepository extends JpaRepository<HelpRecord,Integer>{
 
     List<HelpRecord> findByEmail(String email);
 }

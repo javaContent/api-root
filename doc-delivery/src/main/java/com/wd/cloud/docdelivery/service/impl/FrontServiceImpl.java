@@ -1,9 +1,8 @@
 package com.wd.cloud.docdelivery.service.impl;
 
-import com.wd.cloud.docdelivery.domain.HelpLierature;
+import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
-import com.wd.cloud.docdelivery.repository.HelpLieratureRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.FrontService;
@@ -27,25 +26,26 @@ public class FrontServiceImpl implements FrontService{
     @Autowired
     HelpRecordRepository helpRecordRepository;
 
-    @Autowired
-    HelpLieratureRepository helpLieratureRepository;
+    @Override
+    public Literature queryLiterature(Literature literature){
+        Literature literatureData;
+        if (StrUtil.isNotEmpty(literature.getDocHref())){
+            literatureData = literatureRepository.findByDocTitleAndDocHref(literature.getDocTitle(),literature.getDocHref());
+        }else{
+            literatureData = literatureRepository.findByDocTitle(literature.getDocTitle());
+        }
+        return literatureData;
+    }
+
+
+    @Override
+    public Literature saveLiterature(Literature literature) {
+        return literatureRepository.save(literature);
+    }
 
     @Override
     public List<HelpRecord> getLiteratureForUser(String email) {
         return helpRecordRepository.findByEmail(email);
     }
 
-    @Override
-    public void save(){
-        HelpLierature helpLierature = new HelpLierature();
-        helpLierature.setDocTitle("test");
-        helpLierature.setDoi("123");
-        List<HelpRecord> helpRecords = new ArrayList<>();
-        HelpRecord helpRecord = new HelpRecord();
-        helpRecord.setDocFilename("test.pdf");
-        helpRecord.setEmail("vampirehgg@qq.com");
-        helpRecords.add(helpRecord);
-        helpLierature.setHelpRecords(helpRecords);
-        helpLieratureRepository.save(helpLierature);
-    }
 }

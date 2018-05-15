@@ -2,12 +2,14 @@ package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.extra.mail.Mail;
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.DeliveryConfig;
+import com.wd.cloud.docdelivery.config.HelpSuccessMailConfig;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.service.FrontService;
@@ -36,6 +38,9 @@ public class FrontendController {
     DeliveryConfig deliveryConfig;
 
     @Autowired
+    HelpSuccessMailConfig helpSuccessMailConfig;
+
+    @Autowired
     FrontService frontService;
 
     @GetMapping("/hello")
@@ -54,7 +59,14 @@ public class FrontendController {
      */
     @PostMapping("/help")
     public ResponseModel help(String email, @RequestBody Literature literature) {
-        return ResponseModel.success("文献求助成功,请注意登陆邮箱" + email + "查收结果");
+        Literature literatureData = frontService.queryLiterature(literature);
+        if (literatureData != null && StrUtil.isNotEmpty(literatureData.getDocFilename())){
+            MailUtil.sendHtml(email,helpSuccessMailConfig.getSubject(),helpSuccessMailConfig.getContent());
+            return ResponseModel.success("文献求助成功,请注意登陆邮箱" + email + "查收结果");
+        }else{
+            frontService.saveLiterature(literature);
+            return ResponseModel.success("文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收");
+        }
     }
 
     /**

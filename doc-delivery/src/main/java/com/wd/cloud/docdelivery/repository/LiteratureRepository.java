@@ -12,5 +12,8 @@ import java.util.List;
  */
 public interface LiteratureRepository extends JpaRepository<Literature, Integer> {
 
+    Literature findByDocTitle(String docTitle);
+
+    Literature findByDocTitleAndDocHref(String docTitle,String docHref);
 
 }

@@ -68,6 +68,12 @@ public class Literature {
      */
     private String summary;
 
+    /**
+     * 文献全文的文件名称
+     */
+    @Column(name = "doc_filename")
+    private String docFilename;
+
     public Integer getId() {
         return id;
     }
@@ -148,19 +154,13 @@ public class Literature {
         this.summary = summary;
     }
 
-    @Override
-    public String toString() {
-        return "Literature{" +
-                "id=" + id +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                ", journalName='" + journalName + '\'' +
-                ", docHref='" + docHref + '\'' +
-                ", docTitle='" + docTitle + '\'' +
-                ", authors='" + authors + '\'' +
-                ", yearOfPublication='" + yearOfPublication + '\'' +
-                ", doi='" + doi + '\'' +
-                ", summary='" + summary + '\'' +
-                '}';
+
+    public String getDocFilename() {
+        return docFilename;
     }
+
+    public void setDocFilename(String docFilename) {
+        this.docFilename = docFilename;
+    }
+
 }

@@ -11,7 +11,11 @@ import java.util.List;
  * @Description:
  */
 public interface FrontService {
+
+    Literature saveLiterature(Literature literature);
+
+    Literature queryLiterature(Literature literature);
+
     List<HelpRecord> getLiteratureForUser(String email);
 
-    void save();
 }

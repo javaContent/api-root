@@ -13,4 +13,5 @@ import java.util.List;
 public interface HelpRecordRepository extends JpaRepository<HelpRecord,Integer>{
 
     List<HelpRecord> findByEmail(String email);
+
 }

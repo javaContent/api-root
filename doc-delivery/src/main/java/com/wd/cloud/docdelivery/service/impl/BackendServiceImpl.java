@@ -26,8 +26,24 @@ public class BackendServiceImpl implements BackendService {
 
     @Override
     public Page getHelpList(int pageNum, int pageSize) {
-        //Sort sort = new Sort(Direction.DESC, "");
         Pageable pageable = PageRequest.of(pageNum-1, pageSize, null);
         return helpRecordRepository.findAll(pageable);
     }
+    
+    @Override
+    public HelpRecord get(Long id) {
+    	return helpRecordRepository.findById(id);
+    }
+    
+    @Override
+    public HelpRecord getAudit(Long id) {
+    	return helpRecordRepository.findByIdAndStatus(id,2);
+    }
+    
+    @Override
+    public void update(HelpRecord helpRecord) {
+    	helpRecordRepository.update(helpRecord);
+    }
+    
+    
 }

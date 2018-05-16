@@ -14,8 +14,13 @@ public interface FrontService {
 
     Literature saveLiterature(Literature literature);
 
+    HelpRecord saveHelpRecord(HelpRecord helpRecord);
+
     Literature queryLiterature(Literature literature);
 
-    List<HelpRecord> getLiteratureForUser(String email);
+    List<HelpRecord> getHelpRecordsForUser(Integer helpUserId);
 
+    List<HelpRecord> getHelpRecordsForEmail(String helpEmail);
+
+    List<HelpRecord> getWaitHelpRecords(int pageNum,int pageSize);
 }

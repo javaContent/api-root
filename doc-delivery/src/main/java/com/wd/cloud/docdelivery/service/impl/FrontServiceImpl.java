@@ -3,10 +3,15 @@ package com.wd.cloud.docdelivery.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.enumeration.HelpStatus;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.FrontService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -44,8 +49,26 @@ public class FrontServiceImpl implements FrontService{
     }
 
     @Override
-    public List<HelpRecord> getLiteratureForUser(String email) {
-        return helpRecordRepository.findByEmail(email);
+    public HelpRecord saveHelpRecord(HelpRecord helpRecord) {
+        return helpRecordRepository.save(helpRecord);
+    }
+
+    @Override
+    public List<HelpRecord> getHelpRecordsForUser(Integer helpUserId) {
+        return helpRecordRepository.findByHelpUserId(helpUserId);
+    }
+
+    @Override
+    public List<HelpRecord> getHelpRecordsForEmail(String helpEmail) {
+        return helpRecordRepository.findByHelpEmail(helpEmail);
+    }
+
+    @Override
+    public List<HelpRecord> getWaitHelpRecords(int pageNum,int pageSize) {
+        Sort sort = new Sort(Direction.DESC, "gmt_create");
+        Pageable pageable = PageRequest.of(pageNum-1, pageSize, sort);
+        List<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatus.WAITING.getStatusCode(),pageable);
+        return waitHelpRecords;
     }
 
 }

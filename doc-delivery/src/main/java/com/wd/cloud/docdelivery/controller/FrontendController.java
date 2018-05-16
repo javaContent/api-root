@@ -12,6 +12,7 @@ import com.wd.cloud.docdelivery.config.DeliveryConfig;
 import com.wd.cloud.docdelivery.config.HelpSuccessMailConfig;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.enumeration.HelpStatus;
 import com.wd.cloud.docdelivery.service.FrontService;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,27 +47,53 @@ public class FrontendController {
     @GetMapping("/hello")
     public ResponseModel hello() {
         //frontService.save();
-        MailUtil.send("hezhigang@hnwdkj.com","hello dimon","hello zhengwen",true);
+        //MailUtil.send("hezhigang@hnwdkj.com","hello dimon","hello zhengwen",true);
         return ResponseModel.success("惊不惊喜？意不意外？");
     }
 
     /**
      * 文献求助请求
      *
-     * @param email
-     * @param literature
+     * @param helpUserId
      * @return
      */
-    @PostMapping("/help")
-    public ResponseModel help(String email, @RequestBody Literature literature) {
+    @PostMapping(value = "/help/{helpUserId}")
+    public ResponseModel help(@PathVariable Integer helpUserId,
+                              @RequestParam String helpEmail,
+                              @RequestParam Integer helpChannel,
+                              @RequestParam Integer helpUserScid,
+                              @RequestParam String docTitle,
+                              @RequestParam String docHref,
+                              HttpServletRequest request) {
+
+        HelpRecord helpRecord = new HelpRecord();
+        helpRecord.setHelpChannel(helpChannel);
+        helpRecord.setHelpUserScid(helpUserScid);
+        helpRecord.setHelpUserId(helpUserId);
+        helpRecord.setHelpIp(request.getLocalAddr());
+        helpRecord.setHelpEmail(helpEmail);
+
+        Literature literature = new Literature();
+        literature.setDocTitle(docTitle);
+        literature.setDocTitle(docHref);
+        // 先查询元数据是否存在
         Literature literatureData = frontService.queryLiterature(literature);
-        if (literatureData != null && StrUtil.isNotEmpty(literatureData.getDocFilename())){
-            MailUtil.sendHtml(email,helpSuccessMailConfig.getSubject(),helpSuccessMailConfig.getContent());
-            return ResponseModel.success("文献求助成功,请注意登陆邮箱" + email + "查收结果");
-        }else{
-            frontService.saveLiterature(literature);
-            return ResponseModel.success("文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收");
+        String msg = "文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收";
+        if (null == literatureData){
+            // 如果不存在，则新增一条元数据
+            literatureData = frontService.saveLiterature(literature);
         }
+        helpRecord.setLiteratureId(literatureData.getId());
+        // 如果文件已存在，自动应助成功
+        if (StrUtil.isNotEmpty(literatureData.getDocFilename())) {
+                helpRecord.setStatus(HelpStatus.FINISHED.value());
+                helpRecord.setDocFilename(literatureData.getDocFilename());
+                MailUtil.sendHtml(helpEmail, helpSuccessMailConfig.getSubject(), helpSuccessMailConfig.getContent());
+                msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
+        }
+        // 插入求助记录
+        frontService.saveHelpRecord(helpRecord);
+        return ResponseModel.success(msg);
     }
 
     /**
@@ -76,7 +103,8 @@ public class FrontendController {
      */
     @GetMapping("/help/{pageNum}/{pageSize}")
     public ResponseModel help(@PathVariable int pageNum, @PathVariable int pageSize) {
-        return ResponseModel.success();
+        List<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageNum,pageSize);
+        return ResponseModel.success(waitHelpRecords);
     }
 
     /**
@@ -86,7 +114,7 @@ public class FrontendController {
      * @return
      */
     @PostMapping("/upload")
-    public ResponseModel upload(MultipartFile file,HttpServletResponse response) throws IOException {
+    public ResponseModel upload(MultipartFile file) throws IOException {
         FileTypeUtil.putFileType("255044462D312E", "pdf");
         if (file == null){
             return ResponseModel.fail();
@@ -116,13 +144,13 @@ public class FrontendController {
     /**
      * 我的求助记录
      *
-     * @param email
+     * @param helpUserId
      * @return
      */
-    @GetMapping("/records/{userid}")
-    public ResponseModel myRecords(String email) {
-        List<HelpRecord> literatureList = frontService.getLiteratureForUser(email);
-        return ResponseModel.success(literatureList);
+    @GetMapping("/records/{helpUserId}")
+    public ResponseModel myRecords(Integer helpUserId) {
+        List<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helpUserId);
+        return ResponseModel.success(myHelpRecords);
     }
 
     /**
@@ -133,7 +161,7 @@ public class FrontendController {
      */
     @GetMapping("/records")
     public ResponseModel recordsByEmail(String email) {
-        List<HelpRecord> literatureList = frontService.getLiteratureForUser(email);
+        List<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email);
         return ResponseModel.success(literatureList);
     }
 

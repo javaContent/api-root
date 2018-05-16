@@ -60,7 +60,7 @@ public class Literature {
     @Column(name = "year_of_publication")
     private String yearOfPublication;
     /**
-     * dio
+     * doi
      */
     private String doi;
     /**

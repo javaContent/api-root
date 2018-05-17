@@ -3,7 +3,6 @@ package com.wd.cloud.docdelivery.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,7 +11,7 @@ import java.util.List;
  */
 @Component
 @ConfigurationProperties(value = "help.global")
-public class DeliveryConfig {
+public class GlobalConfig {
 
     /**
      * 求助的来源渠道

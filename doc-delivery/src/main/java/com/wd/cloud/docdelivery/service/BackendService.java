@@ -11,17 +11,32 @@ import com.wd.cloud.docdelivery.domain.HelpRecord;
  */
 public interface BackendService {
 
-    Page getHelpList(int pageNum, int pageSize);
-    
-    HelpRecord get(Long id);
-    
     /**
-     * 查询需要审核的
+     * 获取互助列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    Page getHelpList(int pageNum, int pageSize);
+
+    /**
+     * 获取单条互助记录
      * @param id
      * @return
      */
-    HelpRecord getAudit(Long id);
+    HelpRecord get(Long id);
     
-    void update(HelpRecord helpRecord);
+    /**
+     * 查询待审核的
+     * @param id
+     * @return
+     */
+    HelpRecord getWaitAudit(Long id);
+
+    /**
+     * 更新互助记录
+     * @param helpRecord
+     */
+    void updateHelRecord(HelpRecord helpRecord);
     
 }

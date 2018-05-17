@@ -1,31 +1,26 @@
 package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.io.FileTypeUtil;
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.DigestUtil;
-import cn.hutool.extra.mail.Mail;
-import cn.hutool.extra.mail.MailAccount;
-import cn.hutool.extra.mail.MailUtil;
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.docdelivery.config.DeliveryConfig;
-import com.wd.cloud.docdelivery.config.HelpSuccessMailConfig;
+import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
-import com.wd.cloud.docdelivery.enumeration.HelpStatus;
+import com.wd.cloud.docdelivery.enums.ChannelEnum;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.enums.ProcessTypeEnum;
+import com.wd.cloud.docdelivery.model.HelpModel;
+import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
+import com.wd.cloud.docdelivery.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.zip.Checksum;
 
 /**
  * @author He Zhigang
@@ -36,60 +31,55 @@ import java.util.zip.Checksum;
 public class FrontendController {
 
     @Autowired
-    DeliveryConfig deliveryConfig;
+    GlobalConfig globalConfig;
 
     @Autowired
-    HelpSuccessMailConfig helpSuccessMailConfig;
+    FileService fileService;
+
+    @Autowired
+    MailService mailService;
 
     @Autowired
     FrontService frontService;
 
     @GetMapping("/hello")
-    public ResponseModel hello() {
+    public ResponseModel hello() throws InterruptedException {
         //frontService.save();
-        //MailUtil.send("hezhigang@hnwdkj.com","hello dimon","hello zhengwen",true);
+        mailService.sendMail(ChannelEnum.CRS, "hezhigang@hnwdkj.com", "测试标题", "http://www.baidu.com", ProcessTypeEnum.PASS);
         return ResponseModel.success("惊不惊喜？意不意外？");
     }
 
     /**
      * 文献求助请求
-     *
-     * @param helpUserId
      * @return
      */
-    @PostMapping(value = "/help/{helpUserId}")
-    public ResponseModel help(@PathVariable Integer helpUserId,
-                              @RequestParam String helpEmail,
-                              @RequestParam Integer helpChannel,
-                              @RequestParam Integer helpUserScid,
-                              @RequestParam String docTitle,
-                              @RequestParam String docHref,
-                              HttpServletRequest request) {
-
+    @PostMapping(value = "/help")
+    public ResponseModel help(@Validated HelpModel helpModel, HttpServletRequest request) {
         HelpRecord helpRecord = new HelpRecord();
-        helpRecord.setHelpChannel(helpChannel);
-        helpRecord.setHelpUserScid(helpUserScid);
-        helpRecord.setHelpUserId(helpUserId);
+        String helpEmail = helpModel.getHelpEmail();
+        helpRecord.setHelpChannel(helpModel.getHelpChannel());
+        helpRecord.setHelpUserScid(helpModel.getHelpUserScid());
+        helpRecord.setHelpUserId(helpModel.getHelpUserId());
         helpRecord.setHelpIp(request.getLocalAddr());
-        helpRecord.setHelpEmail(helpEmail);
+        helpRecord.setHelpEmail(helpModel.getHelpEmail());
 
         Literature literature = new Literature();
-        literature.setDocTitle(docTitle);
-        literature.setDocTitle(docHref);
+        literature.setDocTitle(helpModel.getDocTitle());
+        literature.setDocHref(helpModel.getDocHref());
         // 先查询元数据是否存在
         Literature literatureData = frontService.queryLiterature(literature);
         String msg = "文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收";
-        if (null == literatureData){
+        if (null == literatureData) {
             // 如果不存在，则新增一条元数据
             literatureData = frontService.saveLiterature(literature);
         }
         helpRecord.setLiteratureId(literatureData.getId());
         // 如果文件已存在，自动应助成功
         if (StrUtil.isNotEmpty(literatureData.getDocFilename())) {
-                helpRecord.setStatus(HelpStatus.FINISHED.value());
-                helpRecord.setDocFilename(literatureData.getDocFilename());
-                MailUtil.sendHtml(helpEmail, helpSuccessMailConfig.getSubject(), helpSuccessMailConfig.getContent());
-                msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
+            helpRecord.setStatus(HelpStatusEnum.PASS.getCode());
+            helpRecord.setDocFilename(literatureData.getDocFilename());
+            mailService.sendMail(helpRecord.getHelpChannel(),helpEmail,helpRecord.getDocTitle(),"",ProcessTypeEnum.PASS);
+            msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         }
         // 插入求助记录
         frontService.saveHelpRecord(helpRecord);
@@ -103,7 +93,7 @@ public class FrontendController {
      */
     @GetMapping("/help/{pageNum}/{pageSize}")
     public ResponseModel help(@PathVariable int pageNum, @PathVariable int pageSize) {
-        List<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageNum,pageSize);
+        List<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageNum, pageSize);
         return ResponseModel.success(waitHelpRecords);
     }
 
@@ -116,28 +106,14 @@ public class FrontendController {
     @PostMapping("/upload")
     public ResponseModel upload(MultipartFile file) throws IOException {
         FileTypeUtil.putFileType("255044462D312E", "pdf");
-        if (file == null){
+        if (file == null) {
             return ResponseModel.fail();
-        }else if (!deliveryConfig.getFileTypes().contains(FileTypeUtil.getType(file.getInputStream()))){
+        } else if (!globalConfig.getFileTypes().contains(FileTypeUtil.getType(file.getInputStream()))) {
             return ResponseModel.fail("不支持的文件类型");
         }
-        //创建文件目录
-        File dir = FileUtil.mkdir(deliveryConfig.getSavePath());
-        //文件MD5值
-        String md5File = DigestUtil.md5Hex(file.getInputStream());
-        //文件后缀
-        String extName = FileTypeUtil.getType(file.getInputStream());
-        //组装成新的文件名
-        String md5Filename = md5File+"."+extName;
-        if (FileUtil.exist(new File(dir,md5Filename))){
-            return ResponseModel.fail("请不要重复上传");
-        }
-        //创建一个新文件
-        File attachFile = FileUtil.touch(dir, md5Filename);
-        //将文件流写入文件中
-        FileUtil.writeFromStream(file.getInputStream(), attachFile);
+        String filename = fileService.saveFile(file);
 
-        return ResponseModel.success(attachFile.getAbsolutePath());
+        return ResponseModel.success(filename);
     }
 
 

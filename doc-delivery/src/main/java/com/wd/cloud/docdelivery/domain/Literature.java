@@ -1,10 +1,7 @@
 package com.wd.cloud.docdelivery.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author He Zhigang
@@ -17,7 +14,7 @@ public class Literature {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     /**
      * 创建时间
@@ -74,11 +71,11 @@ public class Literature {
     @Column(name = "doc_filename")
     private String docFilename;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

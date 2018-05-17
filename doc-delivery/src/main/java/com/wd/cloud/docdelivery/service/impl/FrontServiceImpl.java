@@ -3,7 +3,7 @@ package com.wd.cloud.docdelivery.service.impl;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
-import com.wd.cloud.docdelivery.enumeration.HelpStatus;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.FrontService;
@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,7 +66,7 @@ public class FrontServiceImpl implements FrontService{
     public List<HelpRecord> getWaitHelpRecords(int pageNum,int pageSize) {
         Sort sort = new Sort(Direction.DESC, "gmt_create");
         Pageable pageable = PageRequest.of(pageNum-1, pageSize, sort);
-        List<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatus.WAITING.getStatusCode(),pageable);
+        List<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatusEnum.WAITHELP.getCode(),pageable);
         return waitHelpRecords;
     }
 

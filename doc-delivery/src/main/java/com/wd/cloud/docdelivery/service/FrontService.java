@@ -12,15 +12,46 @@ import java.util.List;
  */
 public interface FrontService {
 
+    /**
+     * 保存元数据
+     * @param literature
+     * @return
+     */
     Literature saveLiterature(Literature literature);
 
+    /**
+     * 保存求助记录
+     * @param helpRecord
+     * @return
+     */
     HelpRecord saveHelpRecord(HelpRecord helpRecord);
 
+    /**
+     * 查询元数据
+     * @param literature
+     * @return
+     */
     Literature queryLiterature(Literature literature);
 
+    /**
+     * 获取用户的求助记录
+     * @param helpUserId
+     * @return
+     */
     List<HelpRecord> getHelpRecordsForUser(Integer helpUserId);
 
+    /**
+     * 获取用户的求助记录
+     * @param helpEmail
+     * @return
+     */
     List<HelpRecord> getHelpRecordsForEmail(String helpEmail);
 
+    /**
+     * 获取待应助的求助记录
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     List<HelpRecord> getWaitHelpRecords(int pageNum,int pageSize);
 }

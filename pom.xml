@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.wd.cloud</groupId>
-	<artifactId>root</artifactId>
+	<artifactId>api-root</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
@@ -16,6 +16,7 @@
         <module>config-server</module>
 		<module>discovery</module>
         <module>doc-delivery</module>
+		<module>commons</module>
     </modules>
 
 	<parent>

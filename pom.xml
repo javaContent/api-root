@@ -8,7 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>root</name>
+	<name>api-root</name>
 	<description>微服务根POM</description>
 
     <modules>
@@ -34,6 +34,8 @@
 		<com.alibaba.druid.version>1.1.9</com.alibaba.druid.version>
 		<cn.hutool.all.version>4.0.12</cn.hutool.all.version>
 		<javax.mail.version>1.4.7</javax.mail.version>
+		<swagger-ui.version>2.6.1</swagger-ui.version>
+		<swagger2.version>2.6.1</swagger2.version>
 	</properties>
 
 	<dependencyManagement>
@@ -59,6 +61,22 @@
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
 				<version>${javax.mail.version}</version>
+			</dependency>
+			<!-- Swagger -->
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger-ui</artifactId>
+				<version>${swagger-ui.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>${swagger2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.wd.cloud</groupId>
+				<artifactId>commons</artifactId>
+				<version>${version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

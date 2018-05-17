@@ -62,33 +62,33 @@ public class ResponseModel<T> {
     }
 
     public static ResponseModel success(int code, String msg) {
-        return new ResponseModel(code, msg);
+        return new ResponseModel<Object>(code, msg);
     }
 
     public static ResponseModel success(String msg) {
-        return new ResponseModel(SUCCESS_CODE, msg);
+        return new ResponseModel<Object>(SUCCESS_CODE, msg);
     }
 
     public static ResponseModel success() {
-        return new ResponseModel(SUCCESS_CODE, SUCCESS_MSG);
+        return new ResponseModel<Object>(SUCCESS_CODE, SUCCESS_MSG);
     }
 
     public static ResponseModel success(Object data) {
-        return new ResponseModel(SUCCESS_CODE, SUCCESS_MSG, data);
+        return new ResponseModel<Object>(SUCCESS_CODE, SUCCESS_MSG, data);
     }
 
     public static ResponseModel fail(int code, String msg) {
-        return new ResponseModel(code, msg);
+        return new ResponseModel<Object>(code, msg);
     }
 
     public static ResponseModel fail(String msg) {
-        return new ResponseModel(FAIL_CODE, msg);
+        return new ResponseModel<Object>(FAIL_CODE, msg);
     }
 
     public static ResponseModel fail() {
-        return new ResponseModel(FAIL_CODE, FAIL_MSG);
+        return new ResponseModel<Object>(FAIL_CODE, FAIL_MSG);
     }
     public static ResponseModel fail(Object data) {
-        return new ResponseModel(FAIL_CODE, FAIL_MSG, data);
+        return new ResponseModel<Object>(FAIL_CODE, FAIL_MSG, data);
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2018/5/3
  */
 @Component
-@ConfigurationProperties(value = "delivery")
+@ConfigurationProperties(value = "help.global")
 public class DeliveryConfig {
 
     /**

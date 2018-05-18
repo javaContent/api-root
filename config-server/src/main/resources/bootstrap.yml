@@ -5,9 +5,9 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone:   http://localhost:8761/eureka/
+      defaultZone: http://192.168.1.103:8761/eureka/
   instance:
-    status-page-url: http://localhost:8888/swagger-ui.html
+    status-page-url: http://192.168.1.7:8888/swagger-ui.html
 spring:
   application:
     name: config-server
@@ -17,4 +17,8 @@ spring:
         git:
           uri: http://192.168.1.2/hezhigang/config.git     # 配置git仓库的地址
           search-paths: config-repo # git仓库地址下的相对地址，可以配置多个，用","分割。
+management:
+  endpoint:
+    auditevents:
+      enabled: false
 

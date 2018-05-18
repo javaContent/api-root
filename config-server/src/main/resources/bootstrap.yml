@@ -16,9 +16,5 @@ spring:
       server:
         git:
           uri: http://192.168.1.2/hezhigang/config.git     # 配置git仓库的地址
-          search-paths: config-repo # git仓库地址下的相对地址，可以配置多个，用","分割。
-management:
-  endpoint:
-    auditevents:
-      enabled: false
+          search-paths: settings/** # git仓库地址下的相对地址，可以配置多个，用","分割。
 

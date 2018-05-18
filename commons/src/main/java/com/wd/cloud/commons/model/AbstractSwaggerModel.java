@@ -1,34 +1,34 @@
-package com.wd.cloud.docdelivery.config;
+package com.wd.cloud.commons.model;
 
 import cn.hutool.setting.Setting;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger.web.UiConfiguration;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger.web.*;
 
 /**
  * @author He Zhigang
  * @date 2018/5/17
  * @Description:
  */
-@Configuration
-@EnableSwagger2
-public class SwaggerConfig {
 
-    private Setting apiInfo = new Setting("api-info.setting");
+public abstract class AbstractSwaggerModel {
 
     @Bean
-    public Docket createRestApi() {
+    public Docket docket() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(createApiInfo());
     }
 
     private ApiInfo createApiInfo(){
+        Setting apiInfo = new Setting("api-info.setting");
         return new ApiInfoBuilder().title(apiInfo.get("title"))
                 .description(apiInfo.get("description"))
                 .termsOfServiceUrl(apiInfo.get("termsOfServiceUrl"))
@@ -38,7 +38,8 @@ public class SwaggerConfig {
     }
 
     @Bean
-    UiConfiguration uiConfig() {
+    public UiConfiguration uiConfiguration() {
+        //new UiConfiguration(Boolean deepLinking, Boolean displayOperationId, Integer defaultModelsExpandDepth, Integer defaultModelExpandDepth, ModelRendering defaultModelRendering, Boolean displayRequestDuration, DocExpansion docExpansion, Object filter, Integer maxDisplayedTags, OperationsSorter operationsSorter, Boolean showExtensions, TagsSorter tagsSorter, String validatorUrl);
         UiConfiguration uiConfiguration = new UiConfiguration(null, "list", "alpha", "schema",
                 UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS, false, true, 60000L);
         return uiConfiguration;

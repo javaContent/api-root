@@ -1,6 +1,6 @@
 title = 文献传递系统
 description = 文献传递系统接口文档说明
-termsOfServiceUrl = "http://localhost:8081"
+termsOfServiceUrl = "http://192.168.1.121:8081"
 version = 1.0
 contact.name = hezhigang
 contact.email = hezhigang@hnwdkj.com

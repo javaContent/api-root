@@ -14,6 +14,8 @@ import javax.validation.constraints.NotNull;
 
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.MailService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author He Zhigang
  * @date 2018/5/3
  */
+
 @RestController
 @RequestMapping("/backend")
 public class BackendController {

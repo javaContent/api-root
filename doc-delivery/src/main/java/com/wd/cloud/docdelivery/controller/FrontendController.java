@@ -16,6 +16,10 @@ import com.wd.cloud.docdelivery.service.MailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,13 +50,14 @@ public class FrontendController {
 
     @GetMapping("/hello")
     public ResponseModel hello() throws InterruptedException {
-        //frontService.save();
-        mailService.sendMail(ChannelEnum.CRS, "hezhigang@hnwdkj.com", "测试标题", "http://www.baidu.com", ProcessTypeEnum.PASS);
+        //frontService.saveHelpRecord();
+        //mailService.sendMail(ChannelEnum.CRS, "hezhigang@hnwdkj.com", "测试标题", "http://www.baidu.com", ProcessTypeEnum.PASS);
         return ResponseModel.success("惊不惊喜？意不意外？");
     }
 
     /**
      * 文献求助请求
+     *
      * @return
      */
     @PostMapping(value = "/help")
@@ -75,12 +80,12 @@ public class FrontendController {
             // 如果不存在，则新增一条元数据
             literatureData = frontService.saveLiterature(literature);
         }
-        helpRecord.setLiteratureId(literatureData.getId());
+        helpRecord.setLiterature(literatureData);
         // 如果文件已存在，自动应助成功
         if (StrUtil.isNotEmpty(literatureData.getDocFilename())) {
             helpRecord.setStatus(HelpStatusEnum.PASS.getCode());
             helpRecord.setDocFilename(literatureData.getDocFilename());
-            mailService.sendMail(helpRecord.getHelpChannel(),helpEmail,helpRecord.getDocTitle(),"",ProcessTypeEnum.PASS);
+            mailService.sendMail(helpRecord.getHelpChannel(), helpEmail, helpRecord.getLiterature().getDocTitle(), "", ProcessTypeEnum.PASS);
             msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         }
         // 插入求助记录
@@ -93,9 +98,9 @@ public class FrontendController {
      *
      * @return
      */
-    @GetMapping("/help/{pageNum}/{pageSize}")
-    public ResponseModel help(@PathVariable int pageNum, @PathVariable int pageSize) {
-        List<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageNum, pageSize);
+    @GetMapping("/help/wait")
+    public ResponseModel help(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageable);
         return ResponseModel.success(waitHelpRecords);
     }
 
@@ -126,8 +131,8 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/records/{helpUserId}")
-    public ResponseModel myRecords(Integer helpUserId) {
-        List<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helpUserId);
+    public ResponseModel myRecords(Integer helpUserId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helpUserId, pageable);
         return ResponseModel.success(myHelpRecords);
     }
 
@@ -138,8 +143,8 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/records")
-    public ResponseModel recordsByEmail(String email) {
-        List<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email);
+    public ResponseModel recordsByEmail(String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email, pageable);
         return ResponseModel.success(literatureList);
     }
 
@@ -149,8 +154,8 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/records/all")
-    public ResponseModel allRecords() {
-        return ResponseModel.success("所有记录");
+    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseModel.success(frontService.getAllHelpRecord(pageable));
     }
 
     /**

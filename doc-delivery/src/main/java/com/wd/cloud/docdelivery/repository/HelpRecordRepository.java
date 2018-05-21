@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.repository;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -34,24 +35,10 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>{
     /**
      * 根据求助用户ID查询
      * @param helpUserId
-     * @return
-     */
-    List<HelpRecord> findByHelpUserId(Integer helpUserId);
-
-    /**
-     * 根据求助用户ID查询
-     * @param helpUserId
      * @param pageable
      * @return
      */
-    List<HelpRecord> findByHelpUserId(Integer helpUserId,Pageable pageable);
-
-    /**
-     * 根据求助邮箱查询
-     * @param helpEmail
-     * @return
-     */
-    List<HelpRecord> findByHelpEmail(String helpEmail);
+    Page<HelpRecord> findByHelpUserId(Integer helpUserId,Pageable pageable);
 
     /**
      * 根据求助邮箱查询
@@ -59,7 +46,7 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>{
      * @param pageable
      * @return
      */
-    List<HelpRecord> findByHelpEmail(String helpEmail,Pageable pageable);
+    Page<HelpRecord> findByHelpEmail(String helpEmail,Pageable pageable);
 
     /**
      * 根据互助状态查询
@@ -67,5 +54,5 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>{
      * @param pageable
      * @return
      */
-    List<HelpRecord> findByStatus(Integer status, Pageable pageable);
+    Page<HelpRecord> findByStatus(Integer status, Pageable pageable);
 }

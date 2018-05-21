@@ -4,10 +4,15 @@ import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.service.BackendService;
+import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 /**
@@ -18,12 +23,13 @@ import org.springframework.stereotype.Service;
 @Service("backendService")
 public class BackendServiceImpl implements BackendService {
 
+    @Autowired
     HelpRecordRepository helpRecordRepository;
 
     @Override
-    public Page getHelpList(int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize, null);
-        return helpRecordRepository.findAll(pageable);
+    public Page<HelpRecord> getHelpList(Pageable pageable) {
+        Page<HelpRecord> page = helpRecordRepository.findAll(pageable);
+        return page;
     }
     
     @Override

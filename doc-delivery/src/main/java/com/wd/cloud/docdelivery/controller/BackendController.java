@@ -17,6 +17,9 @@ import com.wd.cloud.docdelivery.service.MailService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,14 +46,13 @@ public class BackendController {
      *
      * @return
      */
-    @GetMapping("/help/list/{pageNum}/{pageSize}")
-    public ResponseModel helpList(@PathVariable int pageNum, @PathVariable int pageSize, @RequestParam short type,
-                                  @RequestParam String shool, @RequestParam String keyword, @RequestParam String beginTime,
-                                  @RequestParam String endTime) {
+    @GetMapping("/help/list")
+    public ResponseModel helpList(@RequestParam(required=false) Short type,
+                                  @RequestParam(required=false) String shool, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
+                                  @RequestParam(required=false) String endTime,
+                                  @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
-
-        backendService.getHelpList(pageNum, pageSize);
-        return ResponseModel.success();
+        return ResponseModel.success(backendService.getHelpList(pageable));
     }
 
     /**
@@ -71,11 +73,10 @@ public class BackendController {
         String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
                 + md5Filename;
 
-        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(), helpRecord.getDocTitle(), url, ProcessTypeEnum.PASS);
+        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(), helpRecord.getLiterature().getDocTitle(), url, ProcessTypeEnum.PASS);
 
         helpRecord.setDocFilename(md5Filename);
         helpRecord.setProcessType(ProcessTypeEnum.PASS.getCode());
-        helpRecord.setGmtModified(new Date());
         // 当后台管理员直接处理时，GiveUserId和processUserId一致
         helpRecord.setGiveUserId(processUserId);
         helpRecord.setProcessUserId(processUserId);
@@ -94,12 +95,11 @@ public class BackendController {
                                  @RequestParam Integer processType) {
         HelpRecord helpRecord = backendService.get(id);
         helpRecord.setProcessType(processType);
-        helpRecord.setGmtModified(new Date());
         // 当后台管理员直接处理时，GiveUserId和processUserId一致
         helpRecord.setGiveUserId(processUserId);
         helpRecord.setProcessUserId(processUserId);
         String subject = "", content = "";
-        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(),helpRecord.getDocTitle(),null,processType);
+        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(),helpRecord.getLiterature().getDocTitle(),null,processType);
 
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.success("处理成功");
@@ -117,12 +117,11 @@ public class BackendController {
             return ResponseModel.fail();
         }
         helpRecord.setProcessType(ProcessTypeEnum.PASS.getCode());
-        helpRecord.setGmtModified(new Date());
         helpRecord.setProcessUserId(processUserId);
         helpRecord.setStatus(HelpStatusEnum.PASS.getCode());
         String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
                 + helpRecord.getDocFilename();
-        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(),helpRecord.getDocTitle(),url,ProcessTypeEnum.PASS);
+        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(),helpRecord.getLiterature().getDocTitle(),url,ProcessTypeEnum.PASS);
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.success();
     }
@@ -138,7 +137,6 @@ public class BackendController {
         if (helpRecord == null) {
             return ResponseModel.fail();
         }
-        helpRecord.setGmtModified(new Date());
         helpRecord.setProcessUserId(processUserId);
         helpRecord.setStatus(HelpStatusEnum.NOPASS.getCode());
         backendService.updateHelRecord(helpRecord);

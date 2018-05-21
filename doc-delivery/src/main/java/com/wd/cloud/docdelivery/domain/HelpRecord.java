@@ -11,28 +11,17 @@ import java.util.Date;
  */
 @Entity
 @Table(name="help_record")
-public class HelpRecord {
+public class HelpRecord extends AbstractDBModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
-     * 创建时间
-     */
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
-
-    /**
-     * 更新时间
-     */
-    @Column(name = "gmt_modified")
-    private Date gmtModified;
-
-    /**
      * 文献ID
      */
-    @Column(name = "literature_id")
-    private Long literatureId;
+    @ManyToOne
+    @JoinColumn(name = "literature_id")
+    private Literature literature;
 
     /**
      * 求助的email地址
@@ -61,7 +50,7 @@ public class HelpRecord {
     /**
      * 求助渠道，1：QQ，2：SPIS，3：CRS，4：ZHY
      */
-    @Column(name = "help_channel")
+    @Column(name = "help_channel", columnDefinition = "tinyint default 1")
     private Integer helpChannel;
 
     /**
@@ -78,7 +67,7 @@ public class HelpRecord {
     /**
      * 互助状态 0：待应助，0：审核不通过,1:为应助中,2: 已应助待审核，3：已审核通过，
      */
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "tinyint default 0")
     private Integer status;
 
     /**
@@ -90,7 +79,7 @@ public class HelpRecord {
      * 4:表示其他途径
      * 5：没结果（图书）
      */
-    @Column(name = "process_type")
+    @Column(name = "process_type", columnDefinition = "tinyint default 0")
     private Integer processType;
 
     /**
@@ -99,18 +88,6 @@ public class HelpRecord {
      */
     @Column(name = "process_User_id")
     private Long processUserId;
-
-    /**
-     * 文献标题
-     */
-    @Column(name = "doc_title")
-    private String docTitle;
-
-    /**
-     * 文献地址
-     */
-    @Column(name = "doc_href")
-    private String docHref;
 
     /**
      * 文献全文的文件名称
@@ -126,28 +103,12 @@ public class HelpRecord {
         this.id = id;
     }
 
-    public Date getGmtCreate() {
-        return gmtCreate;
+    public Literature getLiterature() {
+        return literature;
     }
 
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Date getGmtModified() {
-        return gmtModified;
-    }
-
-    public void setGmtModified(Date gmtModified) {
-        this.gmtModified = gmtModified;
-    }
-
-    public Long getLiteratureId() {
-        return literatureId;
-    }
-
-    public void setLiteratureId(Long literatureId) {
-        this.literatureId = literatureId;
+    public void setLiterature(Literature literature) {
+        this.literature = literature;
     }
 
     public String getHelpEmail() {
@@ -180,22 +141,6 @@ public class HelpRecord {
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public String getDocTitle() {
-        return docTitle;
-    }
-
-    public void setDocTitle(String docTitle) {
-        this.docTitle = docTitle;
-    }
-
-    public String getDocHref() {
-        return docHref;
-    }
-
-    public void setDocHref(String docHref) {
-        this.docHref = docHref;
     }
 
     public String getDocFilename() {
@@ -259,9 +204,7 @@ public class HelpRecord {
     public String toString() {
         return "HelpRecord{" +
                 "id=" + id +
-                ", gmtCreate=" + gmtCreate +
-                ", gmtModified=" + gmtModified +
-                ", literatureId=" + literatureId +
+                ", literature=" + literature +
                 ", helpEmail='" + helpEmail + '\'' +
                 ", helpUserId=" + helpUserId +
                 ", helpUserScid=" + helpUserScid +
@@ -272,9 +215,9 @@ public class HelpRecord {
                 ", status=" + status +
                 ", processType=" + processType +
                 ", processUserId=" + processUserId +
-                ", docTitle='" + docTitle + '\'' +
-                ", docHref='" + docHref + '\'' +
                 ", docFilename='" + docFilename + '\'' +
+                ", gmtModified=" + gmtModified +
+                ", gmtCreate=" + gmtCreate +
                 '}';
     }
 }

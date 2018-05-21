@@ -3,6 +3,7 @@ package com.wd.cloud.docdelivery.service;
 import org.springframework.data.domain.Page;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author He Zhigang
@@ -13,11 +14,9 @@ public interface BackendService {
 
     /**
      * 获取互助列表
-     * @param pageNum
-     * @param pageSize
      * @return
      */
-    Page getHelpList(int pageNum, int pageSize);
+    Page<HelpRecord> getHelpList(Pageable pageable);
 
     /**
      * 获取单条互助记录

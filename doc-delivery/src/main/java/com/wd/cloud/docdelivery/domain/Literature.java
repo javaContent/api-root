@@ -10,24 +10,11 @@ import java.util.Date;
  */
 @Entity
 @Table(name="literature")
-public class Literature {
+public class Literature extends AbstractDBModel{
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-
-    /**
-     * 创建时间
-     */
-    @Column(name = "gmt_create")
-    private Date gmtCreate;
-
-    /**
-     * 更新时间
-     */
-    @Column(name = "gmt_modified")
-    private Date gmtModified;
-
 
     /**
      * 期刊名称
@@ -77,22 +64,6 @@ public class Literature {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Date getGmtCreate() {
-        return gmtCreate;
-    }
-
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
-    }
-
-    public Date getGmtModified() {
-        return gmtModified;
-    }
-
-    public void setGmtModified(Date gmtModified) {
-        this.gmtModified = gmtModified;
     }
 
     public String getJournalName() {

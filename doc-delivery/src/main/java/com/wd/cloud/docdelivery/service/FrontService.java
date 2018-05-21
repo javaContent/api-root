@@ -2,6 +2,8 @@ package com.wd.cloud.docdelivery.service;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -38,20 +40,21 @@ public interface FrontService {
      * @param helpUserId
      * @return
      */
-    List<HelpRecord> getHelpRecordsForUser(Integer helpUserId);
+    Page<HelpRecord> getHelpRecordsForUser(Integer helpUserId,Pageable pageable);
 
     /**
      * 获取用户的求助记录
      * @param helpEmail
      * @return
      */
-    List<HelpRecord> getHelpRecordsForEmail(String helpEmail);
+    Page<HelpRecord> getHelpRecordsForEmail(String helpEmail,Pageable pageable);
 
     /**
      * 获取待应助的求助记录
-     * @param pageNum
-     * @param pageSize
      * @return
      */
-    List<HelpRecord> getWaitHelpRecords(int pageNum,int pageSize);
+    Page<HelpRecord> getWaitHelpRecords(Pageable pageable);
+
+    Page<HelpRecord> getAllHelpRecord(Pageable pageable);
+
 }

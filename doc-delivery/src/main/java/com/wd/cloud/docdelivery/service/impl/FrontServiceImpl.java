@@ -8,6 +8,7 @@ import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.FrontService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -53,21 +54,26 @@ public class FrontServiceImpl implements FrontService{
     }
 
     @Override
-    public List<HelpRecord> getHelpRecordsForUser(Integer helpUserId) {
-        return helpRecordRepository.findByHelpUserId(helpUserId);
+    public Page<HelpRecord> getHelpRecordsForUser(Integer helpUserId, Pageable pageable) {
+        return helpRecordRepository.findByHelpUserId(helpUserId, pageable);
     }
 
     @Override
-    public List<HelpRecord> getHelpRecordsForEmail(String helpEmail) {
-        return helpRecordRepository.findByHelpEmail(helpEmail);
+    public Page<HelpRecord> getHelpRecordsForEmail(String helpEmail, Pageable pageable) {
+        return helpRecordRepository.findByHelpEmail(helpEmail,pageable);
     }
 
     @Override
-    public List<HelpRecord> getWaitHelpRecords(int pageNum,int pageSize) {
-        Sort sort = new Sort(Direction.DESC, "gmt_create");
-        Pageable pageable = PageRequest.of(pageNum-1, pageSize, sort);
-        List<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatusEnum.WAITHELP.getCode(),pageable);
+    public Page<HelpRecord> getWaitHelpRecords(Pageable pageable) {
+//        Sort sort = new Sort(Direction.DESC, "gmtCreate");
+//        Pageable pageable = PageRequest.of(pageNum-1, pageSize,sort);
+        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatusEnum.WAITHELP.getCode(),pageable);
         return waitHelpRecords;
+    }
+
+    @Override
+    public Page<HelpRecord> getAllHelpRecord(Pageable pageable) {
+        return helpRecordRepository.findAll(pageable);
     }
 
 }

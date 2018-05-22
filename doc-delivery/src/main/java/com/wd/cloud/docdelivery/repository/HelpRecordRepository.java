@@ -1,23 +1,18 @@
 package com.wd.cloud.docdelivery.repository;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author He Zhigang
  * @date 2018/5/7
  * @Description:
  */
-public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>{
+public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>, JpaSpecificationExecutor<HelpRecord>{
 
     /**
      * 查询

@@ -7,15 +7,14 @@ import com.wd.cloud.docdelivery.enums.ProcessTypeEnum;
 import com.wd.cloud.docdelivery.service.BackendService;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.MailService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -47,12 +46,20 @@ public class BackendController {
      * @return
      */
     @GetMapping("/help/list")
-    public ResponseModel helpList(@RequestParam(required=false) Short type,
-                                  @RequestParam(required=false) String shool, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
+    public ResponseModel helpList(@RequestParam(required=false) Short type,@RequestParam(required=false) Short processType,
+                                  @RequestParam(required=false) Short shool, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
                                   @RequestParam(required=false) String endTime,
                                   @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    	
+    	Map<String,Object> param = new HashMap<String, Object>();
+    	param.put("type", type);
+    	param.put("scid", shool);
+    	param.put("processType", processType);
+    	param.put("keyword", keyword);
+    	param.put("beginTime", beginTime);
+    	param.put("endTime", endTime);
 
-        return ResponseModel.success(backendService.getHelpList(pageable));
+        return ResponseModel.success(backendService.getHelpList(pageable,param));
     }
 
     /**

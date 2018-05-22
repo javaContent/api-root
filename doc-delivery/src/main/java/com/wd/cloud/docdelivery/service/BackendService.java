@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.service;
 
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
@@ -16,7 +18,7 @@ public interface BackendService {
      * 获取互助列表
      * @return
      */
-    Page<HelpRecord> getHelpList(Pageable pageable);
+    Page<HelpRecord> getHelpList(Pageable pageable,Map<String,Object> param);
 
     /**
      * 获取单条互助记录

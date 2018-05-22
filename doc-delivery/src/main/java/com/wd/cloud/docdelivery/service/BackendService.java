@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service;
 
+import com.wd.cloud.docdelivery.domain.GiveRecord;
 import org.springframework.data.domain.Page;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
@@ -27,10 +28,10 @@ public interface BackendService {
     
     /**
      * 查询待审核的
-     * @param id
+     * @param giveRecordId
      * @return
      */
-    HelpRecord getWaitAudit(Long id);
+    GiveRecord getWaitAudit(Long giveRecordId);
 
     /**
      * 更新互助记录

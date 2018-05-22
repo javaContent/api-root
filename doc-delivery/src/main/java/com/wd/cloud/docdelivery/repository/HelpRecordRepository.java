@@ -25,7 +25,7 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>{
      * @param status
      * @return
      */
-    HelpRecord findByIdAndStatus(Long id,int status);
+    HelpRecord findByIdAndStatus(long id,int status);
 
 //    @Transactional
 //    @Modifying
@@ -34,19 +34,19 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>{
 
     /**
      * 根据求助用户ID查询
-     * @param helpUserId
+     * @param helperId
      * @param pageable
      * @return
      */
-    Page<HelpRecord> findByHelpUserId(Integer helpUserId,Pageable pageable);
+    Page<HelpRecord> findByHelperId(long helperId,Pageable pageable);
 
     /**
      * 根据求助邮箱查询
-     * @param helpEmail
+     * @param helperEmail
      * @param pageable
      * @return
      */
-    Page<HelpRecord> findByHelpEmail(String helpEmail,Pageable pageable);
+    Page<HelpRecord> findByHelperEmail(String helperEmail,Pageable pageable);
 
     /**
      * 根据互助状态查询
@@ -54,5 +54,5 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>{
      * @param pageable
      * @return
      */
-    Page<HelpRecord> findByStatus(Integer status, Pageable pageable);
+    Page<HelpRecord> findByStatus(int status, Pageable pageable);
 }

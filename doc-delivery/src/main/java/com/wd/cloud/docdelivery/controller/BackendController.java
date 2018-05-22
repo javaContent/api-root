@@ -1,21 +1,20 @@
 package com.wd.cloud.docdelivery.controller;
 
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import com.wd.cloud.docdelivery.enums.AuditEnum;
+import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
-import com.wd.cloud.docdelivery.enums.ProcessTypeEnum;
 import com.wd.cloud.docdelivery.service.BackendService;
 
 import java.io.IOException;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.MailService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -47,9 +46,11 @@ public class BackendController {
      * @return
      */
     @GetMapping("/help/list")
-    public ResponseModel helpList(@RequestParam(required=false) Short type,
-                                  @RequestParam(required=false) String shool, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
-                                  @RequestParam(required=false) String endTime,
+    public ResponseModel helpList(@RequestParam(required = false) Short type,
+                                  @RequestParam(required = false) String shool,
+                                  @RequestParam(required = false) String keyword,
+                                  @RequestParam(required = false) String beginTime,
+                                  @RequestParam(required = false) String endTime,
                                   @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         return ResponseModel.success(backendService.getHelpList(pageable));
@@ -61,7 +62,7 @@ public class BackendController {
      * @return
      */
     @PostMapping("/upload/{id}")
-    public ResponseModel upload(@PathVariable Long id, @RequestParam Long processUserId, HttpServletRequest request,@NotNull MultipartFile file) {
+    public ResponseModel upload(@PathVariable Long id, @RequestParam Long giverId, HttpServletRequest request, @NotNull MultipartFile file) {
 
         HelpRecord helpRecord = backendService.get(id);
         String md5Filename = null;
@@ -73,36 +74,61 @@ public class BackendController {
         String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
                 + md5Filename;
 
-        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(), helpRecord.getLiterature().getDocTitle(), url, ProcessTypeEnum.PASS);
+        mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
 
-        helpRecord.setDocFilename(md5Filename);
-        helpRecord.setProcessType(ProcessTypeEnum.PASS.getCode());
-        // 当后台管理员直接处理时，GiveUserId和processUserId一致
-        helpRecord.setGiveUserId(processUserId);
-        helpRecord.setProcessUserId(processUserId);
+        GiveRecord giveRecord = new GiveRecord();
+        giveRecord.setHelpRecord(helpRecord);
+        giveRecord.setDocFilename(md5Filename);
+        giveRecord.setFileMd5(md5Filename);
+        giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
+        giveRecord.setGiverId(giverId);
+        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.success("文件上传成功");
     }
 
     /**
-     * 其他处理方式（第三方、无结果、无结果图书）
+     * 提交第三方处理
      *
      * @param id
      * @return
      */
-    @PostMapping("/process/{id}")
-    public ResponseModel process(@PathVariable Long id, @RequestParam Long processUserId,
-                                 @RequestParam Integer processType) {
+    @PatchMapping("/third/{id}")
+    public ResponseModel helpThird(@PathVariable Long id, @RequestParam Long giverId) {
         HelpRecord helpRecord = backendService.get(id);
-        helpRecord.setProcessType(processType);
-        // 当后台管理员直接处理时，GiveUserId和processUserId一致
-        helpRecord.setGiveUserId(processUserId);
-        helpRecord.setProcessUserId(processUserId);
-        String subject = "", content = "";
-        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(),helpRecord.getLiterature().getDocTitle(),null,processType);
-
+        helpRecord.setStatus(HelpStatusEnum.HELP_THIRD.getCode());
+        GiveRecord giveRecord = new GiveRecord();
+        giveRecord.setGiverId(giverId);
+        giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
+        mailService.sendMail(helpRecord.getHelpChannel(),
+                helpRecord.getHelperEmail(),
+                helpRecord.getLiterature().getDocTitle(),
+                null,
+                HelpStatusEnum.HELP_THIRD);
         backendService.updateHelRecord(helpRecord);
-        return ResponseModel.success("处理成功");
+        return ResponseModel.success("已提交第三方处理，请耐心等待第三方应助结果");
+    }
+
+    /**
+     * 无结果，应助失败
+     * @param id
+     * @param giverId
+     * @return
+     */
+    @PatchMapping("/fiaied/{id}")
+    public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId) {
+        HelpRecord helpRecord = backendService.get(id);
+        helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
+        GiveRecord giveRecord = new GiveRecord();
+        giveRecord.setGiverId(giverId);
+        giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
+        mailService.sendMail(helpRecord.getHelpChannel(),
+                helpRecord.getHelperEmail(),
+                helpRecord.getLiterature().getDocTitle(),
+                null,
+                HelpStatusEnum.HELP_FAILED);
+        backendService.updateHelRecord(helpRecord);
+        return ResponseModel.success("无法找到文献全文，应助失败");
     }
 
     /**
@@ -111,17 +137,18 @@ public class BackendController {
      * @return
      */
     @PatchMapping("/audit/pass/{id}")
-    public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "processUserId", required = true) Long processUserId, HttpServletRequest request) {
-        HelpRecord helpRecord = backendService.getWaitAudit(id);
-        if (helpRecord == null) {
+    public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, HttpServletRequest request) {
+        GiveRecord giveRecord = backendService.getWaitAudit(id);
+        if (giveRecord == null) {
             return ResponseModel.fail();
         }
-        helpRecord.setProcessType(ProcessTypeEnum.PASS.getCode());
-        helpRecord.setProcessUserId(processUserId);
-        helpRecord.setStatus(HelpStatusEnum.PASS.getCode());
+        giveRecord.setAuditStatus(AuditEnum.PASS.getCode());
+        giveRecord.setAuditorId(auditorId);
+        HelpRecord helpRecord  = giveRecord.getHelpRecord();
+        helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
         String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
-                + helpRecord.getDocFilename();
-        mailService.sendMail(helpRecord.getHelpChannel(),helpRecord.getHelpEmail(),helpRecord.getLiterature().getDocTitle(),url,ProcessTypeEnum.PASS);
+                + giveRecord.getDocFilename();
+        mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.success();
     }
@@ -131,14 +158,16 @@ public class BackendController {
      *
      * @return
      */
-    @PatchMapping("/audit/nopass/{id}")
-    public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "processUserId", required = true) Long processUserId) {
-        HelpRecord helpRecord = backendService.getWaitAudit(id);
-        if (helpRecord == null) {
+    @PatchMapping("/audit/nopass/{giveRecordId}")
+    public ResponseModel auditNoPass(@PathVariable Long giveRecordId, @RequestParam(name = "auditorId") Long auditorId) {
+        GiveRecord giveRecord = backendService.getWaitAudit(giveRecordId);
+        if (giveRecord == null) {
             return ResponseModel.fail();
         }
-        helpRecord.setProcessUserId(processUserId);
-        helpRecord.setStatus(HelpStatusEnum.NOPASS.getCode());
+        giveRecord.setAuditStatus(AuditEnum.NO_PASS.getCode());
+        giveRecord.setAuditorId(auditorId);
+        HelpRecord helpRecord  = giveRecord.getHelpRecord();
+        helpRecord.setStatus(HelpStatusEnum.WAIT_HELP.getCode());
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.success();
     }

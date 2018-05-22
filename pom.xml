@@ -12,10 +12,11 @@
 	<description>微服务根POM</description>
 
     <modules>
-		<module>api-gateway</module>
-        <module>config-server</module>
-		<module>discovery</module>
-        <module>doc-delivery</module>
+		<module>api-gateway</module><!--api网关-->
+        <module>config-server</module><!--配置中心-->
+		<module>discovery</module><!--服务注册中心-->
+		<module>user-server</module><!--用户中心-->
+        <module>doc-delivery</module><!--文献传递服务-->
 		<module>commons</module>
     </modules>
 

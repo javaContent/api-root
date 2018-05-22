@@ -1,7 +1,10 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.service.BackendService;
 import io.swagger.annotations.Api;
@@ -26,6 +29,9 @@ public class BackendServiceImpl implements BackendService {
     @Autowired
     HelpRecordRepository helpRecordRepository;
 
+    @Autowired
+    GiveRecordRepository giveRecordRepository;
+
     @Override
     public Page<HelpRecord> getHelpList(Pageable pageable) {
         Page<HelpRecord> page = helpRecordRepository.findAll(pageable);
@@ -38,8 +44,9 @@ public class BackendServiceImpl implements BackendService {
     }
     
     @Override
-    public HelpRecord getWaitAudit(Long id) {
-    	return helpRecordRepository.findByIdAndStatus(id, HelpStatusEnum.WAITAUDIT.getCode());
+    public GiveRecord getWaitAudit(Long id) {
+        GiveRecord giveRecord = giveRecordRepository.findByIdAndAuditStatus(id, AuditEnum.WAIT.getCode());
+    	return giveRecord;
     }
     
     @Override

@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service;
 
+import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,20 @@ public interface FrontService {
      * @return
      */
     Literature saveLiterature(Literature literature);
+
+    /**
+     * 保存应助记录
+     * @param giveRecord
+     * @return
+     */
+    GiveRecord saveGiveRecord(GiveRecord giveRecord);
+
+    /**
+     * 保存文件
+     * @param helpRecordId
+     * @param fileName
+     */
+    void saveFilename(Long helpRecordId,Long giveUserId,String fileName,String giviIp);
 
     /**
      * 保存求助记录

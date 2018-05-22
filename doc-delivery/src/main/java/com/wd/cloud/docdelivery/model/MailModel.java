@@ -9,6 +9,9 @@ import cn.hutool.extra.mail.MailAccount;
  */
 public class MailModel {
 
+    /**
+     * 发送邮件账号对象
+     */
     private MailAccount account;
 
     /**
@@ -17,19 +20,28 @@ public class MailModel {
     private long exp = 1000 * 60 * 60 * 24 * 15;
 
     /**
-     * 提叫第三方处理
+     * 提交第三方处理
      */
     private String outherSubject;
-    private String outherCountent;
+    /**
+     * 提交第三方处理邮件内容
+     */
+    private String outherContent;
     /**
      * 应助成功标题
      */
     private String successSubject;
+    /**
+     * 应助成功邮件内容
+     */
     private String successContent;
     /**
      * 无有效应助，应助失败
      */
     private String failSubject;
+    /**
+     * 无有效应助，应助失败邮件内容
+     */
     private String failContent;
 
 
@@ -57,12 +69,12 @@ public class MailModel {
         this.outherSubject = outherSubject;
     }
 
-    public String getOutherCountent() {
-        return outherCountent;
+    public String getOutherContent() {
+        return outherContent;
     }
 
-    public void setOutherCountent(String outherCountent) {
-        this.outherCountent = outherCountent;
+    public void setOutherContent(String outherContent) {
+        this.outherContent = outherContent;
     }
 
     public String getSuccessSubject() {

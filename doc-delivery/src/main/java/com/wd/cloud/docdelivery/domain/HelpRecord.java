@@ -3,11 +3,12 @@ package com.wd.cloud.docdelivery.domain;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author He Zhigang
  * @date 2018/5/7
- * @Description: 互助记录
+ * @Description: 求助记录
  */
 @Entity
 @Table(name="help_record")
@@ -23,29 +24,32 @@ public class HelpRecord extends AbstractDBModel{
     @JoinColumn(name = "literature_id")
     private Literature literature;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "help_record_id")
+    private Set<GiveRecord> giveRecord;
     /**
      * 求助的email地址
      */
     @Email
-    @Column(name = "help_email")
-    private String helpEmail;
+    @Column(name = "helper_email")
+    private String helperEmail;
 
     /**
      * 求助用户，未登录用户为null
      */
-    @Column(name = "help_user_id")
-    private Long helpUserId;
+    @Column(name = "helper_id")
+    private Long helperId;
 
     /**
      * 求助用户的学校id
      */
-    @Column(name = "help_user_scid")
-    private Long helpUserScid;
+    @Column(name = "helper_scid")
+    private Long helperScid;
     /**
      * 求助IP
      */
-    @Column(name = "help_ip")
-    private String helpIp;
+    @Column(name = "helper_ip")
+    private String helperIp;
 
     /**
      * 求助渠道，1：QQ，2：SPIS，3：CRS，4：ZHY
@@ -53,47 +57,19 @@ public class HelpRecord extends AbstractDBModel{
     @Column(name = "help_channel", columnDefinition = "tinyint default 1")
     private Integer helpChannel;
 
-    /**
-     * 应助用户,未登录用户为null
-     */
-    @Column(name = "give_user_id")
-    private Long giveUserId;
-    /**
-     * 应助IP
-     */
-    @Column(name = "give_ip")
-    private String giveIp;
 
     /**
-     * 互助状态 0：待应助，0：审核不通过,1:为应助中,2: 已应助待审核，3：已审核通过，
+     * 互助状态
+     * 0：待应助，
+     * 1：应助中（用户已认领，15分钟内上传文件），
+     * 2: 待审核（用户已应助），
+     * 3：求助第三方（第三方应助），
+     * 4：应助成功（审核通过或管理员应助），
+     * 5：应助失败（超过15天无结果）
      */
     @Column(name = "status", columnDefinition = "tinyint default 0")
     private Integer status;
 
-    /**
-     * 处理类型
-     * 0：表示未处理
-     * 1：表示已经处理并邮件回复
-     * 2：表示提交第三方处理
-     * 3：没有结果
-     * 4:表示其他途径
-     * 5：没结果（图书）
-     */
-    @Column(name = "process_type", columnDefinition = "tinyint default 0")
-    private Integer processType;
-
-    /**
-     * 负责处理的用户的ID
-     * 审核人，如果是用户应助，则有对应的审核人
-     */
-    @Column(name = "process_User_id")
-    private Long processUserId;
-
-    /**
-     * 文献全文的文件名称
-     */
-    @Column(name = "doc_filename")
-    private String docFilename;
 
     public Long getId() {
         return id;
@@ -111,85 +87,44 @@ public class HelpRecord extends AbstractDBModel{
         this.literature = literature;
     }
 
-    public String getHelpEmail() {
-        return helpEmail;
+    public Set<GiveRecord> getGiveRecord() {
+        return giveRecord;
     }
 
-    public void setHelpEmail(String helpEmail) {
-        this.helpEmail = helpEmail;
+    public void setGiveRecord(Set<GiveRecord> giveRecord) {
+        this.giveRecord = giveRecord;
     }
 
-    public String getHelpIp() {
-        return helpIp;
+    public String getHelperEmail() {
+        return helperEmail;
     }
 
-    public void setHelpIp(String helpIp) {
-        this.helpIp = helpIp;
+    public void setHelperEmail(String helperEmail) {
+        this.helperEmail = helperEmail;
     }
 
-    public String getGiveIp() {
-        return giveIp;
+    public Long getHelperId() {
+        return helperId;
     }
 
-    public void setGiveIp(String giveIp) {
-        this.giveIp = giveIp;
+    public void setHelperId(Long helperId) {
+        this.helperId = helperId;
     }
 
-    public Integer getStatus() {
-        return status;
+    public Long getHelperScid() {
+        return helperScid;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setHelperScid(Long helperScid) {
+        this.helperScid = helperScid;
     }
 
-    public String getDocFilename() {
-        return docFilename;
+    public String getHelperIp() {
+        return helperIp;
     }
 
-    public void setDocFilename(String docFilename) {
-        this.docFilename = docFilename;
-    }
-
-    public Long getHelpUserId() {
-        return helpUserId;
-    }
-
-    public void setHelpUserId(Long helpUserId) {
-        this.helpUserId = helpUserId;
-    }
-
-    public Long getHelpUserScid() {
-        return helpUserScid;
-    }
-
-    public void setHelpUserScid(Long helpUserScid) {
-        this.helpUserScid = helpUserScid;
-    }
-
-    public Long getGiveUserId() {
-        return giveUserId;
-    }
-
-    public void setGiveUserId(Long giveUserId) {
-        this.giveUserId = giveUserId;
-    }
-
-    public Integer getProcessType() {
-        return processType;
-    }
-
-    public void setProcessType(Integer processType) {
-        this.processType = processType;
-    }
-
-
-    public Long getProcessUserId() {
-        return processUserId;
-    }
-
-    public void setProcessUserId(Long processUserId) {
-        this.processUserId = processUserId;
+    public void setHelperIp(String helperIp) {
+        this.helperIp = helperIp;
     }
 
     public Integer getHelpChannel() {
@@ -200,24 +135,13 @@ public class HelpRecord extends AbstractDBModel{
         this.helpChannel = helpChannel;
     }
 
-    @Override
-    public String toString() {
-        return "HelpRecord{" +
-                "id=" + id +
-                ", literature=" + literature +
-                ", helpEmail='" + helpEmail + '\'' +
-                ", helpUserId=" + helpUserId +
-                ", helpUserScid=" + helpUserScid +
-                ", helpIp='" + helpIp + '\'' +
-                ", helpChannel=" + helpChannel +
-                ", giveUserId=" + giveUserId +
-                ", giveIp='" + giveIp + '\'' +
-                ", status=" + status +
-                ", processType=" + processType +
-                ", processUserId=" + processUserId +
-                ", docFilename='" + docFilename + '\'' +
-                ", gmtModified=" + gmtModified +
-                ", gmtCreate=" + gmtCreate +
-                '}';
+    public Integer getStatus() {
+        return status;
     }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+
 }

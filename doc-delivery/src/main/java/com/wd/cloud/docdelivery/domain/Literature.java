@@ -17,12 +17,6 @@ public class Literature extends AbstractDBModel{
     private Long id;
 
     /**
-     * 期刊名称
-     */
-    @Column(name = "journal_name")
-    private String journalName;
-
-    /**
      * 文献的链接地址
      */
     @Column(name = "doc_href")
@@ -58,20 +52,15 @@ public class Literature extends AbstractDBModel{
     @Column(name = "doc_filename")
     private String docFilename;
 
+    @Column(name = "file_md5")
+    private String fileMd5;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getJournalName() {
-        return journalName;
-    }
-
-    public void setJournalName(String journalName) {
-        this.journalName = journalName;
     }
 
     public String getDocHref() {
@@ -131,4 +120,11 @@ public class Literature extends AbstractDBModel{
         this.docFilename = docFilename;
     }
 
+    public String getFileMd5() {
+        return fileMd5;
+    }
+
+    public void setFileMd5(String fileMd5) {
+        this.fileMd5 = fileMd5;
+    }
 }

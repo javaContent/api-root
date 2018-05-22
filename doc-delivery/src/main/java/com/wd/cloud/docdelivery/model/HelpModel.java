@@ -18,14 +18,9 @@ public class HelpModel {
     /**
      * 求助用户ID
      */
-    @ApiModelProperty(value="求助用户ID",name="helpUserId",example="1233")
-    private Long helpUserId;
+    @ApiModelProperty(value="求助用户ID",name="helperId",example="1233")
+    private Long helperId;
 
-    /**
-     * 后台操作用户ID
-     */
-    @ApiModelProperty(value="后台操作用户ID",name="processUserId",example="2233")
-    private Long processUserId;
 
     /**
      * 求助渠道
@@ -37,8 +32,8 @@ public class HelpModel {
     /**
      * 求助用户所属机构
      */
-    @ApiModelProperty(value="求助用户所属机构ID",name="helpUserScid",example="60")
-    private Long helpUserScid;
+    @ApiModelProperty(value="求助用户所属机构ID",name="helperScid",example="60")
+    private Long helperScid;
 
     /**
      * 求助文件标题
@@ -59,23 +54,15 @@ public class HelpModel {
      */
     @Email
     @NotNull
-    @ApiModelProperty(value="求助用户邮箱",name="helpEmail",example="vampirehgg@qq.com")
-    private String helpEmail;
+    @ApiModelProperty(value="求助用户邮箱",name="helperEmail",example="vampirehgg@qq.com")
+    private String helperEmail;
 
-    public Long getHelpUserId() {
-        return helpUserId;
+    public Long getHelperId() {
+        return helperId;
     }
 
-    public void setHelpUserId(Long helpUserId) {
-        this.helpUserId = helpUserId;
-    }
-
-    public Long getProcessUserId() {
-        return processUserId;
-    }
-
-    public void setProcessUserId(Long processUserId) {
-        this.processUserId = processUserId;
+    public void setHelperId(Long helperId) {
+        this.helperId = helperId;
     }
 
     public Integer getHelpChannel() {
@@ -86,12 +73,12 @@ public class HelpModel {
         this.helpChannel = helpChannel;
     }
 
-    public Long getHelpUserScid() {
-        return helpUserScid;
+    public Long getHelperScid() {
+        return helperScid;
     }
 
-    public void setHelpUserScid(Long helpUserScid) {
-        this.helpUserScid = helpUserScid;
+    public void setHelperScid(Long helperScid) {
+        this.helperScid = helperScid;
     }
 
     public String getDocTitle() {
@@ -110,11 +97,11 @@ public class HelpModel {
         this.docHref = docHref;
     }
 
-    public String getHelpEmail() {
-        return helpEmail;
+    public String getHelperEmail() {
+        return helperEmail;
     }
 
-    public void setHelpEmail(String helpEmail) {
-        this.helpEmail = helpEmail;
+    public void setHelperEmail(String helperEmail) {
+        this.helperEmail = helperEmail;
     }
 }

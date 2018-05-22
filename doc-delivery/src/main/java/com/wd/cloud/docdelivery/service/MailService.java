@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.service;
 
 import com.wd.cloud.docdelivery.enums.ChannelEnum;
-import com.wd.cloud.docdelivery.enums.ProcessTypeEnum;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 
 /**
  * @author He Zhigang
@@ -16,18 +16,18 @@ public interface MailService {
      * @param helpEmail
      * @param docTitle
      * @param url
-     * @param processTypeEnum
+     * @param helpStatusEnum
      */
-    void sendMail(ChannelEnum channelEnum,String helpEmail, String docTitle, String url, ProcessTypeEnum processTypeEnum);
+    void sendMail(ChannelEnum channelEnum,String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum);
     /**
      * 发送邮件
      * @param channel
      * @param helpEmail
      * @param docTitle
      * @param url
-     * @param processTypeEnum
+     * @param helpStatusEnum
      */
-    void sendMail(Integer channel,String helpEmail, String docTitle, String url, ProcessTypeEnum processTypeEnum);
+    void sendMail(Integer channel,String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum);
     /**
      * 发送邮件
      * @param channel
@@ -42,23 +42,23 @@ public interface MailService {
      * @param helpEmail
      * @param docTitle
      * @param url
-     * @param processTypeEnum
+     * @param helpStatusEnum
      */
-    void sendCrsMail(String helpEmail, String docTitle, String url, ProcessTypeEnum processTypeEnum);
+    void sendCrsMail(String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum);
     /**
      * 发送SPIS邮件
      * @param helpEmail
      * @param docTitle
      * @param url
-     * @param processTypeEnum
+     * @param helpStatusEnum
      */
-    void sendSpisMail(String helpEmail, String docTitle,String url, ProcessTypeEnum processTypeEnum);
+    void sendSpisMail(String helpEmail, String docTitle,String url, HelpStatusEnum helpStatusEnum);
     /**
      * 发送智汇云邮件
      * @param helpEmail
      * @param docTitle
      * @param url
-     * @param processTypeEnum
+     * @param helpStatusEnum
      */
-    void sendZhyMail(String helpEmail, String docTitle,String url, ProcessTypeEnum processTypeEnum);
+    void sendZhyMail(String helpEmail, String docTitle,String url, HelpStatusEnum helpStatusEnum);
 }

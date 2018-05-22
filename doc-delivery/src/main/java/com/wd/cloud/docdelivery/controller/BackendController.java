@@ -9,6 +9,8 @@ import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.service.BackendService;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -46,14 +48,20 @@ public class BackendController {
      * @return
      */
     @GetMapping("/help/list")
-    public ResponseModel helpList(@RequestParam(required = false) Short type,
-                                  @RequestParam(required = false) String shool,
-                                  @RequestParam(required = false) String keyword,
-                                  @RequestParam(required = false) String beginTime,
-                                  @RequestParam(required = false) String endTime,
+    public ResponseModel helpList(@RequestParam(required=false) Short type,@RequestParam(required=false) Short processType,
+                                  @RequestParam(required=false) Short shool, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
+                                  @RequestParam(required=false) String endTime,
                                   @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return ResponseModel.success(backendService.getHelpList(pageable));
+    	Map<String,Object> param = new HashMap<String, Object>();
+    	param.put("type", type);
+    	param.put("scid", shool);
+    	param.put("processType", processType);
+    	param.put("keyword", keyword);
+    	param.put("beginTime", beginTime);
+    	param.put("endTime", endTime);
+
+        return ResponseModel.success(backendService.getHelpList(pageable,param));
     }
 
     /**
@@ -128,7 +136,7 @@ public class BackendController {
                 null,
                 HelpStatusEnum.HELP_FAILED);
         backendService.updateHelRecord(helpRecord);
-        return ResponseModel.success("无法找到文献全文，应助失败");
+        return ResponseModel.success("处理成功");
     }
 
     /**

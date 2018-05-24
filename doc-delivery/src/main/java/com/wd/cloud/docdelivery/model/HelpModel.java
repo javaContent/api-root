@@ -19,6 +19,10 @@ public class HelpModel {
      */
     private Long helperId;
 
+    /**
+     * 求助用户名称
+     */
+    private String helperName;
 
     /**
      * 求助渠道
@@ -27,9 +31,14 @@ public class HelpModel {
     private Integer helpChannel;
 
     /**
-     * 求助用户所属机构
+     * 求助用户所属机构id
      */
     private Long helperScid;
+
+    /**
+     * 求助用户所属机构名
+     */
+    private String helperScname;
 
     /**
      * 求助文件标题
@@ -96,5 +105,21 @@ public class HelpModel {
 
     public void setHelperEmail(String helperEmail) {
         this.helperEmail = helperEmail;
+    }
+
+    public String getHelperName() {
+        return helperName;
+    }
+
+    public void setHelperName(String helperName) {
+        this.helperName = helperName;
+    }
+
+    public String getHelperScname() {
+        return helperScname;
+    }
+
+    public void setHelperScname(String helperScname) {
+        this.helperScname = helperScname;
     }
 }

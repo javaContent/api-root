@@ -49,7 +49,7 @@ public class Literature extends AbstractDBModel {
     /**
      * 文献全文的文件名称
      */
-    @Column(name = "doc_file_Name")
+    @Column(name = "doc_file_name")
     private String docFileName;
 
     @Column(name = "doc_file_type")

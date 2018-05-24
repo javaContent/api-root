@@ -41,10 +41,21 @@ public class HelpRecord extends AbstractDBModel {
     private Long helperId;
 
     /**
-     * 求助用户的学校id
+     * 应助者名称
+     */
+    private String helperName;
+
+    /**
+     * 求助用户的机构id
      */
     @Column(name = "helper_scid")
     private Long helperScid;
+
+    /**
+     * 求助用户的机构名称
+     */
+    private String helperScname;
+
     /**
      * 求助IP
      */
@@ -135,5 +146,19 @@ public class HelpRecord extends AbstractDBModel {
         this.status = status;
     }
 
+    public String getHelperScname() {
+        return helperScname;
+    }
 
+    public void setHelperScname(String helperScname) {
+        this.helperScname = helperScname;
+    }
+
+    public String getHelperName() {
+        return helperName;
+    }
+
+    public void setHelperName(String helperName) {
+        this.helperName = helperName;
+    }
 }

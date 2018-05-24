@@ -41,6 +41,11 @@ public class GiveRecord extends AbstractDBModel {
     private Long giverId;
 
     /**
+     * 应助者名称
+     */
+    private String giverName;
+
+    /**
      * 应助者IP
      */
     private String giverIp;
@@ -64,6 +69,11 @@ public class GiveRecord extends AbstractDBModel {
      * 审核人
      */
     private Long auditorId;
+
+    /**
+     * 审核人名称
+     */
+    private String auditorName;
 
     /**
      * 审核失败原因
@@ -164,6 +174,22 @@ public class GiveRecord extends AbstractDBModel {
 
     public void setAuditMsg(AuditMsg auditMsg) {
         this.auditMsg = auditMsg;
+    }
+
+    public String getGiverName() {
+        return giverName;
+    }
+
+    public void setGiverName(String giverName) {
+        this.giverName = giverName;
+    }
+
+    public String getAuditorName() {
+        return auditorName;
+    }
+
+    public void setAuditorName(String auditorName) {
+        this.auditorName = auditorName;
     }
 
     @Override

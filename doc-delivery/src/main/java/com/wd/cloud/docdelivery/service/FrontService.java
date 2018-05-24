@@ -3,10 +3,12 @@ package com.wd.cloud.docdelivery.service;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.Md5FileModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -16,6 +18,7 @@ import java.util.List;
  */
 public interface FrontService {
 
+    DownloadModel getDowloadFile(long helpRecordId);
     /**
      * 保存元数据
      *

@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.io.FileTypeUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -10,6 +11,7 @@ import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.HelpModel;
 import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.service.FileService;
@@ -20,16 +22,22 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -40,7 +48,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/front")
 public class FrontendController {
-
     @Autowired
     GlobalConfig globalConfig;
 
@@ -55,8 +62,6 @@ public class FrontendController {
 
     @GetMapping("/hello")
     public ResponseModel hello() throws InterruptedException {
-        //frontService.saveHelpRecord();
-        //mailService.sendMail(ChannelEnum.CRS, "hezhigang@hnwdkj.com", "测试标题", "http://www.baidu.com", ProcessTypeEnum.PASS);
         return ResponseModel.success("惊不惊喜？意不意外？");
     }
 
@@ -178,12 +183,26 @@ public class FrontendController {
     /**
      * 文献下载
      *
-     * @param filename
      * @return
      */
-    @GetMapping("/download/{filename}")
-    public ResponseModel download(@PathVariable String filename) {
+    @GetMapping("/download/{helpRecodeId}")
+    public ResponseEntity download(@PathVariable Long helpRecodeId) {
 
-        return ResponseModel.success();
+        DownloadModel downloadModel = frontService.getDowloadFile(helpRecodeId);
+
+        if (downloadModel.getDocFile() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Content-Disposition", "attachment; filename=" + downloadModel.getDownloadFileName());
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentLength(downloadModel.getDocFile().length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(new FileSystemResource(downloadModel.getDocFile()));
     }
 }

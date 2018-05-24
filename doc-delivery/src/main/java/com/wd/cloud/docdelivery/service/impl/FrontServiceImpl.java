@@ -1,11 +1,13 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -29,6 +32,8 @@ import java.util.List;
 @Service("frontService")
 public class FrontServiceImpl implements FrontService {
 
+    @Autowired
+    GlobalConfig globalConfig;
     @Autowired
     LiteratureRepository literatureRepository;
 
@@ -49,6 +54,19 @@ public class FrontServiceImpl implements FrontService {
         return literatureData;
     }
 
+
+    @Override
+    public DownloadModel getDowloadFile(long helpRecordId) {
+        HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
+        GiveRecord giveRecord = giveRecordRepository.findByHelpRecordId(helpRecord);
+        String fileName = giveRecord.getDocFileName();
+        String fileType = giveRecord.getDocFileType();
+        String docTitle = helpRecord.getLiterature().getDocTitle();
+        DownloadModel downloadModel = new  DownloadModel();
+        downloadModel.setDocFile(new File(globalConfig.getSavePath(),fileName));
+        downloadModel.setDownloadFileName(docTitle+"."+fileType);
+        return downloadModel;
+    }
 
     @Override
     public Literature saveLiterature(Literature literature) {
@@ -95,8 +113,6 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public Page<HelpRecord> getWaitHelpRecords(Pageable pageable) {
-//        Sort sort = new Sort(Direction.DESC, "gmtCreate");
-//        Pageable pageable = PageRequest.of(pageNum-1, pageSize,sort);
         Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatusEnum.WAIT_AUDIT.getCode(), pageable);
         return waitHelpRecords;
     }

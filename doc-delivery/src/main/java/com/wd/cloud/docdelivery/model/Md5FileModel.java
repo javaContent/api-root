@@ -6,6 +6,7 @@ package com.wd.cloud.docdelivery.model;
  * @Description:
  */
 public class Md5FileModel {
+
     private String name;
     private String type;
 

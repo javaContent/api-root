@@ -1,7 +1,10 @@
 package com.wd.cloud.docdelivery.repository;
 
 import com.wd.cloud.docdelivery.domain.GiveRecord;
+import com.wd.cloud.docdelivery.domain.HelpRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * @author He Zhigang
@@ -18,5 +21,8 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
      * @return
      */
     GiveRecord findByIdAndAuditStatus(Long id, int auditStatus);
+
+    @Query("from GiveRecord t where t.helpRecord = :helpRecordId and (t.auditStatus = 1 or t.giverType <> 2)")
+    GiveRecord findByHelpRecordId(@Param("helpRecordId") HelpRecord helpRecordId);
 
 }

@@ -55,10 +55,10 @@ public class BackendServiceImpl implements BackendService {
 			public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				List<Predicate> list = new ArrayList<Predicate>();
 				if(helpUserScid != null && helpUserScid != 0) {
-					list.add(cb.equal(root.get("helpUserScid").as(Integer.class), helpUserScid));
+					list.add(cb.equal(root.get("helperScid").as(Integer.class), helpUserScid));
 				}
 				if(processType != null && processType != 0) {
-					list.add(cb.equal(root.get("processType").as(Integer.class), processType));
+					list.add(cb.equal(root.get("status").as(Integer.class), processType));
 				}
 				if(!StringUtils.isEmpty(keyword)) {
 					list.add(cb.or(cb.like(root.get("literature").get("docTitle").as(String.class), "%" +keyword + "%"), cb.like(root.get("helpEmail").as(String.class), "%" +keyword + "%")));

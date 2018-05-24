@@ -49,13 +49,13 @@ public class BackendController {
      */
     @GetMapping("/help/list")
     public ResponseModel helpList(@RequestParam(required=false) Short type,@RequestParam(required=false) Short processType,
-                                  @RequestParam(required=false) Short shool, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
+                                  @RequestParam(required=false) Short school, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
                                   @RequestParam(required=false) String endTime,
                                   @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
     	Map<String,Object> param = new HashMap<String, Object>();
     	param.put("type", type);
-    	param.put("scid", shool);
+    	param.put("scid", school);
     	param.put("processType", processType);
     	param.put("keyword", keyword);
     	param.put("beginTime", beginTime);

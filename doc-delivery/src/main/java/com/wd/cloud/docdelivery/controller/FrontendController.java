@@ -11,9 +11,14 @@ import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.HelpModel;
+import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +29,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author He Zhigang
@@ -58,8 +65,8 @@ public class FrontendController {
      *
      * @return
      */
-    @PostMapping(value = "/help")
-    public ResponseModel help(@Validated HelpModel helpModel, HttpServletRequest request) {
+    @PostMapping(value = "/help/form")
+    public ResponseModel helpFrom(@Valid HelpModel helpModel, HttpServletRequest request) {
         HelpRecord helpRecord = new HelpRecord();
         String helpEmail = helpModel.getHelperEmail();
         helpRecord.setHelpChannel(helpModel.getHelpChannel());
@@ -80,11 +87,10 @@ public class FrontendController {
         }
         helpRecord.setLiterature(literatureData);
         // 如果文件已存在，自动应助成功
-        if (StrUtil.isNotEmpty(literatureData.getDocFilename())) {
+        if (StrUtil.isNotEmpty(literatureData.getDocFileName())) {
             helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
             GiveRecord giveRecord = new GiveRecord();
-            giveRecord.setDocFilename(literatureData.getDocFilename());
-            giveRecord.setFileMd5(literatureData.getFileMd5());
+            giveRecord.setDocFileName(literatureData.getDocFileName());
             giveRecord.setGiverType(GiveTypeEnum.AUTO.getCode());
             //先保存求助记录，得到求助ID，再关联应助记录
             helpRecord = frontService.saveHelpRecord(helpRecord);
@@ -92,7 +98,7 @@ public class FrontendController {
             frontService.saveGiveRecord(giveRecord);
             mailService.sendMail(helpRecord.getHelpChannel(), helpEmail, helpRecord.getLiterature().getDocTitle(), "", HelpStatusEnum.HELP_SUCCESSED);
             msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
-        } else{
+        } else {
             // 保存求助记录
             frontService.saveHelpRecord(helpRecord);
         }
@@ -105,7 +111,7 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/help/wait")
-    public ResponseModel help(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel help(@RequestBody @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageable);
         return ResponseModel.success(waitHelpRecords);
     }
@@ -128,10 +134,10 @@ public class FrontendController {
             return ResponseModel.fail("不支持的文件类型");
         }
         //保存文件
-        String filename = fileService.saveFile(file);
+        Md5FileModel md5FileModel = fileService.saveFile(file);
         //更新记录
-        frontService.saveFilename(helpRecordId, giveUserId, filename, request.getLocalAddr());
-        return ResponseModel.success(filename);
+        frontService.saveFilename(helpRecordId, giveUserId, md5FileModel, request.getLocalAddr());
+        return ResponseModel.success(md5FileModel.getName());
     }
 
 

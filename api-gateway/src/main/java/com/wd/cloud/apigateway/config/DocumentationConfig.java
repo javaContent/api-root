@@ -23,15 +23,15 @@ public class DocumentationConfig implements SwaggerResourcesProvider {
     @Autowired
     private final RouteLocator routeLocator;
 
-    public DocumentationConfig(RouteLocator routeLocator){
+    public DocumentationConfig(RouteLocator routeLocator) {
         this.routeLocator = routeLocator;
     }
 
     @Override
     public List<SwaggerResource> get() {
         List<SwaggerResource> resources = new ArrayList<>();
-        List<Route> routes= routeLocator.getRoutes();
-        routes.forEach(route->{
+        List<Route> routes = routeLocator.getRoutes();
+        routes.forEach(route -> {
             resources.add(swaggerResource(route.getId(), route.getFullPath().replace("**", "v2/api-docs"), "1.0"));
         });
         return resources;

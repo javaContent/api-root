@@ -1,6 +1,6 @@
-title = 纬度微服务系统
-description = 纬度微服务系统接口文档说明
-termsOfServiceUrl = "http://localhost:8080"
-version = 1.0
-contact.name = hezhigang
-contact.email = hezhigang@hnwdkj.com
+title=纬度微服务系统
+description=纬度微服务系统接口文档说明
+termsOfServiceUrl="http://localhost:8080"
+version=1.0
+contact.name=hezhigang
+contact.email=hezhigang@hnwdkj.com

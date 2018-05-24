@@ -8,10 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date 2018/5/22
  * @Description:
  */
-public interface GiveRecordRepository extends JpaRepository<GiveRecord,Long> {
+public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
 
     /**
      * 查询待审核记录
+     *
      * @param id
      * @param auditStatus
      * @return

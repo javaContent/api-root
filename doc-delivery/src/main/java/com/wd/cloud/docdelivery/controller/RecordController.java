@@ -17,37 +17,41 @@ public class RecordController {
 
     /**
      * 审核不通过记录报表
+     *
      * @return
      */
     @GetMapping("/process/audit/fail/list")
-    public ResponseModel auditFails(){
+    public ResponseModel auditFails() {
         return ResponseModel.success();
     }
 
     /**
      * 应助失败记录报表
+     *
      * @return
      */
     @GetMapping("/give/fail/list")
-    public ResponseModel giveFails(){
+    public ResponseModel giveFails() {
         return ResponseModel.success();
     }
 
     /**
      * 应助成功记录报表
+     *
      * @return
      */
     @GetMapping("/give/success/list")
-    public ResponseModel giveSuccess(){
+    public ResponseModel giveSuccess() {
         return ResponseModel.success();
     }
 
     /**
      * 自动应助的报表
+     *
      * @return
      */
     @GetMapping("/give/auto/list")
-    public ResponseModel autoGives(){
+    public ResponseModel autoGives() {
         return ResponseModel.success();
     }
 

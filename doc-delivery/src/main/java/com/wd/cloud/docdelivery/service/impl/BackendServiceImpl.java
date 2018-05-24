@@ -43,52 +43,52 @@ public class BackendServiceImpl implements BackendService {
     GiveRecordRepository giveRecordRepository;
 
     @Override
-    public Page getHelpList(Pageable pageable,Map<String,Object> param) {
-    	Short helpUserScid = (Short) param.get("scid");
-        Short processType = (Short) param.get("processType");
+    public Page getHelpList(Pageable pageable, Map<String, Object> param) {
+        Short helpUserScid = (Short) param.get("scid");
+        Short status = (Short) param.get("status");
         String keyword = (String) param.get("keyword");
-        String beginTime =  (String) param.get("beginTime");
+        String beginTime = (String) param.get("beginTime");
         String endTime = (String) param.get("endTime");
-        
-        Page result =  helpRecordRepository.findAll(new Specification<HelpRecord>()  {
-			@Override
-			public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				List<Predicate> list = new ArrayList<Predicate>();
-				if(helpUserScid != null && helpUserScid != 0) {
-					list.add(cb.equal(root.get("helpUserScid").as(Integer.class), helpUserScid));
-				}
-				if(processType != null && processType != 0) {
-					list.add(cb.equal(root.get("processType").as(Integer.class), processType));
-				}
-				if(!StringUtils.isEmpty(keyword)) {
-					list.add(cb.or(cb.like(root.get("literature").get("docTitle").as(String.class), "%" +keyword + "%"), cb.like(root.get("helpEmail").as(String.class), "%" +keyword + "%")));
-				}
-				if(!StringUtils.isEmpty(beginTime)) {
-					list.add(cb.between(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime), DateUtil.parse(endTime)));
-				}
-				
-				Predicate[] p = new Predicate[list.size()];
-		        return cb.and(list.toArray(p));
-			}
+
+        Page result = helpRecordRepository.findAll(new Specification<HelpRecord>() {
+            @Override
+            public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> list = new ArrayList<Predicate>();
+                if (helpUserScid != null && helpUserScid != 0) {
+                    list.add(cb.equal(root.get("helperScid").as(Integer.class), helpUserScid));
+                }
+                if (status != null && status != 0) {
+                    list.add(cb.equal(root.get("status").as(Integer.class), status));
+                }
+                if (!StringUtils.isEmpty(keyword)) {
+                    list.add(cb.or(cb.like(root.get("literature").get("docTitle").as(String.class), "%" + keyword + "%"), cb.like(root.get("helpEmail").as(String.class), "%" + keyword + "%")));
+                }
+                if (!StringUtils.isEmpty(beginTime)) {
+                    list.add(cb.between(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime), DateUtil.parse(endTime)));
+                }
+
+                Predicate[] p = new Predicate[list.size()];
+                return cb.and(list.toArray(p));
+            }
         }, pageable);
         return result;
     }
-    
+
     @Override
     public HelpRecord get(Long id) {
-    	return helpRecordRepository.getOne(id);
+        return helpRecordRepository.getOne(id);
     }
-    
+
     @Override
     public GiveRecord getWaitAudit(Long id) {
         GiveRecord giveRecord = giveRecordRepository.findByIdAndAuditStatus(id, AuditEnum.WAIT.getCode());
-    	return giveRecord;
+        return giveRecord;
     }
-    
+
     @Override
     public void updateHelRecord(HelpRecord helpRecord) {
-    	helpRecordRepository.save(helpRecord);
+        helpRecordRepository.save(helpRecord);
     }
-    
-    
+
+
 }

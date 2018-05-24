@@ -17,19 +17,22 @@ public interface BackendService {
 
     /**
      * 获取互助列表
+     *
      * @return
      */
-    Page<HelpRecord> getHelpList(Pageable pageable,Map<String,Object> param);
+    Page<HelpRecord> getHelpList(Pageable pageable, Map<String, Object> param);
 
     /**
      * 获取单条互助记录
+     *
      * @param id
      * @return
      */
     HelpRecord get(Long id);
-    
+
     /**
      * 查询待审核的
+     *
      * @param giveRecordId
      * @return
      */
@@ -37,8 +40,9 @@ public interface BackendService {
 
     /**
      * 更新互助记录
+     *
      * @param helpRecord
      */
     void updateHelRecord(HelpRecord helpRecord);
-    
+
 }

@@ -11,8 +11,8 @@ import java.util.Set;
  * @Description: 求助记录
  */
 @Entity
-@Table(name="help_record")
-public class HelpRecord extends AbstractDBModel{
+@Table(name = "help_record")
+public class HelpRecord extends AbstractDBModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,13 +20,13 @@ public class HelpRecord extends AbstractDBModel{
     /**
      * 文献ID
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "literature_id")
     private Literature literature;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "help_record_id")
-    private Set<GiveRecord> giveRecord;
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "help_record_id")
+//    private Set<GiveRecord> giveRecord;
     /**
      * 求助的email地址
      */
@@ -85,14 +85,6 @@ public class HelpRecord extends AbstractDBModel{
 
     public void setLiterature(Literature literature) {
         this.literature = literature;
-    }
-
-    public Set<GiveRecord> getGiveRecord() {
-        return giveRecord;
-    }
-
-    public void setGiveRecord(Set<GiveRecord> giveRecord) {
-        this.giveRecord = giveRecord;
     }
 
     public String getHelperEmail() {

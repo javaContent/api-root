@@ -11,6 +11,7 @@ spring:
       client:
         health-indicator:
           enabled: true
+
     
 
 

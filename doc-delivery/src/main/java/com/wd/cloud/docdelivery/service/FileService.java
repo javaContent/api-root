@@ -1,8 +1,10 @@
 package com.wd.cloud.docdelivery.service;
 
+import com.wd.cloud.docdelivery.model.Md5FileModel;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author He Zhigang
@@ -13,9 +15,10 @@ public interface FileService {
 
     /**
      * 保存文件
+     *
      * @param file
      * @return
      * @throws IOException
      */
-    String saveFile(MultipartFile file) throws IOException;
+    Md5FileModel saveFile(MultipartFile file) throws IOException;
 }

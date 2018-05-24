@@ -27,13 +27,13 @@ public abstract class AbstractSwaggerModel {
                 .apiInfo(createApiInfo());
     }
 
-    private ApiInfo createApiInfo(){
+    private ApiInfo createApiInfo() {
         Setting apiInfo = new Setting("api-info.setting");
         return new ApiInfoBuilder().title(apiInfo.get("title"))
                 .description(apiInfo.get("description"))
                 .termsOfServiceUrl(apiInfo.get("termsOfServiceUrl"))
                 .version(apiInfo.get("version"))
-                .contact(new Contact(apiInfo.get("contact.name"),null,apiInfo.get("contact.email")))
+                .contact(new Contact(apiInfo.get("contact.name"), null, apiInfo.get("contact.email")))
                 .build();
     }
 

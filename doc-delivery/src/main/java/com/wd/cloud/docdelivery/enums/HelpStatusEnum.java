@@ -22,7 +22,7 @@ public enum HelpStatusEnum {
     /**
      * 求助第三方
      */
-    HELP_THIRD("求助第三方",3),
+    HELP_THIRD("求助第三方", 3),
     /**
      * 审核通过
      */

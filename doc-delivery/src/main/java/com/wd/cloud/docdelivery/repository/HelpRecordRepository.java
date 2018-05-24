@@ -12,15 +12,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date 2018/5/7
  * @Description:
  */
-public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>, JpaSpecificationExecutor<HelpRecord>{
+public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, JpaSpecificationExecutor<HelpRecord> {
 
     /**
      * 查询
+     *
      * @param id
      * @param status
      * @return
      */
-    HelpRecord findByIdAndStatus(long id,int status);
+    HelpRecord findByIdAndStatus(long id, int status);
 
 //    @Transactional
 //    @Modifying
@@ -29,22 +30,25 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord,Long>, Jp
 
     /**
      * 根据求助用户ID查询
+     *
      * @param helperId
      * @param pageable
      * @return
      */
-    Page<HelpRecord> findByHelperId(long helperId,Pageable pageable);
+    Page<HelpRecord> findByHelperId(long helperId, Pageable pageable);
 
     /**
      * 根据求助邮箱查询
+     *
      * @param helperEmail
      * @param pageable
      * @return
      */
-    Page<HelpRecord> findByHelperEmail(String helperEmail,Pageable pageable);
+    Page<HelpRecord> findByHelperEmail(String helperEmail, Pageable pageable);
 
     /**
      * 根据互助状态查询
+     *
      * @param status
      * @param pageable
      * @return

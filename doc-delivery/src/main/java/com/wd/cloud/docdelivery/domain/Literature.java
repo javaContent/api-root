@@ -9,11 +9,11 @@ import java.util.Date;
  * @Description: 文献元数据
  */
 @Entity
-@Table(name="literature")
-public class Literature extends AbstractDBModel{
+@Table(name = "literature")
+public class Literature extends AbstractDBModel {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -49,11 +49,11 @@ public class Literature extends AbstractDBModel{
     /**
      * 文献全文的文件名称
      */
-    @Column(name = "doc_filename")
-    private String docFilename;
+    @Column(name = "doc_file_Name")
+    private String docFileName;
 
-    @Column(name = "file_md5")
-    private String fileMd5;
+    @Column(name = "doc_file_type")
+    private String docFileType;
 
     public Long getId() {
         return id;
@@ -111,20 +111,19 @@ public class Literature extends AbstractDBModel{
         this.summary = summary;
     }
 
-
-    public String getDocFilename() {
-        return docFilename;
+    public String getDocFileName() {
+        return docFileName;
     }
 
-    public void setDocFilename(String docFilename) {
-        this.docFilename = docFilename;
+    public void setDocFileName(String docFileName) {
+        this.docFileName = docFileName;
     }
 
-    public String getFileMd5() {
-        return fileMd5;
+    public String getDocFileType() {
+        return docFileType;
     }
 
-    public void setFileMd5(String fileMd5) {
-        this.fileMd5 = fileMd5;
+    public void setDocFileType(String docFileType) {
+        this.docFileType = docFileType;
     }
 }

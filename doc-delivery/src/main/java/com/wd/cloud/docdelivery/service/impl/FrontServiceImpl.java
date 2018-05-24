@@ -6,6 +6,7 @@ import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
@@ -26,7 +27,7 @@ import java.util.List;
  * @Description:
  */
 @Service("frontService")
-public class FrontServiceImpl implements FrontService{
+public class FrontServiceImpl implements FrontService {
 
     @Autowired
     LiteratureRepository literatureRepository;
@@ -38,11 +39,11 @@ public class FrontServiceImpl implements FrontService{
     GiveRecordRepository giveRecordRepository;
 
     @Override
-    public Literature queryLiterature(Literature literature){
+    public Literature queryLiterature(Literature literature) {
         Literature literatureData;
-        if (StrUtil.isNotEmpty(literature.getDocHref())){
-            literatureData = literatureRepository.findByDocTitleAndDocHref(literature.getDocTitle(),literature.getDocHref());
-        }else{
+        if (StrUtil.isNotEmpty(literature.getDocHref())) {
+            literatureData = literatureRepository.findByDocTitleAndDocHref(literature.getDocTitle(), literature.getDocHref());
+        } else {
             literatureData = literatureRepository.findByDocTitle(literature.getDocTitle());
         }
         return literatureData;
@@ -60,10 +61,11 @@ public class FrontServiceImpl implements FrontService{
     }
 
     @Override
-    public void saveFilename(Long helpRecordId,Long giveUserId,String fileName,String giveIp) {
+    public void saveFilename(Long helpRecordId, Long giveUserId, Md5FileModel md5FileModel, String giveIp) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
         GiveRecord giveRecord = new GiveRecord();
-        giveRecord.setDocFilename(fileName);
+        giveRecord.setDocFileName(md5FileModel.getName());
+        giveRecord.setDocFileType(md5FileModel.getType());
         giveRecord.setGiverId(giveUserId);
         giveRecord.setGiverIp(giveIp);
         giveRecord.setHelpRecord(helpRecord);
@@ -88,14 +90,14 @@ public class FrontServiceImpl implements FrontService{
 
     @Override
     public Page<HelpRecord> getHelpRecordsForEmail(String helperEmail, Pageable pageable) {
-        return helpRecordRepository.findByHelperEmail(helperEmail,pageable);
+        return helpRecordRepository.findByHelperEmail(helperEmail, pageable);
     }
 
     @Override
     public Page<HelpRecord> getWaitHelpRecords(Pageable pageable) {
 //        Sort sort = new Sort(Direction.DESC, "gmtCreate");
 //        Pageable pageable = PageRequest.of(pageNum-1, pageSize,sort);
-        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatusEnum.WAIT_AUDIT.getCode(),pageable);
+        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatusEnum.WAIT_AUDIT.getCode(), pageable);
         return waitHelpRecords;
     }
 

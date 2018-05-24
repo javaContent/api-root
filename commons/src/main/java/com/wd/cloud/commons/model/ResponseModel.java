@@ -88,6 +88,7 @@ public class ResponseModel<T> {
     public static ResponseModel fail() {
         return new ResponseModel<Object>(FAIL_CODE, FAIL_MSG);
     }
+
     public static ResponseModel fail(Object data) {
         return new ResponseModel<Object>(FAIL_CODE, FAIL_MSG, data);
     }

@@ -14,6 +14,7 @@ public interface LiteratureRepository extends JpaRepository<Literature, Long> {
 
     /**
      * 根据文献标题查询文献元数据
+     *
      * @param docTitle
      * @return
      */
@@ -22,10 +23,11 @@ public interface LiteratureRepository extends JpaRepository<Literature, Long> {
 
     /**
      * 根据文献标题和文献连接查询元数据
+     *
      * @param docTitle
      * @param docHref
      * @return
      */
-    Literature findByDocTitleAndDocHref(String docTitle,String docHref);
+    Literature findByDocTitleAndDocHref(String docTitle, String docHref);
 
 }

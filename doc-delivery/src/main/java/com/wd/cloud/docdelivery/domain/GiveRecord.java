@@ -21,19 +21,19 @@ public class GiveRecord extends AbstractDBModel {
      * 一个求助可能有多个应助，但只有一个应助有效，失败的应助作为应助记录存在
      */
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "help_record_id")
     private HelpRecord helpRecord;
     /**
-     * 文件原名
+     * 文件MD5值,不包含后缀
      */
     @NotNull
-    private String docFilename;
+    private String docFileName;
 
     /**
-     * 文件MD5校验值
+     * 文件类型：pdf,doc,...
      */
-    private String fileMd5;
+    private String docFileType;
 
     /**
      * 应助者ID
@@ -86,20 +86,20 @@ public class GiveRecord extends AbstractDBModel {
         this.id = id;
     }
 
-    public String getDocFilename() {
-        return docFilename;
+    public String getDocFileName() {
+        return docFileName;
     }
 
-    public void setDocFilename(String docFilename) {
-        this.docFilename = docFilename;
+    public void setDocFileName(String docFileName) {
+        this.docFileName = docFileName;
     }
 
-    public String getFileMd5() {
-        return fileMd5;
+    public String getDocFileType() {
+        return docFileType;
     }
 
-    public void setFileMd5(String fileMd5) {
-        this.fileMd5 = fileMd5;
+    public void setDocFileType(String docFileType) {
+        this.docFileType = docFileType;
     }
 
     public boolean isEnable() {
@@ -178,8 +178,8 @@ public class GiveRecord extends AbstractDBModel {
         return enable == that.enable &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(helpRecord, that.helpRecord) &&
-                Objects.equals(docFilename, that.docFilename) &&
-                Objects.equals(fileMd5, that.fileMd5) &&
+                Objects.equals(docFileName, that.docFileName) &&
+                Objects.equals(docFileType, that.docFileType) &&
                 Objects.equals(giverId, that.giverId) &&
                 Objects.equals(giverIp, that.giverIp) &&
                 Objects.equals(giverType, that.giverType) &&
@@ -191,6 +191,6 @@ public class GiveRecord extends AbstractDBModel {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, helpRecord, docFilename, fileMd5, giverId, giverIp, giverType, auditStatus, auditorId, auditMsg, enable);
+        return Objects.hash(id, helpRecord, docFileName, docFileType, giverId, giverIp, giverType, auditStatus, auditorId, auditMsg, enable);
     }
 }

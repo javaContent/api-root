@@ -3,6 +3,7 @@ package com.wd.cloud.docdelivery.service;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.model.Md5FileModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,6 +18,7 @@ public interface FrontService {
 
     /**
      * 保存元数据
+     *
      * @param literature
      * @return
      */
@@ -24,6 +26,7 @@ public interface FrontService {
 
     /**
      * 保存应助记录
+     *
      * @param giveRecord
      * @return
      */
@@ -31,13 +34,14 @@ public interface FrontService {
 
     /**
      * 保存文件
+     *
      * @param helpRecordId
-     * @param fileName
      */
-    void saveFilename(Long helpRecordId,Long giveUserId,String fileName,String giviIp);
+    void saveFilename(Long helpRecordId, Long giveUserId, Md5FileModel md5FileModel, String giviIp);
 
     /**
      * 保存求助记录
+     *
      * @param helpRecord
      * @return
      */
@@ -45,6 +49,7 @@ public interface FrontService {
 
     /**
      * 查询元数据
+     *
      * @param literature
      * @return
      */
@@ -52,20 +57,23 @@ public interface FrontService {
 
     /**
      * 获取用户的求助记录
+     *
      * @param helpUserId
      * @return
      */
-    Page<HelpRecord> getHelpRecordsForUser(Integer helpUserId,Pageable pageable);
+    Page<HelpRecord> getHelpRecordsForUser(Integer helpUserId, Pageable pageable);
 
     /**
      * 获取用户的求助记录
+     *
      * @param helpEmail
      * @return
      */
-    Page<HelpRecord> getHelpRecordsForEmail(String helpEmail,Pageable pageable);
+    Page<HelpRecord> getHelpRecordsForEmail(String helpEmail, Pageable pageable);
 
     /**
      * 获取待应助的求助记录
+     *
      * @return
      */
     Page<HelpRecord> getWaitHelpRecords(Pageable pageable);

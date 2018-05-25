@@ -18,6 +18,25 @@ import java.util.List;
  */
 public interface FrontService {
 
+    /**
+     * 我要应助
+     * @param helpRecordId
+     * @param giverId
+     * @param giverName
+     */
+    boolean givingHelp(Long helpRecordId, Long giverId, String giverName);
+    /**
+     * 去除字符串中的HTML标签
+     * @param docTitle
+     * @return
+     */
+    String clearHtml(String docTitle);
+
+    /**
+     * 获取下载文件
+     * @param helpRecordId
+     * @return
+     */
     DownloadModel getDowloadFile(long helpRecordId);
     /**
      * 保存元数据

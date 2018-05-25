@@ -7,7 +7,13 @@ package com.wd.cloud.docdelivery.model;
  */
 public class Md5FileModel {
 
+    /**
+     * 文件的MD5名称
+     */
     private String name;
+    /**
+     * 文件后缀
+     */
     private String type;
 
     public String getName() {

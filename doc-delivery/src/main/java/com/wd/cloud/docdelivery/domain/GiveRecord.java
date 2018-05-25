@@ -27,7 +27,6 @@ public class GiveRecord extends AbstractDBModel {
     /**
      * 文件MD5值,不包含后缀
      */
-    @NotNull
     private String docFileName;
 
     /**
@@ -61,7 +60,7 @@ public class GiveRecord extends AbstractDBModel {
     private Integer giverType;
 
     /**
-     * 0：待审核，1：审核通过，2：审核不通过
+     * 0：待审核，1：审核通过，2：审核不通过，4：待上传
      */
     private Integer auditStatus;
 

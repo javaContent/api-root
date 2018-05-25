@@ -8,21 +8,21 @@ package com.wd.cloud.docdelivery.enums;
 public enum ChannelEnum {
 
     /**
+     * QQ群
+     */
+    QQ("QQ", 1),
+    /**
      * 期刊导航
      */
-    SPIS("期刊导航", 1),
-    /**
-     * CRS
-     */
-    CRS("CRS", 4),
+    SPIS("期刊导航", 2),
     /**
      * 智慧云
      */
     ZHY("智慧云", 3),
     /**
-     * QQ群
+     * CRS
      */
-    QQ("QQ", 2);
+    CRS("CRS", 4);
 
     private String name;
     private int code;

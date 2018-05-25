@@ -3,6 +3,7 @@ package com.wd.cloud.docdelivery.controller;
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
@@ -81,7 +82,8 @@ public class FrontendController {
         helpRecord.setHelperEmail(helpEmail);
 
         Literature literature = new Literature();
-        literature.setDocTitle(helpModel.getDocTitle());
+        // 防止调用者传过来的docTitle包含HTML标签，在这里将标签去掉
+        literature.setDocTitle(frontService.clearHtml(helpModel.getDocTitle()));
         literature.setDocHref(helpModel.getDocHref());
         // 先查询元数据是否存在
         Literature literatureData = frontService.queryLiterature(literature);
@@ -111,14 +113,31 @@ public class FrontendController {
     }
 
     /**
-     * 待应助
+     * 待应助列表
      *
      * @return
      */
-    @GetMapping("/help/wait")
+    @GetMapping("/help/wait/{helpChannel}")
     public ResponseModel help(@RequestBody @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageable);
         return ResponseModel.success(waitHelpRecords);
+    }
+
+    /**
+     * 我要应助
+     * @param helpRecordId
+     * @param giverId
+     * @return
+     */
+    @PatchMapping("/help/givering/{helpRecordId}")
+    public ResponseModel helping(@PathVariable Long helpRecordId,
+                                 @RequestParam Long giverId,
+                                 @RequestParam String giverName){
+
+        if (frontService.givingHelp(helpRecordId,giverId,giverName)){
+            return ResponseModel.success("请于15分钟内上传文件");
+        }
+        return ResponseModel.fail("未找到待应助记录");
     }
 
     /**
@@ -132,29 +151,28 @@ public class FrontendController {
                                 @RequestParam Long giveUserId,
                                 MultipartFile file,
                                 HttpServletRequest request) throws IOException {
-        FileTypeUtil.putFileType("255044462D312E", "pdf");
         if (file == null) {
-            return ResponseModel.fail();
-        } else if (!globalConfig.getFileTypes().contains(FileTypeUtil.getType(file.getInputStream()))) {
+            return ResponseModel.fail("请选择上传文件");
+        } else if (!globalConfig.getFileTypes().contains(StrUtil.subAfter(file.getName(),".",true))) {
             return ResponseModel.fail("不支持的文件类型");
         }
         //保存文件
         Md5FileModel md5FileModel = fileService.saveFile(file);
         //更新记录
         frontService.saveFilename(helpRecordId, giveUserId, md5FileModel, request.getLocalAddr());
-        return ResponseModel.success(md5FileModel.getName());
+        return ResponseModel.success("应助成功，感谢您的帮助");
     }
 
 
     /**
      * 我的求助记录
      *
-     * @param helpUserId
+     * @param helperId
      * @return
      */
-    @GetMapping("/records/{helpUserId}")
-    public ResponseModel myRecords(Integer helpUserId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helpUserId, pageable);
+    @GetMapping("/records/{helperId}")
+    public ResponseModel myRecords(Integer helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.success(myHelpRecords);
     }
 
@@ -205,4 +223,5 @@ public class FrontendController {
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new FileSystemResource(downloadModel.getDocFile()));
     }
+
 }

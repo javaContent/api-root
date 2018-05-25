@@ -9,7 +9,8 @@ public enum AuditEnum {
 
     WAIT("待审核", 0),
     PASS("审核通过", 1),
-    NO_PASS("审核不通过", 2);
+    NO_PASS("审核不通过", 2),
+    WAIT_UPLOAD("待上传",3);
 
     private String name;
     private int code;

@@ -1,11 +1,13 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
+import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.Md5FileModel;
@@ -56,15 +58,38 @@ public class FrontServiceImpl implements FrontService {
 
 
     @Override
+    public boolean givingHelp(Long helpRecordId, Long giverId, String giverName) {
+        HelpRecord helpRecord = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.WAIT_HELP.getCode());
+        boolean flag = false;
+        if (helpRecord != null) {
+            helpRecord.setStatus(HelpStatusEnum.HELPING.getCode());
+            GiveRecord giveRecord = new GiveRecord();
+            giveRecord.setHelpRecord(helpRecord);
+            giveRecord.setGiverId(giverId);
+            giveRecord.setGiverName(giverName);
+            giveRecord.setGiverType(GiveTypeEnum.USER.getCode());
+            //保存的同时，关联更新求助记录状态
+            giveRecordRepository.save(giveRecord);
+            flag = true;
+        }
+        return flag;
+    }
+
+    @Override
+    public String clearHtml(String docTitle) {
+        return HtmlUtil.restoreEscaped(HtmlUtil.cleanHtmlTag(docTitle));
+    }
+
+    @Override
     public DownloadModel getDowloadFile(long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecordId(helpRecord);
         String fileName = giveRecord.getDocFileName();
         String fileType = giveRecord.getDocFileType();
         String docTitle = helpRecord.getLiterature().getDocTitle();
-        DownloadModel downloadModel = new  DownloadModel();
-        downloadModel.setDocFile(new File(globalConfig.getSavePath(),fileName));
-        downloadModel.setDownloadFileName(docTitle+"."+fileType);
+        DownloadModel downloadModel = new DownloadModel();
+        downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
+        downloadModel.setDownloadFileName(docTitle + "." + fileType);
         return downloadModel;
     }
 

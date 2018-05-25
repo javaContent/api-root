@@ -32,7 +32,7 @@ public class AuthFilter extends ZuulFilter {
     public Object run() throws ZuulException {
         HttpServletRequest request = RequestContext.getCurrentContext().getRequest();
         Principal principal = request.getUserPrincipal();
-        String username = principal.getName();
+        String userNames = principal==null?null:principal.getName();
         return null;
     }
 }

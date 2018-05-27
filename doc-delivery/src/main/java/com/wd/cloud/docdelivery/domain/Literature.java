@@ -54,6 +54,12 @@ public class Literature extends AbstractDBModel {
 
     @Column(name = "doc_file_type")
     private String docFileType;
+    
+    /**
+     *复用
+     */
+    @Column(name = "is_reusing")
+    private Boolean reusing;
 
     public Long getId() {
         return id;
@@ -126,4 +132,12 @@ public class Literature extends AbstractDBModel {
     public void setDocFileType(String docFileType) {
         this.docFileType = docFileType;
     }
+
+	public Boolean getReusing() {
+		return reusing;
+	}
+
+	public void setReusing(Boolean reusing) {
+		this.reusing = reusing;
+	}
 }

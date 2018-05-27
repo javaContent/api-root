@@ -161,4 +161,13 @@ public class HelpRecord extends AbstractDBModel {
     public void setHelperName(String helperName) {
         this.helperName = helperName;
     }
+
+	@Override
+	public String toString() {
+		return "HelpRecord [id=" + id + ", literature=" + literature + ", helperEmail=" + helperEmail + ", helperId="
+				+ helperId + ", helperName=" + helperName + ", helperScid=" + helperScid + ", helperScname="
+				+ helperScname + ", helperIp=" + helperIp + ", helpChannel=" + helpChannel + ", status=" + status + "]";
+	}
+    
+    
 }

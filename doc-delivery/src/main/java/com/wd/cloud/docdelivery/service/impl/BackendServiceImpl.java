@@ -48,7 +48,7 @@ public class BackendServiceImpl implements BackendService {
         Short status = (Short) param.get("status");
         String keyword = (String) param.get("keyword");
         String beginTime = (String) param.get("beginTime");
-        String endTime = (String) param.get("endTime");
+        String endTime = (String) param.get("endTime") + " 23:59:59";
         Page result = helpRecordRepository.findAll(new Specification<HelpRecord>() {
             @Override
             public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -87,6 +87,11 @@ public class BackendServiceImpl implements BackendService {
     @Override
     public void updateHelRecord(HelpRecord helpRecord) {
         helpRecordRepository.save(helpRecord);
+    }
+    
+    @Override
+    public GiveRecord getGiverRecord(HelpRecord helpRecord) {
+    	return giveRecordRepository.findByHelpRecordId(helpRecord);
     }
 
 

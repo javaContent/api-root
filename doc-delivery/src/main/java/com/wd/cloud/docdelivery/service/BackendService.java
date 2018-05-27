@@ -44,5 +44,11 @@ public interface BackendService {
      * @param helpRecord
      */
     void updateHelRecord(HelpRecord helpRecord);
+    
+    /**
+     * 根据helpRecord获取giverRecord
+     * @param helpRecord
+     */
+    public GiveRecord getGiverRecord(HelpRecord helpRecord);
 
 }

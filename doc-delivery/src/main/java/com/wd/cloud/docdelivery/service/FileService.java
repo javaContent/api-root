@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.service;
 
+import com.wd.cloud.docdelivery.domain.DocFile;
+import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.model.Md5FileModel;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,5 +22,5 @@ public interface FileService {
      * @return
      * @throws IOException
      */
-    Md5FileModel saveFile(MultipartFile file) throws IOException;
+    DocFile saveFile(Literature literature, MultipartFile file) throws IOException;
 }

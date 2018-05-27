@@ -24,16 +24,13 @@ public class GiveRecord extends AbstractDBModel {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "help_record_id")
     private HelpRecord helpRecord;
-    /**
-     * 文件MD5值,不包含后缀
-     */
-    private String docFileName;
 
     /**
-     * 文件类型：pdf,doc,...
+     * 文件ID
      */
-    private String docFileType;
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "doc_file_id")
+    private DocFile docFile;
     /**
      * 应助者ID
      */
@@ -95,21 +92,6 @@ public class GiveRecord extends AbstractDBModel {
         this.id = id;
     }
 
-    public String getDocFileName() {
-        return docFileName;
-    }
-
-    public void setDocFileName(String docFileName) {
-        this.docFileName = docFileName;
-    }
-
-    public String getDocFileType() {
-        return docFileType;
-    }
-
-    public void setDocFileType(String docFileType) {
-        this.docFileType = docFileType;
-    }
 
     public boolean isEnable() {
         return enable;
@@ -191,31 +173,11 @@ public class GiveRecord extends AbstractDBModel {
         this.auditorName = auditorName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        GiveRecord that = (GiveRecord) o;
-        return enable == that.enable &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(helpRecord, that.helpRecord) &&
-                Objects.equals(docFileName, that.docFileName) &&
-                Objects.equals(docFileType, that.docFileType) &&
-                Objects.equals(giverId, that.giverId) &&
-                Objects.equals(giverIp, that.giverIp) &&
-                Objects.equals(giverType, that.giverType) &&
-                Objects.equals(auditStatus, that.auditStatus) &&
-                Objects.equals(auditorId, that.auditorId) &&
-                Objects.equals(auditMsg, that.auditMsg);
+    public DocFile getDocFile() {
+        return docFile;
     }
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, helpRecord, docFileName, docFileType, giverId, giverIp, giverType, auditStatus, auditorId, auditMsg, enable);
+    public void setDocFile(DocFile docFile) {
+        this.docFile = docFile;
     }
 }

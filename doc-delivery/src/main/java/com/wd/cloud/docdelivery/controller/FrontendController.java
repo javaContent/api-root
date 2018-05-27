@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
+import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
@@ -77,7 +78,9 @@ public class FrontendController {
         String helpEmail = helpModel.getHelperEmail();
         helpRecord.setHelpChannel(helpModel.getHelpChannel());
         helpRecord.setHelperScid(helpModel.getHelperScid());
+        helpRecord.setHelperScname(helpModel.getHelperScname());
         helpRecord.setHelperId(helpModel.getHelperId());
+        helpRecord.setHelperName(helpModel.getHelperName());
         helpRecord.setHelperIp(request.getLocalAddr());
         helpRecord.setHelperEmail(helpEmail);
 
@@ -93,11 +96,12 @@ public class FrontendController {
             literatureData = frontService.saveLiterature(literature);
         }
         helpRecord.setLiterature(literatureData);
+        DocFile docFile = frontService.getReusingFile(literature);
         // 如果文件已存在，自动应助成功
-        if (StrUtil.isNotEmpty(literatureData.getDocFileName())) {
+        if (null != docFile) {
             helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
             GiveRecord giveRecord = new GiveRecord();
-            giveRecord.setDocFileName(literatureData.getDocFileName());
+            giveRecord.setDocFile(docFile);
             giveRecord.setGiverType(GiveTypeEnum.AUTO.getCode());
             //先保存求助记录，得到求助ID，再关联应助记录
             helpRecord = frontService.saveHelpRecord(helpRecord);
@@ -156,10 +160,11 @@ public class FrontendController {
         } else if (!globalConfig.getFileTypes().contains(StrUtil.subAfter(file.getOriginalFilename(),".",true))) {
             return ResponseModel.fail("不支持的文件类型");
         }
+        HelpRecord helpRecord = frontService.getHelpRecord(helpRecordId);
         //保存文件
-        Md5FileModel md5FileModel = fileService.saveFile(file);
+        DocFile docFile = fileService.saveFile(helpRecord.getLiterature(),file);
         //更新记录
-        frontService.saveFilename(helpRecordId, giveUserId, md5FileModel, request.getLocalAddr());
+        frontService.createGiveRecord(helpRecord, giveUserId, docFile, request.getLocalAddr());
         return ResponseModel.success("应助成功，感谢您的帮助");
     }
 
@@ -170,7 +175,7 @@ public class FrontendController {
      * @param helperId
      * @return
      */
-    @GetMapping("/records/{helperId}")
+    @GetMapping("/help/records/{helperId}")
     public ResponseModel myRecords(Integer helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.success(myHelpRecords);
@@ -182,8 +187,8 @@ public class FrontendController {
      * @param email
      * @return
      */
-    @GetMapping("/records")
-    public ResponseModel recordsByEmail(String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    @GetMapping("/help/records")
+    public ResponseModel recordsByEmail( String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email, pageable);
         return ResponseModel.success(literatureList);
     }

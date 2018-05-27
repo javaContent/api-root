@@ -55,7 +55,7 @@ public class HelpModel {
     /**
      * 求助用户邮箱
      */
-    @Email
+    @Email(groups = HELPER_EMAIL.class)
     @NotNull
     private String helperEmail;
 
@@ -122,4 +122,9 @@ public class HelpModel {
     public void setHelperScname(String helperScname) {
         this.helperScname = helperScname;
     }
+
+
+    public interface HELPER_EMAIL{};
+
+    public interface HELPER_ID{};
 }

@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.controller;
 
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
@@ -74,25 +75,25 @@ public class BackendController {
     @PostMapping("/upload/{id}")
     public ResponseModel upload(@PathVariable Long id, @RequestParam Long giverId,@RequestParam String giverName, HttpServletRequest request, @NotNull MultipartFile file) {
         HelpRecord helpRecord = backendService.get(id);
-        Md5FileModel md5FileModel = null;
+        DocFile docFile = null;
         try {
-            md5FileModel = fileService.saveFile(file);
+            docFile = fileService.saveFile(helpRecord.getLiterature(),file);
         } catch (IOException e) {
             return ResponseModel.fail("文件上传失败,请重新上传");
         }
-        String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
-                + md5FileModel.getName();
-
-        mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
         GiveRecord giveRecord = new GiveRecord();
+
         giveRecord.setHelpRecord(helpRecord);
-        giveRecord.setDocFileName(md5FileModel.getName());
-        giveRecord.setDocFileType(md5FileModel.getType());
+        giveRecord.setDocFile(docFile);
         giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
         giveRecord.setGiverId(giverId);
         giveRecord.setGiverName(giverName);
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
         backendService.updateHelRecord(helpRecord);
+
+        String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
+                + helpRecord.getId();
+        mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
         return ResponseModel.success("文件上传成功");
     }
 
@@ -162,7 +163,7 @@ public class BackendController {
 //        HelpRecord helpRecord = giveRecord.getHelpRecord();
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
         String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
-                + giveRecord.getDocFileName();
+                + helpRecord.getId();
         mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.success();

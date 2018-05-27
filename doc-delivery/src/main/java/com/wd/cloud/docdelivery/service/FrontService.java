@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service;
 
+import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
@@ -55,11 +56,9 @@ public interface FrontService {
     GiveRecord saveGiveRecord(GiveRecord giveRecord);
 
     /**
-     * 保存文件
-     *
-     * @param helpRecordId
+     * 创建应助记录
      */
-    void saveFilename(Long helpRecordId, Long giveUserId, Md5FileModel md5FileModel, String giviIp);
+    void createGiveRecord(HelpRecord helpRecord, Long giveUserId, DocFile docFile, String giviIp);
 
     /**
      * 保存求助记录
@@ -68,6 +67,8 @@ public interface FrontService {
      * @return
      */
     HelpRecord saveHelpRecord(HelpRecord helpRecord);
+
+    HelpRecord getHelpRecord(Long helpRecordId);
 
     /**
      * 查询元数据
@@ -102,4 +103,5 @@ public interface FrontService {
 
     Page<HelpRecord> getAllHelpRecord(Pageable pageable);
 
+    DocFile getReusingFile(Literature literature);
 }

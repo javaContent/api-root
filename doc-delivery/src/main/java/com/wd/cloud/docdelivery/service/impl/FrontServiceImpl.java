@@ -3,14 +3,17 @@ package com.wd.cloud.docdelivery.service.impl;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
+import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.exception.UnanticipatedException;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.Md5FileModel;
+import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
@@ -44,6 +47,9 @@ public class FrontServiceImpl implements FrontService {
 
     @Autowired
     GiveRecordRepository giveRecordRepository;
+
+    @Autowired
+    DocFileRepostitory docFileRepostitory;
 
     @Override
     public Literature queryLiterature(Literature literature) {
@@ -84,8 +90,8 @@ public class FrontServiceImpl implements FrontService {
     public DownloadModel getDowloadFile(long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecordId(helpRecord);
-        String fileName = giveRecord.getDocFileName();
-        String fileType = giveRecord.getDocFileType();
+        String fileName = giveRecord.getDocFile().getFileName();
+        String fileType = giveRecord.getDocFile().getFileType();
         String docTitle = helpRecord.getLiterature().getDocTitle();
         DownloadModel downloadModel = new DownloadModel();
         downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
@@ -104,26 +110,30 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public void saveFilename(Long helpRecordId, Long giveUserId, Md5FileModel md5FileModel, String giveIp) {
-        HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
+    public void createGiveRecord(HelpRecord helpRecord, Long giveUserId, DocFile docFile, String giveIp) {
+        //更新求助状态为待审核
+        helpRecord.setStatus(HelpStatusEnum.WAIT_AUDIT.getCode());
+
         GiveRecord giveRecord = new GiveRecord();
-        giveRecord.setDocFileName(md5FileModel.getName());
-        giveRecord.setDocFileType(md5FileModel.getType());
+        //关联应助记录
+        giveRecord.setDocFile(docFile);
         giveRecord.setGiverId(giveUserId);
         giveRecord.setGiverIp(giveIp);
         giveRecord.setHelpRecord(helpRecord);
         //前台上传的，需要后台人员再审核
         giveRecord.setAuditStatus(AuditEnum.WAIT.getCode());
-        //更新求助状态为待审核
-        helpRecord.setStatus(HelpStatusEnum.WAIT_AUDIT.getCode());
         giveRecordRepository.save(giveRecord);
-        //会关联更新文献元数据的docFilename字段
-        helpRecordRepository.save(helpRecord);
+
     }
 
     @Override
     public HelpRecord saveHelpRecord(HelpRecord helpRecord) {
         return helpRecordRepository.save(helpRecord);
+    }
+
+    @Override
+    public HelpRecord getHelpRecord(Long helpRecordId) {
+        return helpRecordRepository.getOne(helpRecordId);
     }
 
     @Override
@@ -145,6 +155,12 @@ public class FrontServiceImpl implements FrontService {
     @Override
     public Page<HelpRecord> getAllHelpRecord(Pageable pageable) {
         return helpRecordRepository.findAll(pageable);
+    }
+
+    @Override
+    public DocFile getReusingFile(Literature literature) {
+        DocFile docFiles = docFileRepostitory.findByLiteratureAndReusingIsTrue(literature);
+        return docFiles;
     }
 
 }

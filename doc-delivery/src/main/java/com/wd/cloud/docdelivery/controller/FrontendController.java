@@ -153,7 +153,7 @@ public class FrontendController {
                                 HttpServletRequest request) throws IOException {
         if (file == null) {
             return ResponseModel.fail("请选择上传文件");
-        } else if (!globalConfig.getFileTypes().contains(StrUtil.subAfter(file.getName(),".",true))) {
+        } else if (!globalConfig.getFileTypes().contains(StrUtil.subAfter(file.getOriginalFilename(),".",true))) {
             return ResponseModel.fail("不支持的文件类型");
         }
         //保存文件

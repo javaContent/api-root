@@ -1,7 +1,9 @@
 package com.wd.cloud.docdelivery.domain;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author He Zhigang
@@ -27,6 +29,10 @@ public class Literature extends AbstractDBModel {
     @Column(name = "doc_title")
     private String docTitle;
 
+    @NotNull
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<DocFile> docFiles;
+
     /**
      * 文献作者
      */
@@ -46,20 +52,6 @@ public class Literature extends AbstractDBModel {
      */
     private String summary;
 
-    /**
-     * 文献全文的文件名称
-     */
-    @Column(name = "doc_file_name")
-    private String docFileName;
-
-    @Column(name = "doc_file_type")
-    private String docFileType;
-    
-    /**
-     *复用
-     */
-    @Column(name = "is_reusing")
-    private Boolean reusing;
 
     public Long getId() {
         return id;
@@ -117,27 +109,12 @@ public class Literature extends AbstractDBModel {
         this.summary = summary;
     }
 
-    public String getDocFileName() {
-        return docFileName;
+
+    public Set<DocFile> getDocFiles() {
+        return docFiles;
     }
 
-    public void setDocFileName(String docFileName) {
-        this.docFileName = docFileName;
+    public void setDocFiles(Set<DocFile> docFiles) {
+        this.docFiles = docFiles;
     }
-
-    public String getDocFileType() {
-        return docFileType;
-    }
-
-    public void setDocFileType(String docFileType) {
-        this.docFileType = docFileType;
-    }
-
-	public Boolean getReusing() {
-		return reusing;
-	}
-
-	public void setReusing(Boolean reusing) {
-		this.reusing = reusing;
-	}
 }

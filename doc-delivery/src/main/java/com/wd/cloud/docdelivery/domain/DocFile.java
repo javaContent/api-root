@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -22,6 +24,9 @@ public class DocFile extends AbstractDBModel {
     private String fileType;
 
     @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "literature_id")
+    @JsonIgnore
     private Literature literature;
 
     private Long auditorId;

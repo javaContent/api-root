@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.Date;
@@ -24,9 +26,9 @@ public class HelpRecord extends AbstractDBModel {
     @JoinColumn(name = "literature_id")
     private Literature literature;
 
-//    @OneToMany(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "help_record_id")
-//    private Set<GiveRecord> giveRecord;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<GiveRecord> giveRecords;
     /**
      * 求助的email地址
      */
@@ -162,7 +164,15 @@ public class HelpRecord extends AbstractDBModel {
         this.helperName = helperName;
     }
 
-	@Override
+    public Set<GiveRecord> getGiveRecords() {
+        return giveRecords;
+    }
+
+    public void setGiveRecords(Set<GiveRecord> giveRecords) {
+        this.giveRecords = giveRecords;
+    }
+
+    @Override
 	public String toString() {
 		return "HelpRecord [id=" + id + ", literature=" + literature + ", helperEmail=" + helperEmail + ", helperId="
 				+ helperId + ", helperName=" + helperName + ", helperScid=" + helperScid + ", helperScname="

@@ -16,4 +16,7 @@ public interface DocFileRepostitory extends JpaRepository<DocFile,Long> {
     DocFile findByLiteratureAndReusingIsTrue(Literature literature);
 
     DocFile findByLiteratureAndFileNameAndFileType(Literature literature,String fileName,String fileType);
+    
+    List<DocFile> findByLiterature(Literature literature);
+    
 }

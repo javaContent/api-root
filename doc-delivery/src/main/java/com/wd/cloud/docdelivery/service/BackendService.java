@@ -2,10 +2,13 @@ package com.wd.cloud.docdelivery.service;
 
 import java.util.Map;
 
+import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import org.springframework.data.domain.Page;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import com.wd.cloud.docdelivery.domain.Literature;
+
 import org.springframework.data.domain.Pageable;
 
 /**
@@ -21,6 +24,10 @@ public interface BackendService {
      * @return
      */
     Page<HelpRecord> getHelpList(Pageable pageable, Map<String, Object> param);
+    
+    Page<Literature> getLiteratureList(Pageable pageable, Map<String, Object> param);
+    
+    Page<DocFile> getDocFileList(Pageable pageable, Long literatureId);
 
     /**
      * 获取单条互助记录
@@ -50,5 +57,12 @@ public interface BackendService {
      * @param helpRecord
      */
     public GiveRecord getGiverRecord(HelpRecord helpRecord);
+    
+    /**
+     * 复用、取消复用
+     * @param helpRecord
+     * @return
+     */
+    public boolean reusing(Map<String,Object> param);
 
 }

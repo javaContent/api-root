@@ -1,11 +1,15 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
+import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.BackendService;
 
 import cn.hutool.core.date.DateUtil;
@@ -22,8 +26,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +47,12 @@ public class BackendServiceImpl implements BackendService {
 
     @Autowired
     GiveRecordRepository giveRecordRepository;
+    
+    @Autowired
+    LiteratureRepository literatureRepository;
+    
+    @Autowired
+    DocFileRepostitory docFileRepostitory;
 
     @Override
     public Page getHelpList(Pageable pageable, Map<String, Object> param) {
@@ -70,8 +82,45 @@ public class BackendServiceImpl implements BackendService {
                 return cb.and(list.toArray(p));
             }
         }, pageable);
+        
+//        List<HelpRecord> list = result.getContent();
+//        for (HelpRecord helpRecord : list) {
+//        	if(helpRecord.getStatus() == HelpStatusEnum.HELP_SUCCESSED.getCode()) {
+//        		GiveRecord giveRecord = giveRecordRepository.findByHelpRecordId(helpRecord);
+//        		helpRecord.setGiveRecord(giveRecord);
+//        	}
+//		}
         return result;
     }
+    
+    @Override
+    public Page getLiteratureList(Pageable pageable, Map<String, Object> param) {
+    	Boolean reusing = (Boolean) param.get("reusing");
+        String keyword = (String) param.get("keyword");
+    	Page result = literatureRepository.findAll(new Specification<Literature>() {
+            @Override
+            public Predicate toPredicate(Root<Literature> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> list = new ArrayList<Predicate>();
+                
+                if (reusing != null) {
+                    list.add(cb.equal(root.get("reusing").as(boolean.class), reusing));
+                }
+                if (!StringUtils.isEmpty(keyword)) {
+                    list.add(cb.like(root.get("docTitle").as(String.class), "%" + keyword + "%"));
+                }
+
+                Predicate[] p = new Predicate[list.size()];
+                return cb.and(list.toArray(p));
+            }
+        }, pageable);
+		return result;
+    }
+    
+    @Override
+	public Page<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
+    		return null;
+    }
+    
 
     @Override
     public HelpRecord get(Long id) {
@@ -93,6 +142,31 @@ public class BackendServiceImpl implements BackendService {
     public GiveRecord getGiverRecord(HelpRecord helpRecord) {
     	return giveRecordRepository.findByHelpRecordId(helpRecord);
     }
-
+    
+    @Override
+    public boolean reusing(Map<String,Object> param) {
+    	Literature literature = new Literature();
+    	literature.setId((long) param.get("literatureId"));
+	long docFileId = (long) param.get("docFileId");
+	boolean reusing = (boolean) param.get("reusing");
+	List<DocFile> list = docFileRepostitory.findByLiterature(literature);
+	DocFile doc = null;
+	for (DocFile docFile : list) {
+		//如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入
+		if(docFile.isReusing() && reusing) {
+			return false;
+		}
+		if(doc.getId() == docFileId) {
+			doc = docFile;
+		}
+	}
+	doc.setReusing(reusing);
+	doc.setAuditorId((long) param.get("auditorId"));
+	doc.setAuditorName((String) param.get("auditorName"));
+	doc.setReMark((String) param.get("reMark"));
+		if(doc == null) return false;
+		docFileRepostitory.save(doc);
+		return true;
+	}
 
 }

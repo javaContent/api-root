@@ -64,7 +64,7 @@ public class BackendController {
     	param.put("beginTime", beginTime);
     	param.put("endTime", endTime);
 
-        return ResponseModel.success(backendService.getHelpList(pageable, param));
+        return ResponseModel.ok(backendService.getHelpList(pageable, param));
     }
     
     
@@ -79,7 +79,7 @@ public class BackendController {
     	Map<String,Object> param = new HashMap<String, Object>();
     	param.put("reusing", reusing);
     	param.put("keyword", keyword);
-        return ResponseModel.success(backendService.getLiteratureList(pageable, param));
+        return ResponseModel.ok(backendService.getLiteratureList(pageable, param));
     }
     
     /**
@@ -91,7 +91,7 @@ public class BackendController {
     public ResponseModel getDocFileList(@RequestParam Long literatureId,
                                   @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
     
-        return ResponseModel.success(backendService.getDocFileList(pageable, literatureId));
+        return ResponseModel.ok(backendService.getDocFileList(pageable, literatureId));
     }
     
     
@@ -108,7 +108,7 @@ public class BackendController {
         try {
             docFile = fileService.saveFile(helpRecord.getLiterature(),file);
         } catch (IOException e) {
-            return ResponseModel.fail("文件上传失败,请重新上传");
+            return ResponseModel.error("文件上传失败,请重新上传");
         }
         GiveRecord giveRecord = new GiveRecord();
 
@@ -123,7 +123,7 @@ public class BackendController {
         String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
                 + helpRecord.getId();
         mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
-        return ResponseModel.success("文件上传成功");
+        return ResponseModel.ok("文件上传成功");
     }
 
     /**
@@ -146,7 +146,7 @@ public class BackendController {
                 null,
                 HelpStatusEnum.HELP_THIRD);
         backendService.updateHelRecord(helpRecord);
-        return ResponseModel.success("已提交第三方处理，请耐心等待第三方应助结果");
+        return ResponseModel.ok("已提交第三方处理，请耐心等待第三方应助结果");
     }
 
     /**
@@ -170,7 +170,7 @@ public class BackendController {
                 null,
                 HelpStatusEnum.HELP_FAILED);
         backendService.updateHelRecord(helpRecord);
-        return ResponseModel.success("处理成功");
+        return ResponseModel.ok("处理成功");
     }
 
     /**
@@ -183,7 +183,7 @@ public class BackendController {
     	HelpRecord helpRecord = backendService.get(id);
     	GiveRecord giveRecord = backendService.getGiverRecord(helpRecord);
         if (giveRecord == null) {
-            return ResponseModel.fail();
+            return ResponseModel.notFound();
         }
         giveRecord.setAuditStatus(AuditEnum.PASS.getCode());
         giveRecord.setAuditorId(auditorId);
@@ -193,7 +193,7 @@ public class BackendController {
                 + helpRecord.getId();
         mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
         backendService.updateHelRecord(helpRecord);
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
 
     /**
@@ -206,14 +206,14 @@ public class BackendController {
     	HelpRecord helpRecord = backendService.get(id);
     	GiveRecord giveRecord = backendService.getGiverRecord(helpRecord);
         if (giveRecord == null) {
-            return ResponseModel.fail();
+            return ResponseModel.notFound();
         }
         giveRecord.setAuditStatus(AuditEnum.NO_PASS.getCode());
         giveRecord.setAuditorId(auditorId);
         giveRecord.setAuditorName(auditorName);
         helpRecord.setStatus(HelpStatusEnum.WAIT_HELP.getCode());
         backendService.updateHelRecord(helpRecord);
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
     
     
@@ -232,9 +232,9 @@ public class BackendController {
     	param.put("auditorName", reuseUserName);
     	Boolean result = backendService.reusing(param);
     	if(result) {
-    		return ResponseModel.success();
+    		return ResponseModel.ok();
     	} else {
-    		return ResponseModel.fail();
+    		return ResponseModel.error();
     	}
     }
     
@@ -254,9 +254,9 @@ public class BackendController {
     	param.put("reMark", reMark);
     	Boolean result = backendService.reusing(param);
     	if(result) {
-    		return ResponseModel.success();
+    		return ResponseModel.ok();
     	} else {
-    		return ResponseModel.fail();
+    		return ResponseModel.error();
     	}
     }
 

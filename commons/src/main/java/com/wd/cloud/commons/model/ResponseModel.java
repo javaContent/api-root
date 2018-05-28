@@ -1,44 +1,37 @@
 package com.wd.cloud.commons.model;
 
+import cn.hutool.http.HttpStatus;
+
 /**
  * @author He Zhigang
  * @date 2018/5/3
  * @remark api返回的response对象
  */
 public class ResponseModel<T> {
-    private int code;
+    private Integer code;
     private String msg;
-    private T data;
-
-    private static final int SUCCESS_CODE = 200;
-    private static final int FAIL_CODE = 500;
-    private static final String SUCCESS_MSG = "success";
-    private static final String FAIL_MSG = "fail";
+    private T body;
 
     public ResponseModel() {
-    }
-
-    public ResponseModel(T data) {
-        this.data = data;
     }
 
     public ResponseModel(int code, String msg) {
         this.code = code;
         this.msg = msg;
-        this.data = null;
+        this.body = null;
     }
 
-    public ResponseModel(int code, String msg, T data) {
+    public ResponseModel(int code, String msg, T body) {
         this.code = code;
         this.msg = msg;
-        this.data = data;
+        this.body = body;
     }
 
     public int getCode() {
         return code;
     }
 
-    public ResponseModel setCode(int code) {
+    public ResponseModel code(int code) {
         this.code = code;
         return this;
     }
@@ -47,49 +40,149 @@ public class ResponseModel<T> {
         return msg;
     }
 
-    public ResponseModel setMsg(String msg) {
+    public ResponseModel msg(String msg) {
         this.msg = msg;
         return this;
     }
 
-    public T getData() {
-        return data;
+    public T getBody() {
+        return body;
     }
 
-    public ResponseModel setData(T data) {
-        this.data = data;
+    public ResponseModel body(T body) {
+        this.body = body;
         return this;
     }
 
-    public static ResponseModel success(int code, String msg) {
+    /**
+     * 请求成功
+     * @return
+     */
+    public static ResponseModel ok() {
+        return ResponseModel.ok(null);
+    }
+
+    /**
+     * 请求成功
+     * @param data
+     * @return
+     */
+    public static ResponseModel<Object> ok(Object data) {
+        return ResponseModel.ok(HttpStatus.HTTP_OK,data);
+    }
+
+    public static ResponseModel<Object> ok(String msg) {
+        return ResponseModel.ok(HttpStatus.HTTP_OK,msg,null);
+    }
+
+    public static ResponseModel<Object> ok(Integer code,String msg){
+        return ResponseModel.ok(code,msg,null);
+    }
+    /**
+     * 请求成功
+     * @param code
+     * @param data
+     * @return
+     */
+    public static ResponseModel<Object> ok(int code, Object data) {
+        return ResponseModel.ok(code, HttpMsg.OK, data);
+    }
+
+    public static ResponseModel<Object> ok(int code,String msg, Object data) {
+        return new ResponseModel<Object>(code, msg, data);
+    }
+
+    /**
+     * 未知错误
+     * @return
+     */
+    public static ResponseModel error() {
+        return ResponseModel.error(HttpMsg.ERROR);
+    }
+
+    /**
+     * 未知错误
+     * @param msg
+     * @return
+     */
+    public static ResponseModel error(String msg) {
+        return ResponseModel.error(0,msg);
+    }
+
+    /**
+     * 未知错误
+     * @param code
+     * @param msg
+     * @return
+     */
+    public static ResponseModel error(int code, String msg) {
         return new ResponseModel<Object>(code, msg);
     }
 
-    public static ResponseModel success(String msg) {
-        return new ResponseModel<Object>(SUCCESS_CODE, msg);
+    /**
+     * 数据未找到
+     * @return
+     */
+    public static ResponseModel notFound(){
+        return ResponseModel.notFound(HttpMsg.NOT_FOUND);
     }
 
-    public static ResponseModel success() {
-        return new ResponseModel<Object>(SUCCESS_CODE, SUCCESS_MSG);
+    /**
+     * 数据未找到
+     * @param msg
+     * @return
+     */
+    public static ResponseModel notFound(String msg){
+        return new ResponseModel(HttpStatus.HTTP_NOT_FOUND ,msg);
     }
 
-    public static ResponseModel success(Object data) {
-        return new ResponseModel<Object>(SUCCESS_CODE, SUCCESS_MSG, data);
+    /**
+     * 重复提交导致数据冲突
+     * @return
+     */
+    public static ResponseModel clientErr(){
+        return ResponseModel.clientErr(HttpMsg.CLIENT_ERR);
     }
 
-    public static ResponseModel fail(int code, String msg) {
-        return new ResponseModel<Object>(code, msg);
+    /**
+     * 重复提交导致数据冲突
+     * @return
+     */
+    public static ResponseModel clientErr(String msg){
+        return new ResponseModel(HttpStatus.HTTP_CONFLICT ,msg);
     }
 
-    public static ResponseModel fail(String msg) {
-        return new ResponseModel<Object>(FAIL_CODE, msg);
+    /**
+     * 服务异常，一般由服务端有异常未捕获造成的
+     * @return
+     */
+    public static ResponseModel serverErr(){
+        return ResponseModel.serverErr(HttpMsg.SERVER_ERR);
     }
 
-    public static ResponseModel fail() {
-        return new ResponseModel<Object>(FAIL_CODE, FAIL_MSG);
+    /**
+     * 服务异常，一般由服务端有异常未捕获造成的
+     * @param msg
+     * @return
+     */
+    public static ResponseModel serverErr(String msg){
+        return new ResponseModel(HttpStatus.HTTP_INTERNAL_ERROR ,msg);
     }
 
-    public static ResponseModel fail(Object data) {
-        return new ResponseModel<Object>(FAIL_CODE, FAIL_MSG, data);
+    /**
+     * 参数错误
+     * @return
+     */
+    public static ResponseModel paramErr(){
+        return ResponseModel.paramErr(HttpMsg.PARAMS_ERR);
     }
+
+    /**
+     * 参数错误
+     * @return
+     */
+    public static ResponseModel paramErr(String msg){
+        return new ResponseModel(HttpStatus.HTTP_BAD_REQUEST ,msg);
+    }
+
 }

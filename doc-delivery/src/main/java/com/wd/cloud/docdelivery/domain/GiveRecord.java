@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
@@ -22,14 +24,12 @@ public class GiveRecord extends AbstractDBModel {
      */
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "help_record_id")
     private HelpRecord helpRecord;
 
     /**
      * 文件ID
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "doc_file_id")
     private DocFile docFile;
     /**
      * 应助者ID
@@ -75,7 +75,6 @@ public class GiveRecord extends AbstractDBModel {
      * 审核失败原因
      */
     @ManyToOne
-    @JoinColumn(name = "audit_msg_id")
     private AuditMsg auditMsg;
 
     /**
@@ -179,5 +178,48 @@ public class GiveRecord extends AbstractDBModel {
 
     public void setDocFile(DocFile docFile) {
         this.docFile = docFile;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
+        GiveRecord that = (GiveRecord) o;
+        return enable == that.enable &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(helpRecord, that.helpRecord) &&
+                Objects.equals(docFile, that.docFile) &&
+                Objects.equals(giverId, that.giverId) &&
+                Objects.equals(giverName, that.giverName) &&
+                Objects.equals(giverIp, that.giverIp) &&
+                Objects.equals(giverType, that.giverType) &&
+                Objects.equals(auditStatus, that.auditStatus) &&
+                Objects.equals(auditorId, that.auditorId) &&
+                Objects.equals(auditorName, that.auditorName) &&
+                Objects.equals(auditMsg, that.auditMsg);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, helpRecord, docFile, giverId, giverName, giverIp, giverType, auditStatus, auditorId, auditorName, auditMsg, enable);
+    }
+
+    @Override
+    public String toString() {
+        return "GiveRecord{" +
+                "id=" + id +
+                ", helpRecord=" + helpRecord +
+                ", docFile=" + docFile +
+                ", giverId=" + giverId +
+                ", giverName='" + giverName + '\'' +
+                ", giverIp='" + giverIp + '\'' +
+                ", giverType=" + giverType +
+                ", auditStatus=" + auditStatus +
+                ", auditorId=" + auditorId +
+                ", auditorName='" + auditorName + '\'' +
+                ", auditMsg=" + auditMsg +
+                ", enable=" + enable +
+                '}';
     }
 }

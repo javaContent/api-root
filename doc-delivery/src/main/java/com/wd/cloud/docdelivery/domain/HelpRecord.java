@@ -13,7 +13,8 @@ import java.util.Set;
  * @Description: 求助记录
  */
 @Entity
-@Table(name = "help_record")
+@Table(name = "help_record",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"helper_email", "literature_id","status"})})
 public class HelpRecord extends AbstractDBModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,10 +24,9 @@ public class HelpRecord extends AbstractDBModel {
      * 文献ID
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "literature_id")
     private Literature literature;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "helpRecord")
     @JsonIgnore
     private Set<GiveRecord> giveRecords;
     /**
@@ -67,8 +67,8 @@ public class HelpRecord extends AbstractDBModel {
     /**
      * 求助渠道，1：QQ，2：SPIS，3：CRS，4：ZHY
      */
-    @Column(name = "help_channel", columnDefinition = "tinyint default 1")
-    private Integer helpChannel;
+    @Column(name = "help_channel", columnDefinition = "tinyint default 0")
+    private int helpChannel;
 
 
     /**
@@ -81,7 +81,7 @@ public class HelpRecord extends AbstractDBModel {
      * 5：应助失败（超过15天无结果）
      */
     @Column(name = "status", columnDefinition = "tinyint default 0")
-    private Integer status;
+    private int status;
 
 
     public Long getId() {
@@ -140,11 +140,11 @@ public class HelpRecord extends AbstractDBModel {
         this.helpChannel = helpChannel;
     }
 
-    public Integer getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Integer status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

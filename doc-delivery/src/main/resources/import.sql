@@ -13,7 +13,7 @@ CREATE TRIGGER update_give_record_gmt_modified BEFORE UPDATE ON give_record FOR 
 
 
 -- 初始化测试数据
-insert into audit_msg (msg) values ("文不对题"),("文档无法打开"),("文档错误");
-insert into literature (doc_title,doc_href,doc_file_name) select title,url,path FROM spischolar.t_delivery GROUP BY title,url,path;
-INSERT INTO help_record ( literature_id, helper_email, help_channel, helper_scname, helper_id ) SELECT t2.id, t1.email, t1.product_id, t1.org_name, t1.member_id FROM spischolar.t_delivery t1, literature t2 WHERE t1.title = t2.doc_title AND t1.url = t2.doc_href;
-INSERT INTO give_record ( help_record_id, doc_file_name, auditor_id, auditor_name, giver_type ) SELECT t3.id, t1.path, t1.procesor_id, t1.procesor_name, t1.process_type FROM spischolar.t_delivery t1, literature t2, help_record t3 WHERE t1.title = t2.doc_title AND t1.url = t2.doc_href AND t2.id = t3.literature_id;
+-- insert into audit_msg (msg) values ("文不对题"),("文档无法打开"),("文档错误");
+-- insert into literature (doc_title,doc_href) select title,url FROM spischolar.t_delivery GROUP BY title,url,path;
+-- INSERT INTO help_record ( literature_id, helper_email, help_channel, helper_scname, helper_id ) SELECT t2.id, t1.email, t1.product_id, t1.org_name, t1.member_id FROM spischolar.t_delivery t1, literature t2 WHERE t1.title = t2.doc_title AND t1.url = t2.doc_href;
+-- INSERT INTO give_record ( help_record_id, auditor_id, auditor_name, giver_type ) SELECT t3.id, t1.procesor_id, t1.procesor_name, t1.process_type FROM spischolar.t_delivery t1, literature t2, help_record t3 WHERE t1.title = t2.doc_title AND t1.url = t2.doc_href AND t2.id = t3.literature_id;

@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -11,7 +13,8 @@ import java.util.Set;
  * @Description: 文献元数据
  */
 @Entity
-@Table(name = "literature")
+@Table(name = "literature",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"doc_href", "doc_title"})})
 public class Literature extends AbstractDBModel {
 
     @Id
@@ -29,8 +32,8 @@ public class Literature extends AbstractDBModel {
     @Column(name = "doc_title")
     private String docTitle;
 
-    @NotNull
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "literature")
+    @JsonIgnore
     private Set<DocFile> docFiles;
 
     /**

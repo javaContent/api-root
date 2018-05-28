@@ -26,6 +26,13 @@ public interface FrontService {
      * @param giverName
      */
     boolean givingHelp(Long helpRecordId, Long giverId, String giverName);
+
+    /**
+     * 得到应种中状态的应助记录
+     * @param helpRecordId
+     * @return
+     */
+    HelpRecord getHelpingRecord(long helpRecordId);
     /**
      * 去除字符串中的HTML标签
      * @param docTitle
@@ -99,9 +106,19 @@ public interface FrontService {
      *
      * @return
      */
-    Page<HelpRecord> getWaitHelpRecords(Pageable pageable);
+    Page<HelpRecord> getWaitHelpRecords(int helpChannel,Pageable pageable);
+
+    /**
+     * 求助完成列表
+     * @param helpChannel
+     * @param pageable
+     * @return
+     */
+    Page<HelpRecord> getFinishHelpRecords(Integer helpChannel,Pageable pageable);
 
     Page<HelpRecord> getAllHelpRecord(Pageable pageable);
 
     DocFile getReusingFile(Literature literature);
+
+    boolean checkExistsGiveing(Long giverId);
 }

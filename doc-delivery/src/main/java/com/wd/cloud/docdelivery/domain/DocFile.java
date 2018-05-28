@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 /**
  * @author He Zhigang
@@ -11,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @Description:
  */
 @Entity
-@Table(name = "")
+@Table(name = "doc_file")
 public class DocFile extends AbstractDBModel {
 
     @Id
@@ -23,10 +24,7 @@ public class DocFile extends AbstractDBModel {
 
     private String fileType;
 
-    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "literature_id")
-    @JsonIgnore
     private Literature literature;
 
     private Long auditorId;
@@ -105,5 +103,26 @@ public class DocFile extends AbstractDBModel {
 
     public void setReMark(String reMark) {
         this.reMark = reMark;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocFile docFile = (DocFile) o;
+        return reusing == docFile.reusing &&
+                Objects.equals(id, docFile.id) &&
+                Objects.equals(fileName, docFile.fileName) &&
+                Objects.equals(fileType, docFile.fileType) &&
+                Objects.equals(literature, docFile.literature) &&
+                Objects.equals(auditorId, docFile.auditorId) &&
+                Objects.equals(auditorName, docFile.auditorName) &&
+                Objects.equals(reMark, docFile.reMark);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, fileName, fileType, literature, auditorId, auditorName, reusing, reMark);
     }
 }

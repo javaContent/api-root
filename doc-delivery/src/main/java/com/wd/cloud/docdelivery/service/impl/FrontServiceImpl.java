@@ -74,11 +74,17 @@ public class FrontServiceImpl implements FrontService {
             giveRecord.setGiverId(giverId);
             giveRecord.setGiverName(giverName);
             giveRecord.setGiverType(GiveTypeEnum.USER.getCode());
+            giveRecord.setAuditStatus(AuditEnum.WAIT_UPLOAD.getCode());
             //保存的同时，关联更新求助记录状态
             giveRecordRepository.save(giveRecord);
             flag = true;
         }
         return flag;
+    }
+
+    @Override
+    public HelpRecord getHelpingRecord(long helpRecordId) {
+       return helpRecordRepository.findByIdAndStatus(helpRecordId,HelpStatusEnum.HELPING.getCode());
     }
 
     @Override
@@ -110,14 +116,13 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public void createGiveRecord(HelpRecord helpRecord, Long giveUserId, DocFile docFile, String giveIp) {
+    public void createGiveRecord(HelpRecord helpRecord, Long giverId, DocFile docFile, String giveIp) {
         //更新求助状态为待审核
         helpRecord.setStatus(HelpStatusEnum.WAIT_AUDIT.getCode());
-
-        GiveRecord giveRecord = new GiveRecord();
+        GiveRecord giveRecord = giveRecordRepository.findByHelpRecordAndAuditStatusAndGiverId(helpRecord,AuditEnum.WAIT_UPLOAD.getCode(),giverId);
         //关联应助记录
         giveRecord.setDocFile(docFile);
-        giveRecord.setGiverId(giveUserId);
+        giveRecord.setGiverId(giverId);
         giveRecord.setGiverIp(giveIp);
         giveRecord.setHelpRecord(helpRecord);
         //前台上传的，需要后台人员再审核
@@ -147,9 +152,16 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public Page<HelpRecord> getWaitHelpRecords(Pageable pageable) {
-        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByStatus(HelpStatusEnum.WAIT_AUDIT.getCode(), pageable);
+    public Page<HelpRecord> getWaitHelpRecords(int helpChannel,Pageable pageable) {
+        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatus(helpChannel,HelpStatusEnum.WAIT_HELP.getCode(), pageable);
         return waitHelpRecords;
+    }
+
+    @Override
+    public Page<HelpRecord> getFinishHelpRecords(Integer helpChannel, Pageable pageable) {
+        int[] status  = {HelpStatusEnum.HELP_SUCCESSED.getCode(),HelpStatusEnum.HELP_FAILED.getCode()};
+        Page<HelpRecord> finishHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel,status,pageable);
+        return finishHelpRecords;
     }
 
     @Override
@@ -161,6 +173,16 @@ public class FrontServiceImpl implements FrontService {
     public DocFile getReusingFile(Literature literature) {
         DocFile docFiles = docFileRepostitory.findByLiteratureAndReusingIsTrue(literature);
         return docFiles;
+    }
+
+    @Override
+    public boolean checkExistsGiveing(Long giverId) {
+        GiveRecord giveRecord = giveRecordRepository.findByGiverIdAndAuditStatus(giverId,AuditEnum.WAIT_UPLOAD.getCode());
+        if (giveRecord != null){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 }

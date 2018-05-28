@@ -2,6 +2,7 @@ package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.commons.model.ResponseModel;
@@ -42,6 +43,7 @@ import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author He Zhigang
@@ -61,11 +63,6 @@ public class FrontendController {
 
     @Autowired
     FrontService frontService;
-
-    @GetMapping("/hello")
-    public ResponseModel hello() throws InterruptedException {
-        return ResponseModel.success("惊不惊喜？意不意外？");
-    }
 
     /**
      * 文献求助请求
@@ -96,7 +93,7 @@ public class FrontendController {
             literatureData = frontService.saveLiterature(literature);
         }
         helpRecord.setLiterature(literatureData);
-        DocFile docFile = frontService.getReusingFile(literature);
+        DocFile docFile = frontService.getReusingFile(literatureData);
         // 如果文件已存在，自动应助成功
         if (null != docFile) {
             helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
@@ -122,23 +119,42 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/help/wait/{helpChannel}")
-    public ResponseModel help(@RequestBody @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(pageable);
+    public ResponseModel helpWaitList(@PathVariable int helpChannel,
+                                      @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(helpChannel, pageable);
         return ResponseModel.success(waitHelpRecords);
     }
 
     /**
+     * 应助完成列表，包含成功和失败的
+     * @param helpChannel
+     * @param pageable
+     * @return
+     */
+    @GetMapping("/help/finish/{helpChannel}")
+    public ResponseModel helpSuccessList(@PathVariable Integer helpChannel,
+                                         @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> finishHelpRecords = frontService.getFinishHelpRecords(helpChannel, pageable);
+        return ResponseModel.success(finishHelpRecords);
+    }
+
+    /**
      * 我要应助
+     *
      * @param helpRecordId
      * @param giverId
      * @return
      */
-    @PatchMapping("/help/givering/{helpRecordId}")
+    @PatchMapping("/give/{helpRecordId}")
     public ResponseModel helping(@PathVariable Long helpRecordId,
                                  @RequestParam Long giverId,
-                                 @RequestParam String giverName){
+                                 @RequestParam String giverName) {
 
-        if (frontService.givingHelp(helpRecordId,giverId,giverName)){
+        //检查用户是否已经认领了应助
+        if (frontService.checkExistsGiveing(giverId)){
+            return ResponseModel.fail("您已经认领了应助任务，请先处理已认领的任务后再来");
+        }
+        if (frontService.givingHelp(helpRecordId, giverId, giverName)) {
             return ResponseModel.success("请于15分钟内上传文件");
         }
         return ResponseModel.fail("未找到待应助记录");
@@ -150,21 +166,25 @@ public class FrontendController {
      * @param file
      * @return
      */
-    @PostMapping("/upload/{helpRecordId}")
+    @PostMapping("/give/upload/{helpRecordId}")
     public ResponseModel upload(@PathVariable Long helpRecordId,
-                                @RequestParam Long giveUserId,
+                                @RequestParam Long giverId,
                                 MultipartFile file,
                                 HttpServletRequest request) throws IOException {
         if (file == null) {
             return ResponseModel.fail("请选择上传文件");
-        } else if (!globalConfig.getFileTypes().contains(StrUtil.subAfter(file.getOriginalFilename(),".",true))) {
+        } else if (!globalConfig.getFileTypes().contains(StrUtil.subAfter(file.getOriginalFilename(), ".", true))) {
             return ResponseModel.fail("不支持的文件类型");
         }
-        HelpRecord helpRecord = frontService.getHelpRecord(helpRecordId);
+        // 检查求助记录状态是否为HelpStatusEnum.HELPING
+        HelpRecord helpRecord = frontService.getHelpingRecord(helpRecordId);
+        if (helpRecord == null){
+            return ResponseModel.fail("没有这个求助或求助已完成");
+        }
         //保存文件
-        DocFile docFile = fileService.saveFile(helpRecord.getLiterature(),file);
+        DocFile docFile = fileService.saveFile(helpRecord.getLiterature(), file);
         //更新记录
-        frontService.createGiveRecord(helpRecord, giveUserId, docFile, request.getLocalAddr());
+        frontService.createGiveRecord(helpRecord, giverId, docFile, request.getLocalAddr());
         return ResponseModel.success("应助成功，感谢您的帮助");
     }
 
@@ -176,7 +196,7 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/help/records/{helperId}")
-    public ResponseModel myRecords(Integer helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel myRecords(@PathVariable Integer helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.success(myHelpRecords);
     }
@@ -188,8 +208,9 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/help/records")
-    public ResponseModel recordsByEmail( String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel recordsByEmail(String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email, pageable);
+
         return ResponseModel.success(literatureList);
     }
 
@@ -198,7 +219,7 @@ public class FrontendController {
      *
      * @return
      */
-    @GetMapping("/records/all")
+    @GetMapping("/help/records/all")
     public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseModel.success(frontService.getAllHelpRecord(pageable));
     }

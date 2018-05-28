@@ -39,9 +39,10 @@ public class FileServiceImpl implements FileService {
         //文件MD5值
         String md5File = DigestUtil.md5Hex(file.getInputStream());
         //文件后缀
-        String extName = StrUtil.subAfter(file.getName(), ".", true);
+        String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
         DocFile docFile = docFileRepostitory.findByLiteratureAndFileNameAndFileType(literature,md5File,extName);
         if (docFile == null){
+            docFile = new DocFile();
             docFile.setFileName(md5File);
             docFile.setFileType(extName);
             docFile.setLiterature(literature);

@@ -113,7 +113,7 @@ public class BackendController {
     @ApiOperation(value = "直接处理，上传文件")
     @PostMapping("/upload/{id}")
     public ResponseModel upload(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName, HttpServletRequest request, @NotNull MultipartFile file) {
-        HelpRecord helpRecord = backendService.get(id);
+        HelpRecord helpRecord = backendService.getHelpRecord(id);
         DocFile docFile = null;
         try {
             docFile = fileService.saveFile(helpRecord.getLiterature(), file);
@@ -124,9 +124,11 @@ public class BackendController {
 
         giveRecord.setHelpRecord(helpRecord);
         giveRecord.setDocFile(docFile);
+        //设置应助类型为管理员应助
         giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
         giveRecord.setGiverId(giverId);
         giveRecord.setGiverName(giverName);
+        //修改求助状态为应助成功
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
         backendService.updateHelRecord(helpRecord);
 
@@ -145,7 +147,7 @@ public class BackendController {
     @ApiOperation(value = "提交第三方处理")
     @PostMapping("/third/{id}")
     public ResponseModel helpThird(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
-        HelpRecord helpRecord = backendService.get(id);
+        HelpRecord helpRecord = backendService.getHelpRecord(id);
         helpRecord.setStatus(HelpStatusEnum.HELP_THIRD.getCode());
         GiveRecord giveRecord = new GiveRecord();
         giveRecord.setGiverId(giverId);
@@ -170,7 +172,7 @@ public class BackendController {
     @ApiOperation(value = "无结果处理")
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
-        HelpRecord helpRecord = backendService.get(id);
+        HelpRecord helpRecord = backendService.getHelpRecord(id);
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
         GiveRecord giveRecord = new GiveRecord();
         giveRecord.setGiverId(giverId);
@@ -193,7 +195,7 @@ public class BackendController {
     @ApiOperation(value = "审核通过")
     @PatchMapping("/audit/pass/{id}")
     public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName, HttpServletRequest request) {
-        HelpRecord helpRecord = backendService.get(id);
+        HelpRecord helpRecord = backendService.getHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord);
         if (giveRecord == null) {
             return ResponseModel.notFound();
@@ -217,7 +219,7 @@ public class BackendController {
     @ApiOperation(value = "审核不通过")
     @PatchMapping("/audit/nopass/{id}")
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName) {
-        HelpRecord helpRecord = backendService.get(id);
+        HelpRecord helpRecord = backendService.getHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord);
         if (giveRecord == null) {
             return ResponseModel.notFound();

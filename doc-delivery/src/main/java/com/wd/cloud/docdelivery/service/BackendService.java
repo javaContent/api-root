@@ -35,7 +35,7 @@ public interface BackendService {
      * @param id
      * @return
      */
-    HelpRecord get(Long id);
+    HelpRecord getHelpRecord(Long id);
 
     /**
      * 查询待审核的

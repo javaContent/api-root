@@ -12,49 +12,58 @@ import javax.validation.constraints.NotNull;
  * @date 2018/5/16
  * @Description:
  */
+@ApiModel(value = "文献求助post对象")
 public class HelpModel {
 
     /**
      * 求助用户ID
      */
+    @ApiModelProperty(value = "求助用户ID")
     private Long helperId;
 
     /**
      * 求助用户名称
      */
+    @ApiModelProperty(value = "求助用户名称")
     private String helperName;
 
     /**
      * 求助渠道
      */
+    @ApiModelProperty(value = "求助渠道")
     @NotNull
     private Integer helpChannel;
 
     /**
      * 求助用户所属机构id
      */
+    @ApiModelProperty(value = "求助者所属机构ID")
     private Long helperScid;
 
     /**
      * 求助用户所属机构名
      */
+    @ApiModelProperty(value = "求助者所属机构名称")
     private String helperScname;
 
     /**
      * 求助文件标题
      */
+    @ApiModelProperty(value = "求助文献标题")
     @NotNull
     private String docTitle;
 
     /**
      * 求助文献连接
      */
+    @ApiModelProperty(value = "求助文献链接")
     @URL
     private String docHref;
 
     /**
      * 求助用户邮箱
      */
+    @ApiModelProperty(value = "求助用户邮箱")
     @Email(groups = HELPER_EMAIL.class)
     @NotNull
     private String helperEmail;

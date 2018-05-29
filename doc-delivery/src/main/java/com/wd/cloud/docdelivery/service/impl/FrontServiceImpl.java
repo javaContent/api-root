@@ -142,7 +142,7 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public Page<HelpRecord> getHelpRecordsForUser(Integer helperId, Pageable pageable) {
+    public Page<HelpRecord> getHelpRecordsForUser(Long helperId, Pageable pageable) {
         return helpRecordRepository.findByHelperId(helperId, pageable);
     }
 

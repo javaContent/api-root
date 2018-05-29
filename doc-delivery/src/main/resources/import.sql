@@ -11,6 +11,8 @@ CREATE TRIGGER update_audit_msg_gmt_modified BEFORE UPDATE ON audit_msg FOR EACH
 CREATE TRIGGER insert_give_record_gmt_create BEFORE INSERT ON give_record FOR EACH ROW BEGIN SET new.gmt_create = now(); END;
 CREATE TRIGGER update_give_record_gmt_modified BEFORE UPDATE ON give_record FOR EACH ROW BEGIN SET new.gmt_modified = now(); END;
 
+CREATE TRIGGER insert_doc_file_gmt_create BEFORE INSERT ON doc_file FOR EACH ROW BEGIN SET new.gmt_create = now(); END;
+CREATE TRIGGER update_doc_file_gmt_modified BEFORE UPDATE ON doc_file FOR EACH ROW BEGIN SET new.gmt_modified = now(); END;
 
 -- 初始化测试数据
 -- insert into audit_msg (msg) values ("文不对题"),("文档无法打开"),("文档错误");

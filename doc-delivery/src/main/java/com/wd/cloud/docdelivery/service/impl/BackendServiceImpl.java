@@ -123,7 +123,7 @@ public class BackendServiceImpl implements BackendService {
     
 
     @Override
-    public HelpRecord get(Long id) {
+    public HelpRecord getHelpRecord(Long id) {
         return helpRecordRepository.getOne(id);
     }
 

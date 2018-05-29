@@ -26,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class FrontServiceImpl implements FrontService {
 
 
     @Override
-    public boolean givingHelp(Long helpRecordId, Long giverId, String giverName) {
+    public boolean givingHelp(Long helpRecordId, Long giverId, String giverName, String giverIp) {
         HelpRecord helpRecord = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.WAIT_HELP.getCode());
         boolean flag = false;
         if (helpRecord != null) {
@@ -72,11 +73,26 @@ public class FrontServiceImpl implements FrontService {
             GiveRecord giveRecord = new GiveRecord();
             giveRecord.setHelpRecord(helpRecord);
             giveRecord.setGiverId(giverId);
+            giveRecord.setGiverIp(giverIp);
             giveRecord.setGiverName(giverName);
             giveRecord.setGiverType(GiveTypeEnum.USER.getCode());
             giveRecord.setAuditStatus(AuditEnum.WAIT_UPLOAD.getCode());
             //保存的同时，关联更新求助记录状态
             giveRecordRepository.save(giveRecord);
+            flag = true;
+        }
+        return flag;
+    }
+
+    @Override
+    public boolean cancelGivingHelp(Long helpRecordId, Long giverId) {
+        HelpRecord helpRecord = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.HELPING.getCode());
+        boolean flag = false;
+        if (helpRecord != null) {
+            giveRecordRepository.deleteByHelpRecordAndAuditStatusAndGiverId(helpRecord,AuditEnum.WAIT_UPLOAD.getCode(),giverId);
+            //更新求助记录状态
+            helpRecord.setStatus(HelpStatusEnum.WAIT_HELP.getCode());
+            helpRecordRepository.save(helpRecord);
             flag = true;
         }
         return flag;

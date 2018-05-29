@@ -9,6 +9,7 @@ import com.wd.cloud.docdelivery.model.Md5FileModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
 
@@ -25,7 +26,9 @@ public interface FrontService {
      * @param giverId
      * @param giverName
      */
-    boolean givingHelp(Long helpRecordId, Long giverId, String giverName);
+    boolean givingHelp(Long helpRecordId, Long giverId, String giverName,String giverIp);
+
+    boolean cancelGivingHelp(Long helpRecordId, Long giverId);
 
     /**
      * 得到应种中状态的应助记录

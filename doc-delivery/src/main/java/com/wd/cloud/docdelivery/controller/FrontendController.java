@@ -40,7 +40,7 @@ import java.io.IOException;
  * @author He Zhigang
  * @date 2018/5/3
  */
-@Api(value="前台controller",tags={"前台文献互助接口"})
+@Api(value = "前台controller", tags = {"前台文献互助接口"})
 @RestController
 @RequestMapping("/front")
 public class FrontendController {
@@ -97,13 +97,13 @@ public class FrontendController {
             helpRecord = frontService.saveHelpRecord(helpRecord);
             giveRecord.setHelpRecord(helpRecord);
             frontService.saveGiveRecord(giveRecord);
-            mailService.sendMail(helpRecord.getHelpChannel(), helpEmail, helpRecord.getLiterature().getDocTitle(), "", HelpStatusEnum.HELP_SUCCESSED);
+            mailService.sendMail(helpRecord.getHelpChannel(), helpEmail, helpRecord.getLiterature().getDocTitle(), globalConfig.getBaseUrl() + "/front/download/" + helpRecord.getId(), HelpStatusEnum.HELP_SUCCESSED);
             msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         } else {
             try {
                 // 保存求助记录
                 frontService.saveHelpRecord(helpRecord);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return ResponseModel.clientErr();
             }
         }
@@ -116,22 +116,23 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "待应助列表")
-    @ApiImplicitParam(name="helpChannel",value="求助渠道",dataType="Integer", paramType = "path")
+    @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/wait/{helpChannel}")
     public ResponseEntity helpWaitList(@PathVariable int helpChannel,
-                                      @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                       @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(helpChannel, pageable);
         return ResponseEntity.ok(waitHelpRecords);
     }
 
     /**
      * 应助完成列表，包含成功和失败的
+     *
      * @param helpChannel
      * @param pageable
      * @return
      */
     @ApiOperation(value = "求助完成列表")
-    @ApiImplicitParam(name="helpChannel",value="求助渠道",dataType="Integer", paramType = "path")
+    @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/finish/{helpChannel}")
     public ResponseModel helpSuccessList(@PathVariable Integer helpChannel,
                                          @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -146,7 +147,7 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "我的求助记录")
-    @ApiImplicitParam(name="helperId",value="用户ID",dataType="Long", paramType = "path")
+    @ApiImplicitParam(name = "helperId", value = "用户ID", dataType = "Long", paramType = "path")
     @GetMapping("/help/records/{helperId}")
     public ResponseModel myRecords(@PathVariable Long helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
@@ -168,16 +169,39 @@ public class FrontendController {
             @ApiImplicitParam(name = "giverName", value = "应助者用户名称", dataType = "String", paramType = "query")
     })
     @PatchMapping("/give/{helpRecordId}")
-    public ResponseModel helping(@PathVariable Long helpRecordId,
-                                 @RequestParam Long giverId,
-                                 @RequestParam String giverName) {
-
+    public ResponseModel giving(@PathVariable Long helpRecordId,
+                                @RequestParam Long giverId,
+                                @RequestParam String giverName,
+                                HttpServletRequest request) {
+        String giverIp = request.getLocalAddr();
         //检查用户是否已经认领了应助
-        if (frontService.checkExistsGiveing(giverId)){
+        if (frontService.checkExistsGiveing(giverId)) {
             return ResponseModel.error("您已经认领了应助任务，请先处理已认领的任务后再来");
         }
-        if (frontService.givingHelp(helpRecordId, giverId, giverName)) {
+        if (frontService.givingHelp(helpRecordId, giverId, giverName,giverIp)) {
             return ResponseModel.ok("请于15分钟内上传文件");
+        }
+        return ResponseModel.notFound();
+    }
+
+    /**
+     * 取消应助
+     *
+     * @param helpRecordId
+     * @return
+     */
+    @ApiOperation(value = "取消应助")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录ID", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "giverId", value = "应助者用户ID", dataType = "Long", paramType = "query")
+    })
+    @PatchMapping("/give/cancle/{helpRecordId}")
+    public ResponseModel cancelGiving(@PathVariable Long helpRecordId,
+                                      @RequestParam Long giverId) {
+        //检查用户是否已经认领了应助
+        if (frontService.checkExistsGiveing(giverId)) {
+            //有认领记录，可以取消
+            frontService.cancelGivingHelp(helpRecordId,giverId);
         }
         return ResponseModel.notFound();
     }
@@ -205,7 +229,7 @@ public class FrontendController {
         }
         // 检查求助记录状态是否为HelpStatusEnum.HELPING
         HelpRecord helpRecord = frontService.getHelpingRecord(helpRecordId);
-        if (helpRecord == null){
+        if (helpRecord == null) {
             return ResponseModel.notFound("没有这个求助或求助已完成");
         }
         //保存文件

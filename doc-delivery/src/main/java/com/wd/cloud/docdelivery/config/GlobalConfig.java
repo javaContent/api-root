@@ -13,6 +13,7 @@ import java.util.List;
 @ConfigurationProperties(value = "help.global")
 public class GlobalConfig {
 
+    private String baseUrl = "http://192.168.1.103:8080/doc-delivery";
     /**
      * 求助的来源渠道
      */
@@ -50,5 +51,13 @@ public class GlobalConfig {
 
     public void setFileTypes(List<String> fileTypes) {
         this.fileTypes = fileTypes;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }

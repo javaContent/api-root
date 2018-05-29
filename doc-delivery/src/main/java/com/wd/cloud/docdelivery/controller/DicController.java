@@ -16,11 +16,11 @@ public class DicController {
 
     public ResponseModel auditFileMsg(){
 
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
 
 
     public ResponseModel channel(){
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
 }

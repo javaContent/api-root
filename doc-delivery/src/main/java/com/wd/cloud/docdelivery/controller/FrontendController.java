@@ -14,6 +14,8 @@ import com.wd.cloud.docdelivery.model.HelpModel;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
@@ -35,6 +37,7 @@ import java.io.IOException;
  * @author He Zhigang
  * @date 2018/5/3
  */
+@Api(value="前台controller",tags={"文献互助接口"})
 @RestController
 @RequestMapping("/front")
 public class FrontendController {
@@ -51,10 +54,11 @@ public class FrontendController {
     FrontService frontService;
 
     /**
-     * 文献求助请求
+     * 1. 文献求助
      *
      * @return
      */
+    @ApiOperation(value = "文献求助")
     @PostMapping(value = "/help/form")
     public ResponseModel helpFrom(@Valid HelpModel helpModel, HttpServletRequest request) {
         HelpRecord helpRecord = new HelpRecord();
@@ -108,6 +112,7 @@ public class FrontendController {
      *
      * @return
      */
+    @ApiOperation(value = "待应助列表")
     @GetMapping("/help/wait/{helpChannel}")
     public ResponseEntity helpWaitList(@PathVariable int helpChannel,
                                       @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -121,6 +126,7 @@ public class FrontendController {
      * @param pageable
      * @return
      */
+    @ApiOperation(value = "求助完成列表")
     @GetMapping("/help/finish/{helpChannel}")
     public ResponseModel helpSuccessList(@PathVariable Integer helpChannel,
                                          @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -129,12 +135,27 @@ public class FrontendController {
     }
 
     /**
-     * 我要应助
+     * 4. 我的求助
+     *
+     * @param helperId
+     * @return
+     */
+    @ApiOperation(value = "我的求助记录")
+    @GetMapping("/help/records/{helperId}")
+    public ResponseModel myRecords(@PathVariable Integer helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
+        return ResponseModel.ok(myHelpRecords);
+    }
+
+
+    /**
+     * 应助认领
      *
      * @param helpRecordId
      * @param giverId
      * @return
      */
+    @ApiOperation(value = "我要应助")
     @PatchMapping("/give/{helpRecordId}")
     public ResponseModel helping(@PathVariable Long helpRecordId,
                                  @RequestParam Long giverId,
@@ -156,6 +177,7 @@ public class FrontendController {
      * @param file
      * @return
      */
+    @ApiOperation(value = "上传应助文件")
     @PostMapping("/give/upload/{helpRecordId}")
     public ResponseModel upload(@PathVariable Long helpRecordId,
                                 @RequestParam Long giverId,
@@ -180,23 +202,12 @@ public class FrontendController {
 
 
     /**
-     * 我的求助记录
-     *
-     * @param helperId
-     * @return
-     */
-    @GetMapping("/help/records/{helperId}")
-    public ResponseModel myRecords(@PathVariable Integer helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
-        return ResponseModel.ok(myHelpRecords);
-    }
-
-    /**
      * 指定邮箱的求助记录
      *
      * @param email
      * @return
      */
+    @ApiOperation(value = "根据邮箱查询求助记录")
     @GetMapping("/help/records")
     public ResponseModel recordsByEmail(String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email, pageable);
@@ -204,21 +215,13 @@ public class FrontendController {
         return ResponseModel.ok(literatureList);
     }
 
-    /**
-     * 文献求助记录
-     *
-     * @return
-     */
-    @GetMapping("/help/records/all")
-    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseModel.ok(frontService.getAllHelpRecord(pageable));
-    }
 
     /**
      * 文献下载
      *
      * @return
      */
+    @ApiOperation(value = "求助文件下载")
     @GetMapping("/download/{helpRecodeId}")
     public ResponseEntity download(@PathVariable Long helpRecodeId) {
 
@@ -238,6 +241,17 @@ public class FrontendController {
                 .contentLength(downloadModel.getDocFile().length())
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new FileSystemResource(downloadModel.getDocFile()));
+    }
+
+
+    /**
+     * 文献求助记录
+     *
+     * @return
+     */
+    @GetMapping("/help/records/all")
+    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseModel.ok(frontService.getAllHelpRecord(pageable));
     }
 
 }

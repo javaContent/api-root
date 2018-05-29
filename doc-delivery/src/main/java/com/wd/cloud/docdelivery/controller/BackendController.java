@@ -19,6 +19,8 @@ import javax.validation.constraints.NotNull;
 
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.MailService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author He Zhigang
  * @date 2018/5/3
  */
-
+@Api(value="后台controller",tags={"文献互助接口"})
 @RestController
 @RequestMapping("/backend")
 public class BackendController {
@@ -49,6 +51,7 @@ public class BackendController {
      *
      * @return
      */
+    @ApiOperation(value = "文献互助列表")
     @GetMapping("/help/list")
     public ResponseModel helpList(@RequestParam(required=false) Short type,@RequestParam(required=false) Short processType,
                                   @RequestParam(required=false) Short school, @RequestParam(required=false) String keyword, @RequestParam(required=false) String beginTime,
@@ -73,6 +76,7 @@ public class BackendController {
      *
      * @return
      */
+    @ApiOperation(value = "原数据列表")
     @GetMapping("/literature/list")
     public ResponseModel literatureList(@RequestParam(required=false) Boolean reusing,@RequestParam(required=false) String keyword, 
                                   @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -87,6 +91,7 @@ public class BackendController {
      *
      * @return
      */
+    @ApiOperation(value = "应助文档列表")
     @GetMapping("/docFile/list")
     public ResponseModel getDocFileList(@RequestParam Long literatureId,
                                   @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -101,6 +106,7 @@ public class BackendController {
      *
      * @return
      */
+    @ApiOperation(value = "直接处理，上传文件")
     @PostMapping("/upload/{id}")
     public ResponseModel upload(@PathVariable Long id, @RequestParam Long giverId,@RequestParam String giverName, HttpServletRequest request, @NotNull MultipartFile file) {
         HelpRecord helpRecord = backendService.get(id);
@@ -132,6 +138,7 @@ public class BackendController {
      * @param id
      * @return
      */
+    @ApiOperation(value = "提交第三方处理")
     @PostMapping("/third/{id}")
     public ResponseModel helpThird(@PathVariable Long id, @RequestParam Long giverId,@RequestParam String giverName) {
         HelpRecord helpRecord = backendService.get(id);
@@ -156,6 +163,7 @@ public class BackendController {
      * @param giverId
      * @return
      */
+    @ApiOperation(value = "无结果处理")
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId,@RequestParam String giverName) {
         HelpRecord helpRecord = backendService.get(id);
@@ -178,6 +186,7 @@ public class BackendController {
      *
      * @return
      */
+    @ApiOperation(value = "审核通过")
     @PatchMapping("/audit/pass/{id}")
     public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId,@RequestParam(name = "auditorName") String auditorName, HttpServletRequest request) {
     	HelpRecord helpRecord = backendService.get(id);
@@ -201,6 +210,7 @@ public class BackendController {
      *
      * @return
      */
+    @ApiOperation(value = "审核不通过")
     @PatchMapping("/audit/nopass/{id}")
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId,@RequestParam(name = "auditorName") String auditorName) {
     	HelpRecord helpRecord = backendService.get(id);
@@ -222,7 +232,8 @@ public class BackendController {
      *
      * @return
      */
-    @GetMapping("/reusing/pass/{id}")
+    @ApiOperation(value = "复用")
+    @GetMapping("/reusing/pass/{docFileId}")
     public ResponseModel reusing(@PathVariable Long docFileId,@PathVariable Long literatureId, @RequestParam(name = "reuseUserId") Long reuseUserId,@RequestParam(name = "reuseUserName") String reuseUserName) {
     	Map<String,Object> param = new HashMap<>();
     	param.put("docFileId", docFileId);
@@ -243,6 +254,7 @@ public class BackendController {
      *
      * @return
      */
+    @ApiOperation(value = "取消复用")
     @GetMapping("/reusing/nopass/{id}")
     public ResponseModel notReusing(@PathVariable Long docFileId,@PathVariable Long literatureId,@RequestParam String reMark, @RequestParam(name = "reuseUserId") Long reuseUserId,@RequestParam(name = "reuseUserName") String reuseUserName) {
     	Map<String,Object> param = new HashMap<>();

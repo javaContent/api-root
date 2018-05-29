@@ -22,7 +22,7 @@ public class RecordController {
      */
     @GetMapping("/process/audit/fail/list")
     public ResponseModel auditFails() {
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
 
     /**
@@ -32,7 +32,7 @@ public class RecordController {
      */
     @GetMapping("/give/fail/list")
     public ResponseModel giveFails() {
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
 
     /**
@@ -42,7 +42,7 @@ public class RecordController {
      */
     @GetMapping("/give/success/list")
     public ResponseModel giveSuccess() {
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
 
     /**
@@ -52,7 +52,7 @@ public class RecordController {
      */
     @GetMapping("/give/auto/list")
     public ResponseModel autoGives() {
-        return ResponseModel.success();
+        return ResponseModel.ok();
     }
 
 

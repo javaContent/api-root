@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.sun.xml.internal.ws.wsdl.writer.document.ParamType;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.DocFile;
@@ -15,6 +16,8 @@ import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -37,7 +40,7 @@ import java.io.IOException;
  * @author He Zhigang
  * @date 2018/5/3
  */
-@Api(value="前台controller",tags={"文献互助接口"})
+@Api(value="前台controller",tags={"前台文献互助接口"})
 @RestController
 @RequestMapping("/front")
 public class FrontendController {
@@ -113,6 +116,7 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "待应助列表")
+    @ApiImplicitParam(name="helpChannel",value="求助渠道",dataType="Integer", paramType = "path")
     @GetMapping("/help/wait/{helpChannel}")
     public ResponseEntity helpWaitList(@PathVariable int helpChannel,
                                       @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -127,6 +131,7 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "求助完成列表")
+    @ApiImplicitParam(name="helpChannel",value="求助渠道",dataType="Integer", paramType = "path")
     @GetMapping("/help/finish/{helpChannel}")
     public ResponseModel helpSuccessList(@PathVariable Integer helpChannel,
                                          @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
@@ -141,8 +146,9 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "我的求助记录")
+    @ApiImplicitParam(name="helperId",value="用户ID",dataType="Long", paramType = "path")
     @GetMapping("/help/records/{helperId}")
-    public ResponseModel myRecords(@PathVariable Integer helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel myRecords(@PathVariable Long helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.ok(myHelpRecords);
     }
@@ -156,6 +162,11 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "我要应助")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录ID", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "giverId", value = "应助者用户ID", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "giverName", value = "应助者用户名称", dataType = "String", paramType = "query")
+    })
     @PatchMapping("/give/{helpRecordId}")
     public ResponseModel helping(@PathVariable Long helpRecordId,
                                  @RequestParam Long giverId,
@@ -178,6 +189,10 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "上传应助文件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "helpRecordId", value = "求助记录ID", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "giverId", value = "应助者用户ID", dataType = "Long", paramType = "query")
+    })
     @PostMapping("/give/upload/{helpRecordId}")
     public ResponseModel upload(@PathVariable Long helpRecordId,
                                 @RequestParam Long giverId,
@@ -208,6 +223,7 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "根据邮箱查询求助记录")
+    @ApiImplicitParam(name = "email", value = "条件email", dataType = "String", paramType = "query")
     @GetMapping("/help/records")
     public ResponseModel recordsByEmail(String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email, pageable);
@@ -222,6 +238,7 @@ public class FrontendController {
      * @return
      */
     @ApiOperation(value = "求助文件下载")
+    @ApiImplicitParam(name = "helpRecodeId", value = "求助记录ID", dataType = "Long", paramType = "path")
     @GetMapping("/download/{helpRecodeId}")
     public ResponseEntity download(@PathVariable Long helpRecodeId) {
 

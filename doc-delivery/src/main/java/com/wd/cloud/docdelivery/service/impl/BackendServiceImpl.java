@@ -5,7 +5,6 @@ import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
-import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
@@ -26,10 +25,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -139,8 +136,13 @@ public class BackendServiceImpl implements BackendService {
     }
     
     @Override
-    public GiveRecord getGiverRecord(HelpRecord helpRecord) {
-    	return giveRecordRepository.findByHelpRecordId(helpRecord);
+    public GiveRecord getGiverRecord(HelpRecord helpRecord,int auditStatus,int giverType) {
+    	return giveRecordRepository.findByHelpRecordAndAuditStatusAndGiverType(helpRecord,auditStatus,giverType);
+    }
+    
+    @Override
+    public void saveGiveRecord(GiveRecord giveRecord) {
+    	giveRecordRepository.save(giveRecord);
     }
     
     @Override
@@ -156,8 +158,9 @@ public class BackendServiceImpl implements BackendService {
 		if(docFile.isReusing() && reusing) {
 			return false;
 		}
-		if(doc.getId() == docFileId) {
+		if(docFile.getId() == docFileId) {
 			doc = docFile;
+			break;
 		}
 	}
 	doc.setReusing(reusing);

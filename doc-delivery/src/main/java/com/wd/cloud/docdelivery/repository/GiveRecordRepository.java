@@ -28,7 +28,10 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
 
     GiveRecord deleteByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord,int auditStatus,long giverId);
 
-    @Query("from GiveRecord t where t.helpRecord = :helpRecordId and (t.auditStatus = 1 or t.giverType <> 2)")
-    GiveRecord findByHelpRecordId(@Param("helpRecordId") HelpRecord helpRecordId);
+    
+    GiveRecord findByHelpRecordAndAuditStatusAndGiverType(HelpRecord helpRecord,int auditStatus,int giverType);
+    
+    @Query("from GiveRecord t where t.helpRecord = :helpRecord and (t.auditStatus = 1 or t.giverType <> 2)")
+    GiveRecord findByHelpRecord(@Param("helpRecord") HelpRecord helpRecord);
 
 }

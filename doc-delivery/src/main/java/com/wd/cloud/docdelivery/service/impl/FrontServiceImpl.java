@@ -111,7 +111,7 @@ public class FrontServiceImpl implements FrontService {
     @Override
     public DownloadModel getDowloadFile(long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
-        GiveRecord giveRecord = giveRecordRepository.findByHelpRecordId(helpRecord);
+        GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
         String fileName = giveRecord.getDocFile().getFileName();
         String fileType = giveRecord.getDocFile().getFileType();
         String docTitle = helpRecord.getLiterature().getDocTitle();

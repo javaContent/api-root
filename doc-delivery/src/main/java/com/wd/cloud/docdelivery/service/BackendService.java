@@ -56,8 +56,10 @@ public interface BackendService {
      * 根据helpRecord获取giverRecord
      * @param helpRecord
      */
-    public GiveRecord getGiverRecord(HelpRecord helpRecord);
+    public GiveRecord getGiverRecord(HelpRecord helpRecord,int auditStatus,int giverType);
     
+    
+    public void saveGiveRecord(GiveRecord giveRecord);
     /**
      * 复用、取消复用
      * @param helpRecord

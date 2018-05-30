@@ -58,16 +58,14 @@ public class BackendController {
             @ApiImplicitParam(name = "type", value = "求助记录ID", dataType = "Short", paramType = "query")
     })
     @GetMapping("/help/list")
-    public ResponseModel helpList(@RequestParam(required = false) Short type, @RequestParam(required = false) Short processType,
-                                  @RequestParam(required = false) Short school, @RequestParam(required = false) String keyword, @RequestParam(required = false) String beginTime,
-                                  @RequestParam(required = false) String endTime,
-
-                                  @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel helpList(@RequestParam(required = false) Short status,@RequestParam(required = false) Short scid, 
+    		@RequestParam(required = false) String keyword, @RequestParam(required = false) String beginTime,
+            @RequestParam(required = false) String endTime,
+            @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         Map<String, Object> param = new HashMap<String, Object>();
-        param.put("type", type);
-        param.put("scid", school);
-        param.put("processType", processType);
+        param.put("scid", scid);
+        param.put("status", status);
         param.put("keyword", keyword);
         param.put("beginTime", beginTime);
         param.put("endTime", endTime);
@@ -130,8 +128,8 @@ public class BackendController {
         giveRecord.setGiverName(giverName);
         //修改求助状态为应助成功
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
-        backendService.updateHelRecord(helpRecord);
-
+        giveRecord.setHelpRecord(helpRecord);
+        backendService.saveGiveRecord(giveRecord);
         String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
                 + helpRecord.getId();
         mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
@@ -158,7 +156,8 @@ public class BackendController {
                 helpRecord.getLiterature().getDocTitle(),
                 null,
                 HelpStatusEnum.HELP_THIRD);
-        backendService.updateHelRecord(helpRecord);
+        giveRecord.setHelpRecord(helpRecord);
+        backendService.saveGiveRecord(giveRecord);
         return ResponseModel.ok("已提交第三方处理，请耐心等待第三方应助结果");
     }
 
@@ -183,7 +182,8 @@ public class BackendController {
                 helpRecord.getLiterature().getDocTitle(),
                 null,
                 HelpStatusEnum.HELP_FAILED);
-        backendService.updateHelRecord(helpRecord);
+        giveRecord.setHelpRecord(helpRecord);
+        backendService.saveGiveRecord(giveRecord);
         return ResponseModel.ok("处理成功");
     }
 
@@ -196,7 +196,7 @@ public class BackendController {
     @PatchMapping("/audit/pass/{id}")
     public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName, HttpServletRequest request) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
-        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord);
+        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord,0,2);
         if (giveRecord == null) {
             return ResponseModel.notFound();
         }
@@ -220,7 +220,7 @@ public class BackendController {
     @PatchMapping("/audit/nopass/{id}")
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
-        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord);
+        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord,0,2);
         if (giveRecord == null) {
             return ResponseModel.notFound();
         }
@@ -238,44 +238,42 @@ public class BackendController {
      *
      * @return
      */
-    @ApiOperation(value = "复用")
     @GetMapping("/reusing/pass/{docFileId}")
-    public ResponseModel reusing(@PathVariable Long docFileId, @PathVariable Long literatureId, @RequestParam(name = "reuseUserId") Long reuseUserId, @RequestParam(name = "reuseUserName") String reuseUserName) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("docFileId", docFileId);
-        param.put("reusing", true);
-        param.put("literatureId", literatureId);
-        param.put("auditorId", reuseUserId);
-        param.put("auditorName", reuseUserName);
-        Boolean result = backendService.reusing(param);
-        if (result) {
-            return ResponseModel.ok();
-        } else {
-            return ResponseModel.error();
-        }
+    public ResponseModel reusing(@PathVariable Long docFileId,@RequestParam(name = "literatureId") Long literatureId, @RequestParam(name = "reuseUserId") Long reuseUserId,@RequestParam(name = "reuseUserName") String reuseUserName) {
+    	Map<String,Object> param = new HashMap<>();
+    	param.put("docFileId", docFileId);
+    	param.put("reusing", true);
+    	param.put("literatureId", literatureId);
+    	param.put("auditorId", reuseUserId);
+    	param.put("auditorName", reuseUserName);
+    	Boolean result = backendService.reusing(param);
+    	if(result) {
+    		return ResponseModel.ok();
+    	} else {
+    		return ResponseModel.error();
+    	}
     }
-
+    
     /**
      * 取消复用
      *
      * @return
      */
-    @ApiOperation(value = "取消复用")
-    @GetMapping("/reusing/nopass/{id}")
-    public ResponseModel notReusing(@PathVariable Long docFileId, @PathVariable Long literatureId, @RequestParam String reMark, @RequestParam(name = "reuseUserId") Long reuseUserId, @RequestParam(name = "reuseUserName") String reuseUserName) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("docFileId", docFileId);
-        param.put("reusing", false);
-        param.put("literatureId", literatureId);
-        param.put("auditorId", reuseUserId);
-        param.put("auditorName", reuseUserName);
-        param.put("reMark", reMark);
-        Boolean result = backendService.reusing(param);
-        if (result) {
-            return ResponseModel.ok();
-        } else {
-            return ResponseModel.error();
-        }
+    @GetMapping("/reusing/nopass/{docFileId}")
+    public ResponseModel notReusing(@PathVariable Long docFileId,@RequestParam(name = "literatureId") Long literatureId,@RequestParam(name = "reMark") String reMark, @RequestParam(name = "reuseUserId") Long reuseUserId,@RequestParam(name = "reuseUserName") String reuseUserName) {
+    	Map<String,Object> param = new HashMap<>();
+    	param.put("docFileId", docFileId);
+    	param.put("reusing", false);
+    	param.put("literatureId", literatureId);
+    	param.put("auditorId", reuseUserId);
+    	param.put("auditorName", reuseUserName);
+    	param.put("reMark", reMark);
+    	Boolean result = backendService.reusing(param);
+    	if(result) {
+    		return ResponseModel.ok();
+    	} else {
+    		return ResponseModel.error();
+    	}
     }
 
 }

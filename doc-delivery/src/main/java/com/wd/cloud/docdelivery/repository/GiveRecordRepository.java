@@ -26,7 +26,8 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
 
     GiveRecord findByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord,int auditStatus,long giverId);
 
-    GiveRecord deleteByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord,int auditStatus,long giverId);
+    int deleteByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord,int auditStatus,long giverId);
+
 
     
     GiveRecord findByHelpRecordAndAuditStatusAndGiverType(HelpRecord helpRecord,int auditStatus,int giverType);

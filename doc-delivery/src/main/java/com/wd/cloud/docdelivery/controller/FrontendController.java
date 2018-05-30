@@ -178,8 +178,9 @@ public class FrontendController {
         if (frontService.checkExistsGiveing(giverId)) {
             return ResponseModel.error("您已经认领了应助任务，请先处理已认领的任务后再来");
         }
-        if (frontService.givingHelp(helpRecordId, giverId, giverName,giverIp)) {
-            return ResponseModel.ok("请于15分钟内上传文件");
+        HelpRecord helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName,giverIp);
+        if (helpRecord != null){
+            return ResponseModel.ok(helpRecord);
         }
         return ResponseModel.notFound();
     }
@@ -202,6 +203,7 @@ public class FrontendController {
         if (frontService.checkExistsGiveing(giverId)) {
             //有认领记录，可以取消
             frontService.cancelGivingHelp(helpRecordId,giverId);
+            return ResponseModel.ok();
         }
         return ResponseModel.notFound();
     }

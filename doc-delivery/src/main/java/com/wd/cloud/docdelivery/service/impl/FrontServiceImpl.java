@@ -27,6 +27,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import java.io.File;
 import java.util.List;
 
@@ -36,6 +37,7 @@ import java.util.List;
  * @Description:
  */
 @Service("frontService")
+@Transactional
 public class FrontServiceImpl implements FrontService {
 
     @Autowired
@@ -65,9 +67,8 @@ public class FrontServiceImpl implements FrontService {
 
 
     @Override
-    public boolean givingHelp(Long helpRecordId, Long giverId, String giverName, String giverIp) {
+    public HelpRecord givingHelp(long helpRecordId, long giverId, String giverName, String giverIp) {
         HelpRecord helpRecord = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.WAIT_HELP.getCode());
-        boolean flag = false;
         if (helpRecord != null) {
             helpRecord.setStatus(HelpStatusEnum.HELPING.getCode());
             GiveRecord giveRecord = new GiveRecord();
@@ -79,13 +80,12 @@ public class FrontServiceImpl implements FrontService {
             giveRecord.setAuditStatus(AuditEnum.WAIT_UPLOAD.getCode());
             //保存的同时，关联更新求助记录状态
             giveRecordRepository.save(giveRecord);
-            flag = true;
         }
-        return flag;
+        return helpRecord;
     }
 
     @Override
-    public boolean cancelGivingHelp(Long helpRecordId, Long giverId) {
+    public boolean cancelGivingHelp(long helpRecordId, long giverId) {
         HelpRecord helpRecord = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.HELPING.getCode());
         boolean flag = false;
         if (helpRecord != null) {
@@ -132,7 +132,7 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public void createGiveRecord(HelpRecord helpRecord, Long giverId, DocFile docFile, String giveIp) {
+    public void createGiveRecord(HelpRecord helpRecord, long giverId, DocFile docFile, String giveIp) {
         //更新求助状态为待审核
         helpRecord.setStatus(HelpStatusEnum.WAIT_AUDIT.getCode());
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecordAndAuditStatusAndGiverId(helpRecord,AuditEnum.WAIT_UPLOAD.getCode(),giverId);
@@ -153,12 +153,12 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public HelpRecord getHelpRecord(Long helpRecordId) {
+    public HelpRecord getHelpRecord(long helpRecordId) {
         return helpRecordRepository.getOne(helpRecordId);
     }
 
     @Override
-    public Page<HelpRecord> getHelpRecordsForUser(Long helperId, Pageable pageable) {
+    public Page<HelpRecord> getHelpRecordsForUser(long helperId, Pageable pageable) {
         return helpRecordRepository.findByHelperId(helperId, pageable);
     }
 
@@ -169,12 +169,16 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public Page<HelpRecord> getWaitHelpRecords(int helpChannel,Pageable pageable) {
-        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatus(helpChannel,HelpStatusEnum.WAIT_HELP.getCode(), pageable);
+        int[] status  = {HelpStatusEnum.WAIT_HELP.getCode(),
+                HelpStatusEnum.HELPING.getCode(),
+                HelpStatusEnum.WAIT_AUDIT.getCode(),
+                HelpStatusEnum.HELP_THIRD.getCode()};
+        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel,status, pageable);
         return waitHelpRecords;
     }
 
     @Override
-    public Page<HelpRecord> getFinishHelpRecords(Integer helpChannel, Pageable pageable) {
+    public Page<HelpRecord> getFinishHelpRecords(int helpChannel, Pageable pageable) {
         int[] status  = {HelpStatusEnum.HELP_SUCCESSED.getCode(),HelpStatusEnum.HELP_FAILED.getCode()};
         Page<HelpRecord> finishHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel,status,pageable);
         return finishHelpRecords;
@@ -192,7 +196,7 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public boolean checkExistsGiveing(Long giverId) {
+    public boolean checkExistsGiveing(long giverId) {
         GiveRecord giveRecord = giveRecordRepository.findByGiverIdAndAuditStatus(giverId,AuditEnum.WAIT_UPLOAD.getCode());
         if (giveRecord != null){
             return true;

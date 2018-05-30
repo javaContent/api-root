@@ -26,9 +26,9 @@ public interface FrontService {
      * @param giverId
      * @param giverName
      */
-    boolean givingHelp(Long helpRecordId, Long giverId, String giverName,String giverIp);
+    HelpRecord givingHelp(long helpRecordId, long giverId, String giverName,String giverIp);
 
-    boolean cancelGivingHelp(Long helpRecordId, Long giverId);
+    boolean cancelGivingHelp(long helpRecordId, long giverId);
 
     /**
      * 得到应种中状态的应助记录
@@ -68,7 +68,7 @@ public interface FrontService {
     /**
      * 创建应助记录
      */
-    void createGiveRecord(HelpRecord helpRecord, Long giveUserId, DocFile docFile, String giviIp);
+    void createGiveRecord(HelpRecord helpRecord, long giveUserId, DocFile docFile, String giviIp);
 
     /**
      * 保存求助记录
@@ -78,7 +78,7 @@ public interface FrontService {
      */
     HelpRecord saveHelpRecord(HelpRecord helpRecord);
 
-    HelpRecord getHelpRecord(Long helpRecordId);
+    HelpRecord getHelpRecord(long helpRecordId);
 
     /**
      * 查询元数据
@@ -94,7 +94,7 @@ public interface FrontService {
      * @param helpUserId
      * @return
      */
-    Page<HelpRecord> getHelpRecordsForUser(Long helpUserId, Pageable pageable);
+    Page<HelpRecord> getHelpRecordsForUser(long helpUserId, Pageable pageable);
 
     /**
      * 获取用户的求助记录
@@ -117,11 +117,11 @@ public interface FrontService {
      * @param pageable
      * @return
      */
-    Page<HelpRecord> getFinishHelpRecords(Integer helpChannel,Pageable pageable);
+    Page<HelpRecord> getFinishHelpRecords(int helpChannel,Pageable pageable);
 
     Page<HelpRecord> getAllHelpRecord(Pageable pageable);
 
     DocFile getReusingFile(Literature literature);
 
-    boolean checkExistsGiveing(Long giverId);
+    boolean checkExistsGiveing(long giverId);
 }

@@ -107,8 +107,8 @@ public class DocFile extends AbstractDBModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         DocFile docFile = (DocFile) o;
         return reusing == docFile.reusing &&
                 Objects.equals(id, docFile.id) &&

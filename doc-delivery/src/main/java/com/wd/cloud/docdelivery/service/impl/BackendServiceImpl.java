@@ -167,7 +167,7 @@ public class BackendServiceImpl implements BackendService {
 	doc.setAuditorId((long) param.get("auditorId"));
 	doc.setAuditorName((String) param.get("auditorName"));
 	doc.setReMark((String) param.get("reMark"));
-		if(doc == null) return false;
+		if(doc == null) {return false;}
 		docFileRepostitory.save(doc);
 		return true;
 	}

@@ -64,7 +64,6 @@ public class HelpModel {
      * 求助用户邮箱
      */
     @ApiModelProperty(value = "求助用户邮箱")
-    @Email(groups = HELPER_EMAIL.class)
     @NotNull
     private String helperEmail;
 
@@ -132,8 +131,4 @@ public class HelpModel {
         this.helperScname = helperScname;
     }
 
-
-    public interface HELPER_EMAIL{};
-
-    public interface HELPER_ID{};
 }

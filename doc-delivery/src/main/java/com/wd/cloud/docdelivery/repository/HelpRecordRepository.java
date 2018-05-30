@@ -23,11 +23,6 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      */
     HelpRecord findByIdAndStatus(long id, int status);
 
-//    @Transactional
-//    @Modifying
-//    @Query("update HelpRecord hr set hr.process_type = :processType ,hr.process_user_id = :processUserId ,hr.status = :status ,hr.give_user_id = :giveUserId ,hr.doc_filename = :docFilename where sc.id = :id")
-//    void update(@Param(value = "helpRecord") HelpRecord helpRecord);
-
     /**
      * 根据求助用户ID查询
      *

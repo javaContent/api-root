@@ -55,11 +55,13 @@ public class GiveRecord extends AbstractDBModel {
      * 3：第三方应助,
      * 4:其它
      */
+    @Column(columnDefinition = "tinyint COMMENT '应助者类型： 0：系统自动应助， 1：管理员应助 2：用户应助， 3：第三方应助,  4:其它'")
     private Integer giverType;
 
     /**
      * 0：待审核，1：审核通过，2：审核不通过，4：待上传
      */
+    @Column(columnDefinition = "tinyint COMMENT '0：待审核，1：审核通过，2：审核不通过，4：待上传'")
     private Integer auditStatus;
 
     /**
@@ -78,27 +80,12 @@ public class GiveRecord extends AbstractDBModel {
     @ManyToOne
     private AuditMsg auditMsg;
 
-    /**
-     * 是否可复用
-     */
-    @Column(name = "is_enable", columnDefinition = "tinyint default 1")
-    private boolean enable;
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-
-    public boolean isEnable() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
     }
 
     public HelpRecord getHelpRecord() {
@@ -186,8 +173,7 @@ public class GiveRecord extends AbstractDBModel {
         if (this == o) {return true;}
         if (o == null || getClass() != o.getClass()) {return false;}
         GiveRecord that = (GiveRecord) o;
-        return enable == that.enable &&
-                Objects.equals(id, that.id) &&
+        return Objects.equals(id, that.id) &&
                 Objects.equals(helpRecord, that.helpRecord) &&
                 Objects.equals(docFile, that.docFile) &&
                 Objects.equals(giverId, that.giverId) &&
@@ -203,7 +189,7 @@ public class GiveRecord extends AbstractDBModel {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, helpRecord, docFile, giverId, giverName, giverIp, giverType, auditStatus, auditorId, auditorName, auditMsg, enable);
+        return Objects.hash(id, helpRecord, docFile, giverId, giverName, giverIp, giverType, auditStatus, auditorId, auditorName, auditMsg);
     }
 
     @Override
@@ -220,7 +206,6 @@ public class GiveRecord extends AbstractDBModel {
                 ", auditorId=" + auditorId +
                 ", auditorName='" + auditorName + '\'' +
                 ", auditMsg=" + auditMsg +
-                ", enable=" + enable +
                 '}';
     }
 }

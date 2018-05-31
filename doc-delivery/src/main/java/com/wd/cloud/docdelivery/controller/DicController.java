@@ -1,9 +1,15 @@
 package com.wd.cloud.docdelivery.controller;
 
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.docdelivery.domain.AuditMsg;
+import com.wd.cloud.docdelivery.repository.AuditMsgRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author He Zhigang
@@ -14,9 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/dic")
 public class DicController {
 
-    public ResponseModel auditFileMsg(){
-
-        return ResponseModel.ok();
+    @Autowired
+    AuditMsgRepository auditMsgRepository;
+    @GetMapping("/audit/msg")
+    public ResponseModel auditMsgs(){
+        List<AuditMsg> auditMsgs = auditMsgRepository.findAll();
+        return ResponseModel.ok(auditMsgs);
     }
 
 

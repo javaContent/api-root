@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.controller;
 
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -30,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -62,6 +64,7 @@ public class FrontendController {
     @ApiOperation(value = "文献求助")
     @PostMapping(value = "/help/form")
     public ResponseModel helpFrom(@Valid HelpModel helpModel, HttpServletRequest request) {
+
         HelpRecord helpRecord = new HelpRecord();
         String helpEmail = helpModel.getHelperEmail();
         helpRecord.setHelpChannel(helpModel.getHelpChannel());

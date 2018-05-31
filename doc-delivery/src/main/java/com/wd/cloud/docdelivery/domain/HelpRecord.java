@@ -71,7 +71,7 @@ public class HelpRecord extends AbstractDBModel {
     /**
      * 求助渠道，1：QQ，2：SPIS，3：CRS，4：ZHY
      */
-    @Column(name = "help_channel", columnDefinition = "tinyint default 0")
+    @Column(name = "help_channel", columnDefinition = "tinyint default 0 COMMENT '求助渠道，1：QQ，2：SPIS，3：CRS，4：ZHY'")
     private int helpChannel;
 
 
@@ -84,7 +84,7 @@ public class HelpRecord extends AbstractDBModel {
      * 4：应助成功（审核通过或管理员应助），
      * 5：应助失败（超过15天无结果）
      */
-    @Column(name = "status", columnDefinition = "tinyint default 0")
+    @Column(name = "status", columnDefinition = "tinyint default 0 COMMENT '0：待应助， 1：应助中（用户已认领，15分钟内上传文件）， 2: 待审核（用户已应助）， 3：求助第三方（第三方应助）， 4：应助成功（审核通过或管理员应助）， 5：应助失败（超过15天无结果）'")
     private int status;
 
 

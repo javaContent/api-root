@@ -1,10 +1,14 @@
 package com.wd.cloud.docdelivery.repository;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
+import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 
 /**
@@ -22,6 +26,10 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      * @return
      */
     HelpRecord findByIdAndStatus(long id, int status);
+
+    HelpRecord findByIdAndStatusNot(long id, int status);
+
+    HelpRecord findByIdAndStatusNotIn(long id, int[] status);
 
     /**
      * 根据求助用户ID查询
@@ -53,4 +61,6 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
     Page<HelpRecord> findByHelpChannelAndStatus(int helpChannel,int status,Pageable pageable);
 
     Page<HelpRecord> findByHelpChannelAndStatusIn(int helpChannel,int[] status,Pageable pageable);
+
+
 }

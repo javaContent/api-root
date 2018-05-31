@@ -1,6 +1,8 @@
 package com.wd.cloud.docdelivery.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Where;
+import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -27,8 +29,10 @@ public class HelpRecord extends AbstractDBModel {
     private Literature literature;
 
     @OneToMany(mappedBy = "helpRecord")
-    @JsonIgnore
+    @OrderBy(value ="gmt_create desc")
+    @Where(clause="audit_status != 2")
     private Set<GiveRecord> giveRecords;
+
     /**
      * 求助的email地址
      */
@@ -37,13 +41,13 @@ public class HelpRecord extends AbstractDBModel {
     private String helperEmail;
 
     /**
-     * 求助用户，未登录用户为null
+     * 求助用户ID
      */
     @Column(name = "helper_id")
     private Long helperId;
 
     /**
-     * 应助者名称
+     * 求助者名称
      */
     private String helperName;
 
@@ -170,6 +174,10 @@ public class HelpRecord extends AbstractDBModel {
 
     public void setGiveRecords(Set<GiveRecord> giveRecords) {
         this.giveRecords = giveRecords;
+    }
+
+    public void setHelpChannel(int helpChannel) {
+        this.helpChannel = helpChannel;
     }
 
     @Override

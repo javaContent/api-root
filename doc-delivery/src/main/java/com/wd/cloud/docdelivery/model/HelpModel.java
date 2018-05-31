@@ -57,7 +57,6 @@ public class HelpModel {
      * 求助文献连接
      */
     @ApiModelProperty(value = "求助文献链接")
-    @URL
     private String docHref;
 
     /**

@@ -116,7 +116,11 @@ public class ResponseModel<T> {
      * @return
      */
     public static ResponseModel error(int code, String msg) {
-        return new ResponseModel<Object>(code, msg);
+        return ResponseModel.error(code, msg,null);
+    }
+
+    public static ResponseModel error(int code,String msg,Object body){
+        return new ResponseModel(code,msg,body);
     }
 
     /**
@@ -149,7 +153,11 @@ public class ResponseModel<T> {
      * @return
      */
     public static ResponseModel clientErr(String msg){
-        return new ResponseModel(HttpStatus.HTTP_CONFLICT ,msg);
+        return ResponseModel.clientErr(msg,null);
+    }
+
+    public static ResponseModel clientErr(String msg,Object body){
+        return new ResponseModel(HttpStatus.HTTP_CONFLICT ,msg,body);
     }
 
     /**

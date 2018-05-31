@@ -24,6 +24,7 @@ public class GiveRecord extends AbstractDBModel {
      */
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private HelpRecord helpRecord;
 
     /**

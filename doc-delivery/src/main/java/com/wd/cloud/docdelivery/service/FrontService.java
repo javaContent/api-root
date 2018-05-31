@@ -36,6 +36,13 @@ public interface FrontService {
      * @return
      */
     HelpRecord getHelpingRecord(long helpRecordId);
+
+    /**
+     * 获取非待应助的求助记录
+     * @param helpRecordId
+     * @return
+     */
+    HelpRecord getNotWaitRecord(long helpRecordId);
     /**
      * 去除字符串中的HTML标签
      * @param docTitle

@@ -1,7 +1,6 @@
 package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.util.StrUtil;
-import com.sun.xml.internal.ws.wsdl.writer.document.ParamType;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.DocFile;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -119,7 +117,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/wait/{helpChannel}")
     public ResponseEntity helpWaitList(@PathVariable int helpChannel,
-                                       @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                       @PageableDefault(sort = {"status"}, direction = Sort.Direction.ASC) Pageable pageable) {
         Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(helpChannel, pageable);
         return ResponseEntity.ok(waitHelpRecords);
     }
@@ -174,15 +172,17 @@ public class FrontendController {
                                 @RequestParam String giverName,
                                 HttpServletRequest request) {
         String giverIp = request.getLocalAddr();
+        HelpRecord helpRecord = frontService.getNotWaitRecord(helpRecordId);
+        // 该求助记录状态为非待应助，那么可能已经被其他人应助过或已应助完成
+        if (helpRecord != null){
+            return ResponseModel.clientErr("该求助已经被其它人应助",helpRecord);
+        }
         //检查用户是否已经认领了应助
         if (frontService.checkExistsGiveing(giverId)) {
             return ResponseModel.error("您已经认领了应助任务，请先处理已认领的任务后再来");
         }
-        HelpRecord helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName,giverIp);
-        if (helpRecord != null){
-            return ResponseModel.ok(helpRecord);
-        }
-        return ResponseModel.notFound();
+        helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName,giverIp);
+        return ResponseModel.ok(helpRecord);
     }
 
     /**

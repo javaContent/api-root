@@ -10,9 +10,7 @@ import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
-import com.wd.cloud.docdelivery.exception.UnanticipatedException;
 import com.wd.cloud.docdelivery.model.DownloadModel;
-import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
@@ -20,13 +18,9 @@ import com.wd.cloud.docdelivery.repository.LiteratureRepository;
 import com.wd.cloud.docdelivery.service.FrontService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.util.List;
@@ -104,6 +98,11 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
+    public HelpRecord getNotWaitRecord(long helpRecordId) {
+        return helpRecordRepository.findByIdAndStatusNot(helpRecordId,HelpStatusEnum.WAIT_HELP.getCode());
+    }
+
+    @Override
     public String clearHtml(String docTitle) {
         return HtmlUtil.restoreEscaped(HtmlUtil.cleanHtmlTag(docTitle));
     }
@@ -169,6 +168,7 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public Page<HelpRecord> getWaitHelpRecords(int helpChannel,Pageable pageable) {
+
         int[] status  = {HelpStatusEnum.WAIT_HELP.getCode(),
                 HelpStatusEnum.HELPING.getCode(),
                 HelpStatusEnum.WAIT_AUDIT.getCode(),
@@ -176,6 +176,7 @@ public class FrontServiceImpl implements FrontService {
         Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel,status, pageable);
         return waitHelpRecords;
     }
+
 
     @Override
     public Page<HelpRecord> getFinishHelpRecords(int helpChannel, Pageable pageable) {

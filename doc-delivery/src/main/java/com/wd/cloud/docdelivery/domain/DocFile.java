@@ -33,7 +33,7 @@ public class DocFile extends AbstractDBModel {
     /**
      *复用
      */
-    @Column(name = "is_reusing")
+    @Column(name = "is_reusing",columnDefinition = "tinyint default 0 COMMENT '0:未复用，1：已复用'")
     private boolean reusing;
 
     /**

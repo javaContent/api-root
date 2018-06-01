@@ -7,6 +7,7 @@ import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
+import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.service.BackendService;
 
@@ -24,9 +25,13 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -325,6 +330,34 @@ public class BackendController {
     	} else {
     		return ResponseModel.error();
     	}
+    }
+
+    /**
+     * 文献下载
+     *
+     * @return
+     */
+    @ApiOperation(value = "后台文件下载")
+    @ApiImplicitParam(name = "docFileId", value = "文件ID", dataType = "Long", paramType = "path")
+    @GetMapping("/download/{docFileId}")
+    public ResponseEntity download(@PathVariable Long docFileId) {
+        DownloadModel downloadModel;
+        try{
+            downloadModel = backendService.getDowloadFile(docFileId);
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Content-Disposition", "attachment; filename=" + downloadModel.getDownloadFileName());
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentLength(downloadModel.getDocFile().length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(new FileSystemResource(downloadModel.getDocFile()));
     }
 
 }

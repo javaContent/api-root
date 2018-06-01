@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
+import com.wd.cloud.docdelivery.model.DownloadModel;
 import org.springframework.data.domain.Page;
 
 import com.wd.cloud.docdelivery.domain.HelpRecord;
@@ -28,6 +29,8 @@ public interface BackendService {
     Page<Literature> getLiteratureList(Pageable pageable, Map<String, Object> param);
     
     Page<DocFile> getDocFileList(Pageable pageable, Long literatureId);
+
+    DownloadModel getDowloadFile(long docFileId);
 
     /**
      * 获取单条互助记录

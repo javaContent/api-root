@@ -1,10 +1,12 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
+import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
@@ -25,6 +27,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +41,9 @@ import java.util.Map;
  */
 @Service("backendService")
 public class BackendServiceImpl implements BackendService {
+
+    @Autowired
+    GlobalConfig globalConfig;
 
     @Autowired
     HelpRecordRepository helpRecordRepository;
@@ -79,14 +85,7 @@ public class BackendServiceImpl implements BackendService {
                 return cb.and(list.toArray(p));
             }
         }, pageable);
-        
-//        List<HelpRecord> list = result.getContent();
-//        for (HelpRecord helpRecord : list) {
-//        	if(helpRecord.getStatus() == HelpStatusEnum.HELP_SUCCESSED.getCode()) {
-//        		GiveRecord giveRecord = giveRecordRepository.findByHelpRecordId(helpRecord);
-//        		helpRecord.setGiveRecord(giveRecord);
-//        	}
-//		}
+
         return result;
     }
     
@@ -117,7 +116,18 @@ public class BackendServiceImpl implements BackendService {
 	public Page<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
     		return null;
     }
-    
+
+    @Override
+    public DownloadModel getDowloadFile(long docFileId) {
+        DocFile docFile =  docFileRepostitory.getOne(docFileId);
+        DownloadModel downloadModel = new DownloadModel();
+        String fileName = docFile.getFileName();
+        String fileType = docFile.getFileType();
+        downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
+        downloadModel.setDownloadFileName(fileName + "." + fileType);
+        return downloadModel;
+    }
+
 
     @Override
     public HelpRecord getHelpRecord(Long id) {

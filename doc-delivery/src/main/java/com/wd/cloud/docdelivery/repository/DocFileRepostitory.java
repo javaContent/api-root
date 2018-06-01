@@ -13,6 +13,8 @@ import java.util.List;
  */
 public interface DocFileRepostitory extends JpaRepository<DocFile,Long> {
 
+    DocFile findByFileName(String fileName);
+
     DocFile findByLiteratureAndReusingIsTrue(Literature literature);
 
     DocFile findByLiteratureAndFileNameAndFileType(Literature literature,String fileName,String fileType);

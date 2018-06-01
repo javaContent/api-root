@@ -16,7 +16,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "help_record",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"helper_email", "literature_id","status"})})
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"helper_email", "literature_id"})})
 public class HelpRecord extends AbstractDBModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

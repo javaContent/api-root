@@ -33,7 +33,6 @@ public class Literature extends AbstractDBModel {
     private String docTitle;
 
     @OneToMany(mappedBy = "literature")
-    @JsonIgnore
     private Set<DocFile> docFiles;
 
     /**
@@ -54,6 +53,12 @@ public class Literature extends AbstractDBModel {
      * 摘要
      */
     private String summary;
+    
+    /**
+     *复用
+     */
+    @Column(name = "is_reusing")
+    private boolean reusing;
 
 
     public Long getId() {
@@ -120,4 +125,12 @@ public class Literature extends AbstractDBModel {
     public void setDocFiles(Set<DocFile> docFiles) {
         this.docFiles = docFiles;
     }
+
+	public boolean isReusing() {
+		return reusing;
+	}
+
+	public void setReusing(boolean reusing) {
+		this.reusing = reusing;
+	}
 }

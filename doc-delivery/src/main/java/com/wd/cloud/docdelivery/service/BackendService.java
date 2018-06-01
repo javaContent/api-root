@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service;
 
+import java.util.List;
 import java.util.Map;
 
 import com.wd.cloud.docdelivery.domain.DocFile;
@@ -28,7 +29,7 @@ public interface BackendService {
     
     Page<Literature> getLiteratureList(Pageable pageable, Map<String, Object> param);
     
-    Page<DocFile> getDocFileList(Pageable pageable, Long literatureId);
+    List<DocFile> getDocFileList(Pageable pageable, Long literatureId);
 
     DownloadModel getDowloadFile(long docFileId);
 

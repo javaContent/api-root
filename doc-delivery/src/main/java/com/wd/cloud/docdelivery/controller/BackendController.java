@@ -298,7 +298,7 @@ public class BackendController {
     	if(result) {
     		return ResponseModel.ok();
     	} else {
-    		return ResponseModel.error();
+    		return ResponseModel.error("一篇文章不允许复用多个文档");
     	}
     }
     

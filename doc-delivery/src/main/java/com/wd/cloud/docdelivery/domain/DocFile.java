@@ -25,6 +25,7 @@ public class DocFile extends AbstractDBModel {
     private String fileType;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private Literature literature;
 
     private Long auditorId;

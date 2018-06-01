@@ -105,7 +105,7 @@ public class BackendServiceImpl implements BackendService {
                 if (!StringUtils.isEmpty(keyword)) {
                     list.add(cb.like(root.get("docTitle").as(String.class), "%" + keyword + "%"));
                 }
-
+                list.add(cb.isNotEmpty(root.get("docFiles")));
                 Predicate[] p = new Predicate[list.size()];
                 return cb.and(list.toArray(p));
             }
@@ -114,8 +114,10 @@ public class BackendServiceImpl implements BackendService {
     }
     
     @Override
-	public Page<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
-    		return null;
+	public List<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
+    	Literature literature = new Literature();
+    	literature.setId(literatureId);
+    	return docFileRepostitory.findByLiterature(literature);
     }
     
 
@@ -149,24 +151,27 @@ public class BackendServiceImpl implements BackendService {
     public boolean reusing(Map<String,Object> param) {
     	Literature literature = new Literature();
     	literature.setId((long) param.get("literatureId"));
-	long docFileId = (long) param.get("docFileId");
-	boolean reusing = (boolean) param.get("reusing");
-	List<DocFile> list = docFileRepostitory.findByLiterature(literature);
-	DocFile doc = null;
-	for (DocFile docFile : list) {
-		//如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入
-		if(docFile.isReusing() && reusing) {
-			return false;
+		long docFileId = (long) param.get("docFileId");
+		boolean reusing = (boolean) param.get("reusing");
+		List<DocFile> list = docFileRepostitory.findByLiterature(literature);
+		DocFile doc = null;
+		for (DocFile docFile : list) {
+			//如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入
+			if(docFile.isReusing() && reusing) {
+				return false;
+			}
+			if(docFile.getId() == docFileId) {
+				doc = docFile;
+				if(!reusing) {
+					break;
+				}
+			}
 		}
-		if(docFile.getId() == docFileId) {
-			doc = docFile;
-			break;
-		}
-	}
-	doc.setReusing(reusing);
-	doc.setAuditorId((long) param.get("auditorId"));
-	doc.setAuditorName((String) param.get("auditorName"));
-	doc.setReMark((String) param.get("reMark"));
+		doc.setReusing(reusing);
+		doc.setAuditorId((long) param.get("auditorId"));
+		doc.setAuditorName((String) param.get("auditorName"));
+		doc.setReMark((String) param.get("reMark"));
+		doc.getLiterature().setReusing(reusing);
 		if(doc == null) {return false;}
 		docFileRepostitory.save(doc);
 		return true;

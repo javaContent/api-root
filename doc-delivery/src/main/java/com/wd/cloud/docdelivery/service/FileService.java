@@ -2,7 +2,6 @@ package com.wd.cloud.docdelivery.service;
 
 import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.Literature;
-import com.wd.cloud.docdelivery.model.Md5FileModel;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

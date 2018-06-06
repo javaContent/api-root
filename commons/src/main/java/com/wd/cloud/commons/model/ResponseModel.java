@@ -1,7 +1,5 @@
 package com.wd.cloud.commons.model;
 
-import cn.hutool.http.HttpStatus;
-
 /**
  * @author He Zhigang
  * @date 2018/5/3

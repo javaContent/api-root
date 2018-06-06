@@ -8,7 +8,6 @@ import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
-import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.service.BackendService;
 
 import java.io.IOException;
@@ -67,10 +66,10 @@ public class BackendController {
             @ApiImplicitParam(name = "endTime", value = "结束时间", dataType = "String", paramType = "query")
     })
     @GetMapping("/help/list")
-    public ResponseModel helpList(@RequestParam(required = false) Short status,@RequestParam(required = false) Short helperScid, 
-    		@RequestParam(required = false) String keyword, @RequestParam(required = false) String beginTime,
-            @RequestParam(required = false) String endTime,
-            @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel helpList(@RequestParam(required = false) Short status, @RequestParam(required = false) Short helperScid,
+                                  @RequestParam(required = false) String keyword, @RequestParam(required = false) String beginTime,
+                                  @RequestParam(required = false) String endTime,
+                                  @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("helperScid", helperScid);
@@ -90,8 +89,8 @@ public class BackendController {
      */
     @ApiOperation(value = "原数据列表")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "reusing", value = "是否复用", dataType = "Boolean", paramType = "query"),
-        @ApiImplicitParam(name = "keyword", value = "搜索关键词", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "reusing", value = "是否复用", dataType = "Boolean", paramType = "query"),
+            @ApiImplicitParam(name = "keyword", value = "搜索关键词", dataType = "String", paramType = "query")
     })
     @GetMapping("/literature/list")
     public ResponseModel literatureList(@RequestParam(required = false) Boolean reusing, @RequestParam(required = false) String keyword,
@@ -109,7 +108,7 @@ public class BackendController {
      */
     @ApiOperation(value = "应助文档列表")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "literatureId", value = "元数据id", dataType = "Long", paramType = "query")
+            @ApiImplicitParam(name = "literatureId", value = "元数据id", dataType = "Long", paramType = "query")
     })
     @GetMapping("/docFile/list")
     public ResponseModel getDocFileList(@RequestParam Long literatureId,
@@ -126,9 +125,9 @@ public class BackendController {
      */
     @ApiOperation(value = "直接处理，上传文件")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
-        @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
     })
     @PostMapping("/upload/{id}")
     public ResponseModel upload(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName, HttpServletRequest request, @NotNull MultipartFile file) {
@@ -165,9 +164,9 @@ public class BackendController {
      */
     @ApiOperation(value = "提交第三方处理")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
-        @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
     })
     @PostMapping("/third/{id}")
     public ResponseModel helpThird(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
@@ -196,9 +195,9 @@ public class BackendController {
      */
     @ApiOperation(value = "无结果处理")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
-        @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
     })
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
@@ -225,14 +224,14 @@ public class BackendController {
      */
     @ApiOperation(value = "审核通过")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
-        @ApiImplicitParam(name = "auditorId", value = "审核者(处理人)id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "auditorName", value = "审核者(处理人)username", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "auditorId", value = "审核者(处理人)id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "auditorName", value = "审核者(处理人)username", dataType = "String", paramType = "query")
     })
     @PatchMapping("/audit/pass/{id}")
     public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName, HttpServletRequest request) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
-        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord,0,2);
+        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
         if (giveRecord == null) {
             return ResponseModel.notFound();
         }
@@ -254,14 +253,14 @@ public class BackendController {
      */
     @ApiOperation(value = "审核不通过")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
-        @ApiImplicitParam(name = "auditorId", value = "审核者(处理人)id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "auditorName", value = "审核者(处理人)username", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "auditorId", value = "审核者(处理人)id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "auditorName", value = "审核者(处理人)username", dataType = "String", paramType = "query")
     })
     @PatchMapping("/audit/nopass/{id}")
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
-        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord,0,2);
+        GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
         if (giveRecord == null) {
             return ResponseModel.notFound();
         }
@@ -281,27 +280,27 @@ public class BackendController {
      */
     @ApiOperation(value = "复用")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "docFileId", value = "上传文档id", dataType = "Long", paramType = "path"),
-        @ApiImplicitParam(name = "literatureId", value = "元数据id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "reuseUserId", value = "复用人(处理人)id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "reuseUserName", value = "复用人(处理人)username", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "docFileId", value = "上传文档id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "literatureId", value = "元数据id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "reuseUserId", value = "复用人(处理人)id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "reuseUserName", value = "复用人(处理人)username", dataType = "String", paramType = "query")
     })
     @GetMapping("/reusing/pass/{docFileId}")
-    public ResponseModel reusing(@PathVariable Long docFileId,@RequestParam(name = "literatureId") Long literatureId, @RequestParam(name = "reuseUserId") Long reuseUserId,@RequestParam(name = "reuseUserName") String reuseUserName) {
-    	Map<String,Object> param = new HashMap<>();
-    	param.put("docFileId", docFileId);
-    	param.put("reusing", true);
-    	param.put("literatureId", literatureId);
-    	param.put("auditorId", reuseUserId);
-    	param.put("auditorName", reuseUserName);
-    	Boolean result = backendService.reusing(param);
-    	if(result) {
-    		return ResponseModel.ok();
-    	} else {
-    		return ResponseModel.error("一篇文章不允许复用多个文档");
-    	}
+    public ResponseModel reusing(@PathVariable Long docFileId, @RequestParam(name = "literatureId") Long literatureId, @RequestParam(name = "reuseUserId") Long reuseUserId, @RequestParam(name = "reuseUserName") String reuseUserName) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("docFileId", docFileId);
+        param.put("reusing", true);
+        param.put("literatureId", literatureId);
+        param.put("auditorId", reuseUserId);
+        param.put("auditorName", reuseUserName);
+        Boolean result = backendService.reusing(param);
+        if (result) {
+            return ResponseModel.ok();
+        } else {
+            return ResponseModel.error("一篇文章不允许复用多个文档");
+        }
     }
-    
+
     /**
      * 取消复用
      *
@@ -309,27 +308,27 @@ public class BackendController {
      */
     @ApiOperation(value = "取消复用")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "docFileId", value = "上传文档id", dataType = "Long", paramType = "path"),
-        @ApiImplicitParam(name = "literatureId", value = "元数据id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "reMark", value = "取消复用原因", dataType = "String", paramType = "query"),
-        @ApiImplicitParam(name = "reuseUserId", value = "复用人(处理人)id", dataType = "Long", paramType = "query"),
-        @ApiImplicitParam(name = "reuseUserName", value = "复用人(处理人)username", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "docFileId", value = "上传文档id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "literatureId", value = "元数据id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "reMark", value = "取消复用原因", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "reuseUserId", value = "复用人(处理人)id", dataType = "Long", paramType = "query"),
+            @ApiImplicitParam(name = "reuseUserName", value = "复用人(处理人)username", dataType = "String", paramType = "query")
     })
     @GetMapping("/reusing/nopass/{docFileId}")
-    public ResponseModel notReusing(@PathVariable Long docFileId,@RequestParam(name = "literatureId") Long literatureId,@RequestParam(name = "reMark") String reMark, @RequestParam(name = "reuseUserId") Long reuseUserId,@RequestParam(name = "reuseUserName") String reuseUserName) {
-    	Map<String,Object> param = new HashMap<>();
-    	param.put("docFileId", docFileId);
-    	param.put("reusing", false);
-    	param.put("literatureId", literatureId);
-    	param.put("auditorId", reuseUserId);
-    	param.put("auditorName", reuseUserName);
-    	param.put("reMark", reMark);
-    	Boolean result = backendService.reusing(param);
-    	if(result) {
-    		return ResponseModel.ok();
-    	} else {
-    		return ResponseModel.error();
-    	}
+    public ResponseModel notReusing(@PathVariable Long docFileId, @RequestParam(name = "literatureId") Long literatureId, @RequestParam(name = "reMark") String reMark, @RequestParam(name = "reuseUserId") Long reuseUserId, @RequestParam(name = "reuseUserName") String reuseUserName) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("docFileId", docFileId);
+        param.put("reusing", false);
+        param.put("literatureId", literatureId);
+        param.put("auditorId", reuseUserId);
+        param.put("auditorName", reuseUserName);
+        param.put("reMark", reMark);
+        Boolean result = backendService.reusing(param);
+        if (result) {
+            return ResponseModel.ok();
+        } else {
+            return ResponseModel.error();
+        }
     }
 
     /**
@@ -342,9 +341,9 @@ public class BackendController {
     @GetMapping("/download/{docFileId}")
     public ResponseEntity download(@PathVariable Long docFileId) {
         DownloadModel downloadModel;
-        try{
+        try {
             downloadModel = backendService.getDowloadFile(docFileId);
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
         HttpHeaders headers = new HttpHeaders();

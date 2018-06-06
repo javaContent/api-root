@@ -5,7 +5,6 @@ import com.wd.cloud.docdelivery.domain.GiveRecord;
 import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.model.DownloadModel;
-import com.wd.cloud.docdelivery.model.Md5FileModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

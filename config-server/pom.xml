@@ -39,6 +39,10 @@
             <groupId>com.wd.cloud</groupId>
             <artifactId>commons</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.spring4all</groupId>
+            <artifactId>swagger-spring-boot-starter</artifactId>
+        </dependency>
     </dependencies>
 
 

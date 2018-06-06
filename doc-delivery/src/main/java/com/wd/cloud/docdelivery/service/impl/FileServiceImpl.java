@@ -7,7 +7,6 @@ import cn.hutool.crypto.digest.DigestUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.Literature;
-import com.wd.cloud.docdelivery.model.Md5FileModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
 import com.wd.cloud.docdelivery.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;

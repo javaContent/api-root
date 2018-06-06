@@ -34,6 +34,8 @@
         <spring-cloud.version>Finchley.M9</spring-cloud.version>
         <com.alibaba.druid.version>1.1.9</com.alibaba.druid.version>
         <javax.mail.version>1.4.7</javax.mail.version>
+        <swagger.version>1.7.0.RELEASE</swagger.version>
+        <cn.hutool.all.version>[4.0.12,)</cn.hutool.all.version>
     </properties>
 
     <dependencyManagement>
@@ -50,7 +52,11 @@
                 <artifactId>druid</artifactId>
                 <version>${com.alibaba.druid.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.spring4all</groupId>
+                <artifactId>swagger-spring-boot-starter</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>
                 <artifactId>mail</artifactId>
@@ -61,6 +67,11 @@
                 <groupId>com.wd.cloud</groupId>
                 <artifactId>commons</artifactId>
                 <version>${version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${cn.hutool.all.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

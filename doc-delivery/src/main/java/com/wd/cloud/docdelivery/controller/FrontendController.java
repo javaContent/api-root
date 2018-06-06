@@ -2,7 +2,11 @@ package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.commons.model.SessionKey;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.GiveRecord;
@@ -12,6 +16,7 @@ import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.HelpModel;
+import com.wd.cloud.docdelivery.model.User;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
@@ -31,7 +36,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -296,8 +300,10 @@ public class FrontendController {
      * @return
      */
     @GetMapping("/help/records/all")
-    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseModel.ok(frontService.getAllHelpRecord(pageable));
+    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,HttpServletRequest request) {
+//        User user = (User)request.getSession().getAttribute(SessionKey.LOGGER);
+//        Console.log(user);
+        return ResponseModel.ok(request.getSession().getAttribute(SessionKey.LOGGER));
     }
 
 }

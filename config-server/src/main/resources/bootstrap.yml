@@ -17,4 +17,11 @@ spring:
         git:
           uri: http://192.168.1.2/hezhigang/config.git     # 配置git仓库的地址
           search-paths: settings/** # git仓库地址下的相对地址，可以配置多个，用","分割。
-
+swagger:
+  enabled: true
+  title: 配置中心服务
+  description: 配置中心API
+  version: 2.0
+  contact:
+    name: hezhigang
+    email: hezhigang@hnwdkj.com

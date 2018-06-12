@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.config;
 
+import cn.hutool.system.SystemUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class GlobalConfig {
     }
 
     public String getSavePath() {
-        return savePath;
+        return SystemUtil.get(SystemUtil.USER_HOME) + savePath;
     }
 
     public void setSavePath(String savePath) {

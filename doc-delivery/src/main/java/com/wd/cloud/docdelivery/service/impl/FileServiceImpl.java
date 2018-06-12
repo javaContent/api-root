@@ -4,10 +4,11 @@ import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.system.SystemUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.DocFile;
 import com.wd.cloud.docdelivery.domain.Literature;
-import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
+import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class FileServiceImpl implements FileService {
     GlobalConfig globalConfig;
 
     @Autowired
-    DocFileRepostitory docFileRepostitory;
+    DocFileRepository docFileRepository;
 
     @Override
     public DocFile saveFile(Literature literature,MultipartFile file) throws IOException {
@@ -39,13 +40,13 @@ public class FileServiceImpl implements FileService {
         String md5File = DigestUtil.md5Hex(file.getInputStream());
         //文件后缀
         String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
-        DocFile docFile = docFileRepostitory.findByLiteratureAndFileNameAndFileType(literature,md5File,extName);
+        DocFile docFile = docFileRepository.findByLiteratureAndFileNameAndFileType(literature,md5File,extName);
         if (docFile == null){
             docFile = new DocFile();
             docFile.setFileName(md5File);
             docFile.setFileType(extName);
             docFile.setLiterature(literature);
-            docFile = docFileRepostitory.save(docFile);
+            docFile = docFileRepository.save(docFile);
         }
         //文件如果不存在，则保存，否则直接返回文件的MD5名
         if (!FileUtil.exist(new File(globalConfig.getSavePath(), md5File))) {

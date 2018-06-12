@@ -54,7 +54,7 @@ public interface FrontService {
      * @param helpRecordId
      * @return
      */
-    DownloadModel getDowloadFile(long helpRecordId);
+    DownloadModel getDownloadFile(long helpRecordId);
     /**
      * 保存元数据
      *

@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2018/5/27
  * @Description:
  */
-public interface DocFileRepostitory extends JpaRepository<DocFile,Long> {
+public interface DocFileRepository extends JpaRepository<DocFile,Long> {
 
     DocFile findByFileName(String fileName);
 

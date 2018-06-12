@@ -7,7 +7,7 @@ import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
-import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
+import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
@@ -55,7 +55,7 @@ public class BackendServiceImpl implements BackendService {
     LiteratureRepository literatureRepository;
     
     @Autowired
-    DocFileRepostitory docFileRepostitory;
+    DocFileRepository docFileRepository;
 
     @Override
     public Page getHelpList(Pageable pageable, Map<String, Object> param) {
@@ -116,12 +116,12 @@ public class BackendServiceImpl implements BackendService {
 	public List<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
     	Literature literature = new Literature();
     	literature.setId(literatureId);
-    	return docFileRepostitory.findByLiterature(literature);
+    	return docFileRepository.findByLiterature(literature);
     }
 
     @Override
     public DownloadModel getDowloadFile(long docFileId) {
-        DocFile docFile =  docFileRepostitory.getOne(docFileId);
+        DocFile docFile =  docFileRepository.getOne(docFileId);
         DownloadModel downloadModel = new DownloadModel();
         String fileName = docFile.getFileName();
         String fileType = docFile.getFileType();
@@ -163,7 +163,7 @@ public class BackendServiceImpl implements BackendService {
     	literature.setId((long) param.get("literatureId"));
 		long docFileId = (long) param.get("docFileId");
 		boolean reusing = (boolean) param.get("reusing");
-		List<DocFile> list = docFileRepostitory.findByLiterature(literature);
+		List<DocFile> list = docFileRepository.findByLiterature(literature);
 		DocFile doc = null;
 		for (DocFile docFile : list) {
 			//如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入
@@ -183,7 +183,7 @@ public class BackendServiceImpl implements BackendService {
 		doc.setReMark((String) param.get("reMark"));
 		doc.getLiterature().setReusing(reusing);
 		if(doc == null) {return false;}
-		docFileRepostitory.save(doc);
+        docFileRepository.save(doc);
 		return true;
 	}
 

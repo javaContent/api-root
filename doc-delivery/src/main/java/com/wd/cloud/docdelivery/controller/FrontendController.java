@@ -275,7 +275,7 @@ public class FrontendController {
     @GetMapping("/download/{helpRecodeId}")
     public ResponseEntity download(@PathVariable Long helpRecodeId) {
 
-        DownloadModel downloadModel = frontService.getDowloadFile(helpRecodeId);
+        DownloadModel downloadModel = frontService.getDownloadFile(helpRecodeId);
 
         if (downloadModel.getDocFile() == null) {
             return ResponseEntity.notFound().build();

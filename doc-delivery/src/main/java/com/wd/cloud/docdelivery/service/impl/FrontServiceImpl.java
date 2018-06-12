@@ -11,7 +11,7 @@ import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
-import com.wd.cloud.docdelivery.repository.DocFileRepostitory;
+import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.repository.LiteratureRepository;
@@ -31,7 +31,7 @@ import java.util.List;
  * @Description:
  */
 @Service("frontService")
-@Transactional
+@Transactional(rollbackOn = Exception.class)
 public class FrontServiceImpl implements FrontService {
 
     @Autowired
@@ -46,7 +46,7 @@ public class FrontServiceImpl implements FrontService {
     GiveRecordRepository giveRecordRepository;
 
     @Autowired
-    DocFileRepostitory docFileRepostitory;
+    DocFileRepository docFileRepository;
 
     @Override
     public Literature queryLiterature(Literature literature) {
@@ -108,7 +108,7 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public DownloadModel getDowloadFile(long helpRecordId) {
+    public DownloadModel getDownloadFile(long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
         String fileName = giveRecord.getDocFile().getFileName();
@@ -192,7 +192,7 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public DocFile getReusingFile(Literature literature) {
-        DocFile docFiles = docFileRepostitory.findByLiteratureAndReusingIsTrue(literature);
+        DocFile docFiles = docFileRepository.findByLiteratureAndReusingIsTrue(literature);
         return docFiles;
     }
 

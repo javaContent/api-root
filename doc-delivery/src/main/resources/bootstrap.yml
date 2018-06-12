@@ -11,19 +11,3 @@ spring:
       client:
         health-indicator:
           enabled: true
-  redis:
-    host: 192.168.1.41
-    port: 6379
-    database: 1
-
-swagger:
-  enabled: true
-  title: 文献传递服务
-  description: 文献传递API
-  version: 2.0
-  contact: 
-    name: hezhigang
-    email: hezhigang@hnwdkj.com
-
-
-

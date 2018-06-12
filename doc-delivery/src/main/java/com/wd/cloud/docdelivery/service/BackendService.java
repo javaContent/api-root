@@ -20,15 +20,16 @@ import org.springframework.data.domain.Pageable;
  */
 public interface BackendService {
 
+
     /**
      * 获取互助列表
      *
      * @return
      */
     Page<HelpRecord> getHelpList(Pageable pageable, Map<String, Object> param);
-    
+
     Page<Literature> getLiteratureList(Pageable pageable, Map<String, Object> param);
-    
+
     List<DocFile> getDocFileList(Pageable pageable, Long literatureId);
 
     DownloadModel getDowloadFile(long docFileId);
@@ -55,20 +56,22 @@ public interface BackendService {
      * @param helpRecord
      */
     void updateHelRecord(HelpRecord helpRecord);
-    
+
     /**
      * 根据helpRecord获取giverRecord
+     *
      * @param helpRecord
      */
-    public GiveRecord getGiverRecord(HelpRecord helpRecord,int auditStatus,int giverType);
-    
-    
+    public GiveRecord getGiverRecord(HelpRecord helpRecord, int auditStatus, int giverType);
+
+
     public void saveGiveRecord(GiveRecord giveRecord);
+
     /**
      * 复用、取消复用
-     * @param helpRecord
+     *
      * @return
      */
-    public boolean reusing(Map<String,Object> param);
+    public boolean reusing(Map<String, Object> param);
 
 }

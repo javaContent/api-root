@@ -16,9 +16,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     UserRepository userRepository;
+
     @Override
     public User loing(String username, String pwd) {
 
-        return userRepository.findByUsernameAndPwd(username,pwd);
+        return userRepository.findByUsernameAndPwd(username, pwd);
     }
 }

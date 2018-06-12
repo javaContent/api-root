@@ -53,11 +53,11 @@ public class Literature extends AbstractDBModel {
      * 摘要
      */
     private String summary;
-    
+
     /**
-     *复用
+     * 复用
      */
-    @Column(name = "is_reusing",columnDefinition = "tinyint(1) COMMENT '0：未复用，1：已复用'")
+    @Column(name = "is_reusing", columnDefinition = "tinyint(1) COMMENT '0：未复用，1：已复用'")
     private boolean reusing;
 
 
@@ -126,11 +126,11 @@ public class Literature extends AbstractDBModel {
         this.docFiles = docFiles;
     }
 
-	public boolean isReusing() {
-		return reusing;
-	}
+    public boolean isReusing() {
+        return reusing;
+    }
 
-	public void setReusing(boolean reusing) {
-		this.reusing = reusing;
-	}
+    public void setReusing(boolean reusing) {
+        this.reusing = reusing;
+    }
 }

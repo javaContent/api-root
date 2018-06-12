@@ -29,8 +29,8 @@ public class HelpRecord extends AbstractDBModel {
     private Literature literature;
 
     @OneToMany(mappedBy = "helpRecord")
-    @OrderBy(value ="gmt_create desc")
-    @Where(clause="audit_status != 2")
+    @OrderBy(value = "gmt_create desc")
+    @Where(clause = "audit_status != 2")
     private Set<GiveRecord> giveRecords;
 
     /**
@@ -181,11 +181,11 @@ public class HelpRecord extends AbstractDBModel {
     }
 
     @Override
-	public String toString() {
-		return "HelpRecord [id=" + id + ", literature=" + literature + ", helperEmail=" + helperEmail + ", helperId="
-				+ helperId + ", helperName=" + helperName + ", helperScid=" + helperScid + ", helperScname="
-				+ helperScname + ", helperIp=" + helperIp + ", helpChannel=" + helpChannel + ", status=" + status + "]";
-	}
-    
-    
+    public String toString() {
+        return "HelpRecord [id=" + id + ", literature=" + literature + ", helperEmail=" + helperEmail + ", helperId="
+                + helperId + ", helperName=" + helperName + ", helperScid=" + helperScid + ", helperScname="
+                + helperScname + ", helperIp=" + helperIp + ", helpChannel=" + helpChannel + ", status=" + status + "]";
+    }
+
+
 }

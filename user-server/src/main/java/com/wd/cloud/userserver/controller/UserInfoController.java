@@ -24,8 +24,8 @@ public class UserInfoController {
     UserInfoService userInfoService;
 
     @GetMapping("/info/{id}")
-    public ResponseModel user(@PathVariable Long id){
-        User user =  userInfoService.getUserInfo(id);
+    public ResponseModel user(@PathVariable Long id) {
+        User user = userInfoService.getUserInfo(id);
         return ResponseModel.ok(user);
     }
 

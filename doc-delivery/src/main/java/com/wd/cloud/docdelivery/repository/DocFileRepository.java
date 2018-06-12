@@ -11,14 +11,14 @@ import java.util.List;
  * @date 2018/5/27
  * @Description:
  */
-public interface DocFileRepository extends JpaRepository<DocFile,Long> {
+public interface DocFileRepository extends JpaRepository<DocFile, Long> {
 
     DocFile findByFileName(String fileName);
 
     DocFile findByLiteratureAndReusingIsTrue(Literature literature);
 
-    DocFile findByLiteratureAndFileNameAndFileType(Literature literature,String fileName,String fileType);
-    
+    DocFile findByLiteratureAndFileNameAndFileType(Literature literature, String fileName, String fileType);
+
     List<DocFile> findByLiterature(Literature literature);
-    
+
 }

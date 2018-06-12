@@ -58,9 +58,9 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      */
     Page<HelpRecord> findByStatus(int status, Pageable pageable);
 
-    Page<HelpRecord> findByHelpChannelAndStatus(int helpChannel,int status,Pageable pageable);
+    Page<HelpRecord> findByHelpChannelAndStatus(int helpChannel, int status, Pageable pageable);
 
-    Page<HelpRecord> findByHelpChannelAndStatusIn(int helpChannel,int[] status,Pageable pageable);
+    Page<HelpRecord> findByHelpChannelAndStatusIn(int helpChannel, int[] status, Pageable pageable);
 
 
 }

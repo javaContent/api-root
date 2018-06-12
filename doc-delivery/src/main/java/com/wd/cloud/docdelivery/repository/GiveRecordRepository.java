@@ -22,17 +22,47 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
      */
     GiveRecord findByIdAndAuditStatus(Long id, int auditStatus);
 
-    GiveRecord findByGiverIdAndAuditStatus(Long giverId,int auditStatus);
+    /**
+     * 审核记录
+     * @param giverId
+     * @param auditStatus
+     * @return
+     */
+    GiveRecord findByGiverIdAndAuditStatus(Long giverId, int auditStatus);
 
-    GiveRecord findByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord,int auditStatus,long giverId);
+    /**
+     * 特定状态的应助记录
+     * @param helpRecord
+     * @param auditStatus
+     * @param giverId
+     * @return
+     */
+    GiveRecord findByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord, int auditStatus, long giverId);
 
-    int deleteByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord,int auditStatus,long giverId);
+    /**
+     * 取消应助，删除应助记录
+     * @param helpRecord
+     * @param auditStatus
+     * @param giverId
+     * @return
+     */
+    int deleteByHelpRecordAndAuditStatusAndGiverId(HelpRecord helpRecord, int auditStatus, long giverId);
 
+    /**
+     * 特定应助类型的应助记录
+     * @param helpRecord
+     * @param auditStatus
+     * @param giverType
+     * @return
+     */
+    GiveRecord findByHelpRecordAndAuditStatusAndGiverType(HelpRecord helpRecord, int auditStatus, int giverType);
 
-    
-    GiveRecord findByHelpRecordAndAuditStatusAndGiverType(HelpRecord helpRecord,int auditStatus,int giverType);
-    
-    @Query("from GiveRecord t where t.helpRecord = :helpRecord and (t.auditStatus = 1 or t.giverType <> 2)")
+    /**
+     * 已审核通过的 或 非用户应助的应助记录
+     * @param helpRecord
+     * @return
+     */
+    @Query("from GiveRecord where helpRecord = :helpRecord and (auditStatus = 1 or giverType <> 2)")
     GiveRecord findByHelpRecord(@Param("helpRecord") HelpRecord helpRecord);
 
 }

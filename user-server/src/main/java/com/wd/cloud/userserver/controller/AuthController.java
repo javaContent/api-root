@@ -23,9 +23,10 @@ public class AuthController {
 
     @Autowired
     AuthService authService;
+
     @GetMapping("/login")
-    public ResponseModel login(@RequestParam String username, @RequestParam String pwd, HttpServletRequest request){
-        User user = authService.loing(username,pwd);
+    public ResponseModel login(@RequestParam String username, @RequestParam String pwd, HttpServletRequest request) {
+        User user = authService.loing(username, pwd);
         request.getSession().setAttribute(SessionKey.LOGGER, JSONUtil.parseObj(user));
         return ResponseModel.ok(user);
     }
@@ -33,6 +34,6 @@ public class AuthController {
     @GetMapping("/index")
     public ResponseModel index(HttpServletRequest request) {
         String sessionId = request.getSession().getId();
-        return ResponseModel.ok("sessionId: "+sessionId);
+        return ResponseModel.ok("sessionId: " + sessionId);
     }
 }

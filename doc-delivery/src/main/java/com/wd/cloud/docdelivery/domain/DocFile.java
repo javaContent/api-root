@@ -32,9 +32,9 @@ public class DocFile extends AbstractDBModel {
 
     private String auditorName;
     /**
-     *复用
+     * 复用
      */
-    @Column(name = "is_reusing",columnDefinition = "tinyint default 0 COMMENT '0:未复用，1：已复用'")
+    @Column(name = "is_reusing", columnDefinition = "tinyint default 0 COMMENT '0:未复用，1：已复用'")
     private boolean reusing;
 
     /**
@@ -108,8 +108,12 @@ public class DocFile extends AbstractDBModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DocFile docFile = (DocFile) o;
         return reusing == docFile.reusing &&
                 Objects.equals(id, docFile.id) &&

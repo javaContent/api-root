@@ -10,7 +10,6 @@ import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
-import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
@@ -22,8 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.File;
-import java.util.List;
 
 /**
  * @author He Zhigang
@@ -83,7 +80,7 @@ public class FrontServiceImpl implements FrontService {
         HelpRecord helpRecord = helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.HELPING.getCode());
         boolean flag = false;
         if (helpRecord != null) {
-            giveRecordRepository.deleteByHelpRecordAndAuditStatusAndGiverId(helpRecord,AuditEnum.WAIT_UPLOAD.getCode(),giverId);
+            giveRecordRepository.deleteByHelpRecordAndAuditStatusAndGiverId(helpRecord, AuditEnum.WAIT_UPLOAD.getCode(), giverId);
             //更新求助记录状态
             helpRecord.setStatus(HelpStatusEnum.WAIT_HELP.getCode());
             helpRecordRepository.save(helpRecord);
@@ -94,30 +91,17 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public HelpRecord getHelpingRecord(long helpRecordId) {
-       return helpRecordRepository.findByIdAndStatus(helpRecordId,HelpStatusEnum.HELPING.getCode());
+        return helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.HELPING.getCode());
     }
 
     @Override
     public HelpRecord getNotWaitRecord(long helpRecordId) {
-        return helpRecordRepository.findByIdAndStatusNot(helpRecordId,HelpStatusEnum.WAIT_HELP.getCode());
+        return helpRecordRepository.findByIdAndStatusNot(helpRecordId, HelpStatusEnum.WAIT_HELP.getCode());
     }
 
     @Override
     public String clearHtml(String docTitle) {
         return HtmlUtil.restoreEscaped(HtmlUtil.cleanHtmlTag(docTitle));
-    }
-
-    @Override
-    public DownloadModel getDownloadFile(long helpRecordId) {
-        HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
-        GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
-        String fileName = giveRecord.getDocFile().getFileName();
-        String fileType = giveRecord.getDocFile().getFileType();
-        String docTitle = helpRecord.getLiterature().getDocTitle();
-        DownloadModel downloadModel = new DownloadModel();
-        downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
-        downloadModel.setDownloadFileName(docTitle + "." + fileType);
-        return downloadModel;
     }
 
     @Override
@@ -134,7 +118,7 @@ public class FrontServiceImpl implements FrontService {
     public void createGiveRecord(HelpRecord helpRecord, long giverId, DocFile docFile, String giveIp) {
         //更新求助状态为待审核
         helpRecord.setStatus(HelpStatusEnum.WAIT_AUDIT.getCode());
-        GiveRecord giveRecord = giveRecordRepository.findByHelpRecordAndAuditStatusAndGiverId(helpRecord,AuditEnum.WAIT_UPLOAD.getCode(),giverId);
+        GiveRecord giveRecord = giveRecordRepository.findByHelpRecordAndAuditStatusAndGiverId(helpRecord, AuditEnum.WAIT_UPLOAD.getCode(), giverId);
         //关联应助记录
         giveRecord.setDocFile(docFile);
         giveRecord.setGiverId(giverId);
@@ -167,21 +151,21 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public Page<HelpRecord> getWaitHelpRecords(int helpChannel,Pageable pageable) {
+    public Page<HelpRecord> getWaitHelpRecords(int helpChannel, Pageable pageable) {
 
-        int[] status  = {HelpStatusEnum.WAIT_HELP.getCode(),
+        int[] status = {HelpStatusEnum.WAIT_HELP.getCode(),
                 HelpStatusEnum.HELPING.getCode(),
                 HelpStatusEnum.WAIT_AUDIT.getCode(),
                 HelpStatusEnum.HELP_THIRD.getCode()};
-        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel,status, pageable);
+        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel, status, pageable);
         return waitHelpRecords;
     }
 
 
     @Override
     public Page<HelpRecord> getFinishHelpRecords(int helpChannel, Pageable pageable) {
-        int[] status  = {HelpStatusEnum.HELP_SUCCESSED.getCode(),HelpStatusEnum.HELP_FAILED.getCode()};
-        Page<HelpRecord> finishHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel,status,pageable);
+        int[] status = {HelpStatusEnum.HELP_SUCCESSED.getCode(), HelpStatusEnum.HELP_FAILED.getCode()};
+        Page<HelpRecord> finishHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel, status, pageable);
         return finishHelpRecords;
     }
 
@@ -198,10 +182,10 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public boolean checkExistsGiveing(long giverId) {
-        GiveRecord giveRecord = giveRecordRepository.findByGiverIdAndAuditStatus(giverId,AuditEnum.WAIT_UPLOAD.getCode());
-        if (giveRecord != null){
+        GiveRecord giveRecord = giveRecordRepository.findByGiverIdAndAuditStatus(giverId, AuditEnum.WAIT_UPLOAD.getCode());
+        if (giveRecord != null) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

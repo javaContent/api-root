@@ -1,14 +1,17 @@
 package com.wd.cloud.docdelivery.service.impl;
 
-import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import cn.hutool.system.SystemUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.domain.DocFile;
+import com.wd.cloud.docdelivery.domain.GiveRecord;
+import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
+import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
+import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,8 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author He Zhigang
@@ -33,15 +34,21 @@ public class FileServiceImpl implements FileService {
     @Autowired
     DocFileRepository docFileRepository;
 
+    @Autowired
+    HelpRecordRepository helpRecordRepository;
+
+    @Autowired
+    GiveRecordRepository giveRecordRepository;
+
     @Override
-    public DocFile saveFile(Literature literature,MultipartFile file) throws IOException {
+    public DocFile saveFile(Literature literature, MultipartFile file) throws IOException {
 
         //文件MD5值
         String md5File = DigestUtil.md5Hex(file.getInputStream());
         //文件后缀
         String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
-        DocFile docFile = docFileRepository.findByLiteratureAndFileNameAndFileType(literature,md5File,extName);
-        if (docFile == null){
+        DocFile docFile = docFileRepository.findByLiteratureAndFileNameAndFileType(literature, md5File, extName);
+        if (docFile == null) {
             docFile = new DocFile();
             docFile.setFileName(md5File);
             docFile.setFileType(extName);
@@ -57,5 +64,24 @@ public class FileServiceImpl implements FileService {
         }
 
         return docFile;
+    }
+
+    @Override
+    public DownloadModel getDownloadFile(Long helpRecordId) {
+        HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
+        GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
+        String fileName = giveRecord.getDocFile().getFileName();
+        String fileType = giveRecord.getDocFile().getFileType();
+        String docTitle = helpRecord.getLiterature().getDocTitle();
+        DownloadModel downloadModel = new DownloadModel();
+        downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
+        downloadModel.setDownloadFileName(docTitle + "." + fileType);
+        return downloadModel;
+    }
+
+
+    @Override
+    public String getDownloadUrl(Long helpRecordId) {
+        return globalConfig.getBaseUrl() + "/file/download/" + helpRecordId;
     }
 }

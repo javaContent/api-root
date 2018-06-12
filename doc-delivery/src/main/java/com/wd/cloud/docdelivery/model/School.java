@@ -5,7 +5,7 @@ package com.wd.cloud.docdelivery.model;
  * @date 2018/6/5
  * @Description:
  */
-public class School{
+public class School {
     private Long id;
     private String schoolFlag;
     private String schoolName;

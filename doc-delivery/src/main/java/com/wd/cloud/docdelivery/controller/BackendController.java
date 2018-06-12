@@ -117,7 +117,6 @@ public class BackendController {
         return ResponseModel.ok(backendService.getDocFileList(pageable, literatureId));
     }
 
-
     /**
      * 直接处理，上传文件
      *
@@ -129,9 +128,13 @@ public class BackendController {
             @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
     })
-    @PostMapping("/upload/{id}")
-    public ResponseModel upload(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName, HttpServletRequest request, @NotNull MultipartFile file) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+    @PostMapping("/upload/{helpRecordId}")
+    public ResponseModel upload(@PathVariable Long helpRecordId,
+                                @RequestParam Long giverId,
+                                @RequestParam String giverName,
+                                @NotNull MultipartFile file,
+                                HttpServletRequest request) {
+        HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
         DocFile docFile = null;
         try {
             docFile = fileService.saveFile(helpRecord.getLiterature(), file);
@@ -150,8 +153,7 @@ public class BackendController {
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
         giveRecord.setHelpRecord(helpRecord);
         backendService.saveGiveRecord(giveRecord);
-        String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
-                + helpRecord.getId();
+        String url = fileService.getDownloadUrl(helpRecord.getId());
         mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
         return ResponseModel.ok("文件上传成功");
     }
@@ -239,9 +241,12 @@ public class BackendController {
         giveRecord.setAuditorId(auditorId);
         giveRecord.setAuditorName(auditorName);
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
-        String url = request.getRequestURL().toString().replace("/backend/upload", "/front/download") + "/"
-                + helpRecord.getId();
-        mailService.sendMail(helpRecord.getHelpChannel(), helpRecord.getHelperEmail(), helpRecord.getLiterature().getDocTitle(), url, HelpStatusEnum.HELP_SUCCESSED);
+        String downloadUrl = fileService.getDownloadUrl(helpRecord.getId());
+        mailService.sendMail(helpRecord.getHelpChannel(),
+                helpRecord.getHelperEmail(),
+                helpRecord.getLiterature().getDocTitle(),
+                downloadUrl,
+                HelpStatusEnum.HELP_SUCCESSED);
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.ok();
     }

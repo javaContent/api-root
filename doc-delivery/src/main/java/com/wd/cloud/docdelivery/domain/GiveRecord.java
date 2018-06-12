@@ -170,8 +170,12 @@ public class GiveRecord extends AbstractDBModel {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         GiveRecord that = (GiveRecord) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(helpRecord, that.helpRecord) &&

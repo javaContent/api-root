@@ -22,14 +22,15 @@ public class DicController {
 
     @Autowired
     AuditMsgRepository auditMsgRepository;
+
     @GetMapping("/audit/msg")
-    public ResponseModel auditMsgs(){
+    public ResponseModel auditMsgs() {
         List<AuditMsg> auditMsgs = auditMsgRepository.findAll();
         return ResponseModel.ok(auditMsgs);
     }
 
 
-    public ResponseModel channel(){
+    public ResponseModel channel() {
         return ResponseModel.ok();
     }
 }

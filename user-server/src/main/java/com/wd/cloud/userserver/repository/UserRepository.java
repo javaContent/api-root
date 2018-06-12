@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date 2018/6/5
  * @Description:
  */
-public interface UserRepository extends JpaRepository<User,Long>{
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByUsernameAndPwd(String username,String pwd);
+    User findByUsernameAndPwd(String username, String pwd);
 }

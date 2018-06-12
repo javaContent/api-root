@@ -21,16 +21,18 @@ public interface FrontService {
 
     /**
      * 我要应助
+     *
      * @param helpRecordId
      * @param giverId
      * @param giverName
      */
-    HelpRecord givingHelp(long helpRecordId, long giverId, String giverName,String giverIp);
+    HelpRecord givingHelp(long helpRecordId, long giverId, String giverName, String giverIp);
 
     boolean cancelGivingHelp(long helpRecordId, long giverId);
 
     /**
      * 得到应种中状态的应助记录
+     *
      * @param helpRecordId
      * @return
      */
@@ -38,23 +40,20 @@ public interface FrontService {
 
     /**
      * 获取非待应助的求助记录
+     *
      * @param helpRecordId
      * @return
      */
     HelpRecord getNotWaitRecord(long helpRecordId);
+
     /**
      * 去除字符串中的HTML标签
+     *
      * @param docTitle
      * @return
      */
     String clearHtml(String docTitle);
 
-    /**
-     * 获取下载文件
-     * @param helpRecordId
-     * @return
-     */
-    DownloadModel getDownloadFile(long helpRecordId);
     /**
      * 保存元数据
      *
@@ -115,15 +114,16 @@ public interface FrontService {
      *
      * @return
      */
-    Page<HelpRecord> getWaitHelpRecords(int helpChannel,Pageable pageable);
+    Page<HelpRecord> getWaitHelpRecords(int helpChannel, Pageable pageable);
 
     /**
      * 求助完成列表
+     *
      * @param helpChannel
      * @param pageable
      * @return
      */
-    Page<HelpRecord> getFinishHelpRecords(int helpChannel,Pageable pageable);
+    Page<HelpRecord> getFinishHelpRecords(int helpChannel, Pageable pageable);
 
     Page<HelpRecord> getAllHelpRecord(Pageable pageable);
 

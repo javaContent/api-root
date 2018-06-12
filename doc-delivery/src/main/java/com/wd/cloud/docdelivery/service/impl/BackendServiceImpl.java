@@ -50,10 +50,10 @@ public class BackendServiceImpl implements BackendService {
 
     @Autowired
     GiveRecordRepository giveRecordRepository;
-    
+
     @Autowired
     LiteratureRepository literatureRepository;
-    
+
     @Autowired
     DocFileRepository docFileRepository;
 
@@ -88,16 +88,16 @@ public class BackendServiceImpl implements BackendService {
 
         return result;
     }
-    
+
     @Override
     public Page getLiteratureList(Pageable pageable, Map<String, Object> param) {
-    	Boolean reusing = (Boolean) param.get("reusing");
+        Boolean reusing = (Boolean) param.get("reusing");
         String keyword = (String) param.get("keyword");
-    	Page result = literatureRepository.findAll(new Specification<Literature>() {
+        Page result = literatureRepository.findAll(new Specification<Literature>() {
             @Override
             public Predicate toPredicate(Root<Literature> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> list = new ArrayList<Predicate>();
-                
+
                 if (reusing != null) {
                     list.add(cb.equal(root.get("reusing").as(boolean.class), reusing));
                 }
@@ -109,19 +109,19 @@ public class BackendServiceImpl implements BackendService {
                 return cb.and(list.toArray(p));
             }
         }, pageable);
-		return result;
+        return result;
     }
-    
+
     @Override
-	public List<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
-    	Literature literature = new Literature();
-    	literature.setId(literatureId);
-    	return docFileRepository.findByLiterature(literature);
+    public List<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
+        Literature literature = new Literature();
+        literature.setId(literatureId);
+        return docFileRepository.findByLiterature(literature);
     }
 
     @Override
     public DownloadModel getDowloadFile(long docFileId) {
-        DocFile docFile =  docFileRepository.getOne(docFileId);
+        DocFile docFile = docFileRepository.getOne(docFileId);
         DownloadModel downloadModel = new DownloadModel();
         String fileName = docFile.getFileName();
         String fileType = docFile.getFileType();
@@ -146,45 +146,47 @@ public class BackendServiceImpl implements BackendService {
     public void updateHelRecord(HelpRecord helpRecord) {
         helpRecordRepository.save(helpRecord);
     }
-    
+
     @Override
-    public GiveRecord getGiverRecord(HelpRecord helpRecord,int auditStatus,int giverType) {
-    	return giveRecordRepository.findByHelpRecordAndAuditStatusAndGiverType(helpRecord,auditStatus,giverType);
+    public GiveRecord getGiverRecord(HelpRecord helpRecord, int auditStatus, int giverType) {
+        return giveRecordRepository.findByHelpRecordAndAuditStatusAndGiverType(helpRecord, auditStatus, giverType);
     }
-    
+
     @Override
     public void saveGiveRecord(GiveRecord giveRecord) {
-    	giveRecordRepository.save(giveRecord);
+        giveRecordRepository.save(giveRecord);
     }
-    
+
     @Override
-    public boolean reusing(Map<String,Object> param) {
-    	Literature literature = new Literature();
-    	literature.setId((long) param.get("literatureId"));
-		long docFileId = (long) param.get("docFileId");
-		boolean reusing = (boolean) param.get("reusing");
-		List<DocFile> list = docFileRepository.findByLiterature(literature);
-		DocFile doc = null;
-		for (DocFile docFile : list) {
-			//如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入
-			if(docFile.isReusing() && reusing) {
-				return false;
-			}
-			if(docFile.getId() == docFileId) {
-				doc = docFile;
-				if(!reusing) {
-					break;
-				}
-			}
-		}
-		doc.setReusing(reusing);
-		doc.setAuditorId((long) param.get("auditorId"));
-		doc.setAuditorName((String) param.get("auditorName"));
-		doc.setReMark((String) param.get("reMark"));
-		doc.getLiterature().setReusing(reusing);
-		if(doc == null) {return false;}
+    public boolean reusing(Map<String, Object> param) {
+        Literature literature = new Literature();
+        literature.setId((long) param.get("literatureId"));
+        long docFileId = (long) param.get("docFileId");
+        boolean reusing = (boolean) param.get("reusing");
+        List<DocFile> list = docFileRepository.findByLiterature(literature);
+        DocFile doc = null;
+        for (DocFile docFile : list) {
+            //如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入
+            if (docFile.isReusing() && reusing) {
+                return false;
+            }
+            if (docFile.getId() == docFileId) {
+                doc = docFile;
+                if (!reusing) {
+                    break;
+                }
+            }
+        }
+        doc.setReusing(reusing);
+        doc.setAuditorId((long) param.get("auditorId"));
+        doc.setAuditorName((String) param.get("auditorName"));
+        doc.setReMark((String) param.get("reMark"));
+        doc.getLiterature().setReusing(reusing);
+        if (doc == null) {
+            return false;
+        }
         docFileRepository.save(doc);
-		return true;
-	}
+        return true;
+    }
 
 }

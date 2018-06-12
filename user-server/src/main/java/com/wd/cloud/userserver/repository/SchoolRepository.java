@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date 2018/6/5
  * @Description:
  */
-public interface SchoolRepository extends JpaRepository<School,Long> {
+public interface SchoolRepository extends JpaRepository<School, Long> {
 }

@@ -1,10 +1,7 @@
 package com.wd.cloud.docdelivery.controller;
 
-import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+import cn.hutool.http.HttpUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.model.SessionKey;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -14,9 +11,7 @@ import com.wd.cloud.docdelivery.domain.HelpRecord;
 import com.wd.cloud.docdelivery.domain.Literature;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
-import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.model.HelpModel;
-import com.wd.cloud.docdelivery.model.User;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
@@ -25,19 +20,17 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 /**
@@ -102,7 +95,12 @@ public class FrontendController {
             helpRecord = frontService.saveHelpRecord(helpRecord);
             giveRecord.setHelpRecord(helpRecord);
             frontService.saveGiveRecord(giveRecord);
-            mailService.sendMail(helpRecord.getHelpChannel(), helpEmail, helpRecord.getLiterature().getDocTitle(), globalConfig.getBaseUrl() + "/front/download/" + helpRecord.getId(), HelpStatusEnum.HELP_SUCCESSED);
+            String downloadUrl = fileService.getDownloadUrl(helpRecord.getId());
+            mailService.sendMail(helpRecord.getHelpChannel(),
+                    helpEmail,
+                    helpRecord.getLiterature().getDocTitle(),
+                    downloadUrl,
+                    HelpStatusEnum.HELP_SUCCESSED);
             msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         } else {
             try {
@@ -181,14 +179,14 @@ public class FrontendController {
         String giverIp = request.getLocalAddr();
         HelpRecord helpRecord = frontService.getNotWaitRecord(helpRecordId);
         // 该求助记录状态为非待应助，那么可能已经被其他人应助过或已应助完成
-        if (helpRecord != null){
-            return ResponseModel.clientErr("该求助已经被其它人应助",helpRecord);
+        if (helpRecord != null) {
+            return ResponseModel.clientErr("该求助已经被其它人应助", helpRecord);
         }
         //检查用户是否已经认领了应助
         if (frontService.checkExistsGiveing(giverId)) {
             return ResponseModel.error("您已经认领了应助任务，请先处理已认领的任务后再来");
         }
-        helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName,giverIp);
+        helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName, giverIp);
         return ResponseModel.ok(helpRecord);
     }
 
@@ -209,7 +207,7 @@ public class FrontendController {
         //检查用户是否已经认领了应助
         if (frontService.checkExistsGiveing(giverId)) {
             //有认领记录，可以取消
-            frontService.cancelGivingHelp(helpRecordId,giverId);
+            frontService.cancelGivingHelp(helpRecordId, giverId);
             return ResponseModel.ok();
         }
         return ResponseModel.notFound();
@@ -221,7 +219,7 @@ public class FrontendController {
      * @param file
      * @return
      */
-    @ApiOperation(value = "上传应助文件")
+    @ApiOperation(value = "用户上传应助文件")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "helpRecordId", value = "求助记录ID", dataType = "Long", paramType = "path"),
             @ApiImplicitParam(name = "giverId", value = "应助者用户ID", dataType = "Long", paramType = "query")
@@ -229,8 +227,8 @@ public class FrontendController {
     @PostMapping("/give/upload/{helpRecordId}")
     public ResponseModel upload(@PathVariable Long helpRecordId,
                                 @RequestParam Long giverId,
-                                MultipartFile file,
-                                HttpServletRequest request) throws IOException {
+                                @NotNull MultipartFile file,
+                                HttpServletRequest request) {
         if (file == null) {
             return ResponseModel.error("请选择上传文件");
         } else if (!globalConfig.getFileTypes().contains(StrUtil.subAfter(file.getOriginalFilename(), ".", true))) {
@@ -242,9 +240,14 @@ public class FrontendController {
             return ResponseModel.notFound("没有这个求助或求助已完成");
         }
         //保存文件
-        DocFile docFile = fileService.saveFile(helpRecord.getLiterature(), file);
+        DocFile docFile = null;
+        try {
+            docFile = fileService.saveFile(helpRecord.getLiterature(), file);
+        } catch (IOException e) {
+            return ResponseModel.error("文件上传失败,请重新上传");
+        }
         //更新记录
-        frontService.createGiveRecord(helpRecord, giverId, docFile, request.getLocalAddr());
+        frontService.createGiveRecord(helpRecord, giverId, docFile, HttpUtil.getClientIP(request));
         return ResponseModel.ok("应助成功，感谢您的帮助");
     }
 
@@ -264,43 +267,13 @@ public class FrontendController {
         return ResponseModel.ok(literatureList);
     }
 
-
-    /**
-     * 文献下载
-     *
-     * @return
-     */
-    @ApiOperation(value = "求助文件下载")
-    @ApiImplicitParam(name = "helpRecodeId", value = "求助记录ID", dataType = "Long", paramType = "path")
-    @GetMapping("/download/{helpRecodeId}")
-    public ResponseEntity download(@PathVariable Long helpRecodeId) {
-
-        DownloadModel downloadModel = frontService.getDownloadFile(helpRecodeId);
-
-        if (downloadModel.getDocFile() == null) {
-            return ResponseEntity.notFound().build();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Content-Disposition", "attachment; filename=" + downloadModel.getDownloadFileName());
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentLength(downloadModel.getDocFile().length())
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(new FileSystemResource(downloadModel.getDocFile()));
-    }
-
-
     /**
      * 文献求助记录
      *
      * @return
      */
     @GetMapping("/help/records/all")
-    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable,HttpServletRequest request) {
+    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
 //        User user = (User)request.getSession().getAttribute(SessionKey.LOGGER);
 //        Console.log(user);
         return ResponseModel.ok(request.getSession().getAttribute(SessionKey.LOGGER));

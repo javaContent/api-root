@@ -54,6 +54,7 @@ public class ResponseModel<T> {
 
     /**
      * 请求成功
+     *
      * @return
      */
     public static ResponseModel ok() {
@@ -62,22 +63,25 @@ public class ResponseModel<T> {
 
     /**
      * 请求成功
+     *
      * @param data
      * @return
      */
     public static ResponseModel<Object> ok(Object data) {
-        return ResponseModel.ok(HttpStatus.HTTP_OK,data);
+        return ResponseModel.ok(HttpStatus.HTTP_OK, data);
     }
 
     public static ResponseModel<Object> ok(String msg) {
-        return ResponseModel.ok(HttpStatus.HTTP_OK,msg,null);
+        return ResponseModel.ok(HttpStatus.HTTP_OK, msg, null);
     }
 
-    public static ResponseModel<Object> ok(Integer code,String msg){
-        return ResponseModel.ok(code,msg,null);
+    public static ResponseModel<Object> ok(Integer code, String msg) {
+        return ResponseModel.ok(code, msg, null);
     }
+
     /**
      * 请求成功
+     *
      * @param code
      * @param data
      * @return
@@ -86,12 +90,13 @@ public class ResponseModel<T> {
         return ResponseModel.ok(code, HttpMsg.OK, data);
     }
 
-    public static ResponseModel<Object> ok(int code,String msg, Object data) {
+    public static ResponseModel<Object> ok(int code, String msg, Object data) {
         return new ResponseModel<Object>(code, msg, data);
     }
 
     /**
      * 未知错误
+     *
      * @return
      */
     public static ResponseModel error() {
@@ -100,95 +105,105 @@ public class ResponseModel<T> {
 
     /**
      * 未知错误
+     *
      * @param msg
      * @return
      */
     public static ResponseModel error(String msg) {
-        return ResponseModel.error(0,msg);
+        return ResponseModel.error(0, msg);
     }
 
     /**
      * 未知错误
+     *
      * @param code
      * @param msg
      * @return
      */
     public static ResponseModel error(int code, String msg) {
-        return ResponseModel.error(code, msg,null);
+        return ResponseModel.error(code, msg, null);
     }
 
-    public static ResponseModel error(int code,String msg,Object body){
-        return new ResponseModel(code,msg,body);
+    public static ResponseModel error(int code, String msg, Object body) {
+        return new ResponseModel(code, msg, body);
     }
 
     /**
      * 数据未找到
+     *
      * @return
      */
-    public static ResponseModel notFound(){
+    public static ResponseModel notFound() {
         return ResponseModel.notFound(HttpMsg.NOT_FOUND);
     }
 
     /**
      * 数据未找到
+     *
      * @param msg
      * @return
      */
-    public static ResponseModel notFound(String msg){
-        return new ResponseModel(HttpStatus.HTTP_NOT_FOUND ,msg);
+    public static ResponseModel notFound(String msg) {
+        return new ResponseModel(HttpStatus.HTTP_NOT_FOUND, msg);
     }
 
     /**
      * 重复提交导致数据冲突
+     *
      * @return
      */
-    public static ResponseModel clientErr(){
+    public static ResponseModel clientErr() {
         return ResponseModel.clientErr(HttpMsg.CLIENT_ERR);
     }
 
     /**
      * 重复提交导致数据冲突
+     *
      * @return
      */
-    public static ResponseModel clientErr(String msg){
-        return ResponseModel.clientErr(msg,null);
+    public static ResponseModel clientErr(String msg) {
+        return ResponseModel.clientErr(msg, null);
     }
 
-    public static ResponseModel clientErr(String msg,Object body){
-        return new ResponseModel(HttpStatus.HTTP_CONFLICT ,msg,body);
+    public static ResponseModel clientErr(String msg, Object body) {
+        return new ResponseModel(HttpStatus.HTTP_CONFLICT, msg, body);
     }
 
     /**
      * 服务异常，一般由服务端有异常未捕获造成的
+     *
      * @return
      */
-    public static ResponseModel serverErr(){
+    public static ResponseModel serverErr() {
         return ResponseModel.serverErr(HttpMsg.SERVER_ERR);
     }
 
     /**
      * 服务异常，一般由服务端有异常未捕获造成的
+     *
      * @param msg
      * @return
      */
-    public static ResponseModel serverErr(String msg){
-        return new ResponseModel(HttpStatus.HTTP_INTERNAL_ERROR ,msg);
+    public static ResponseModel serverErr(String msg) {
+        return new ResponseModel(HttpStatus.HTTP_INTERNAL_ERROR, msg);
     }
 
     /**
      * 参数错误
+     *
      * @return
      */
-    public static ResponseModel paramErr(){
+    public static ResponseModel paramErr() {
         return ResponseModel.paramErr(HttpMsg.PARAMS_ERR);
     }
 
     /**
      * 参数错误
+     *
      * @return
      */
-    public static ResponseModel paramErr(String msg){
-        return new ResponseModel(HttpStatus.HTTP_BAD_REQUEST ,msg);
+    public static ResponseModel paramErr(String msg) {
+        return new ResponseModel(HttpStatus.HTTP_BAD_REQUEST, msg);
     }
 
 }

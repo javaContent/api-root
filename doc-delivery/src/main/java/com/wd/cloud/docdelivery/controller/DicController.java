@@ -1,11 +1,10 @@
 package com.wd.cloud.docdelivery.controller;
 
 import com.wd.cloud.commons.model.ResponseModel;
-import com.wd.cloud.docdelivery.domain.AuditMsg;
+import com.wd.cloud.docdelivery.entity.AuditMsg;
 import com.wd.cloud.docdelivery.repository.AuditMsgRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

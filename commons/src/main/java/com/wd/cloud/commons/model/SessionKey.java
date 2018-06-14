@@ -7,7 +7,7 @@ package com.wd.cloud.commons.model;
  */
 public class SessionKey {
 
-    public static final String LOGGER = "logger";
+    public static final String LOGIN_USER = "loginUser";
 
 
 }

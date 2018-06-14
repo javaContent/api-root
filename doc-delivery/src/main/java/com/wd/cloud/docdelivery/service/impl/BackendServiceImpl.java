@@ -1,10 +1,10 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import com.wd.cloud.docdelivery.config.GlobalConfig;
-import com.wd.cloud.docdelivery.domain.DocFile;
-import com.wd.cloud.docdelivery.domain.GiveRecord;
-import com.wd.cloud.docdelivery.domain.HelpRecord;
-import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.entity.DocFile;
+import com.wd.cloud.docdelivery.entity.GiveRecord;
+import com.wd.cloud.docdelivery.entity.HelpRecord;
+import com.wd.cloud.docdelivery.entity.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;

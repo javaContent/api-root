@@ -5,10 +5,10 @@ import cn.hutool.http.HttpUtil;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.model.SessionKey;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
-import com.wd.cloud.docdelivery.domain.DocFile;
-import com.wd.cloud.docdelivery.domain.GiveRecord;
-import com.wd.cloud.docdelivery.domain.HelpRecord;
-import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.entity.DocFile;
+import com.wd.cloud.docdelivery.entity.GiveRecord;
+import com.wd.cloud.docdelivery.entity.HelpRecord;
+import com.wd.cloud.docdelivery.entity.Literature;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.HelpModel;
@@ -176,7 +176,6 @@ public class FrontendController {
                                 @RequestParam Long giverId,
                                 @RequestParam String giverName,
                                 HttpServletRequest request) {
-        String giverIp = request.getLocalAddr();
         HelpRecord helpRecord = frontService.getNotWaitRecord(helpRecordId);
         // 该求助记录状态为非待应助，那么可能已经被其他人应助过或已应助完成
         if (helpRecord != null) {
@@ -186,7 +185,7 @@ public class FrontendController {
         if (frontService.checkExistsGiveing(giverId)) {
             return ResponseModel.error("您已经认领了应助任务，请先处理已认领的任务后再来");
         }
-        helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName, giverIp);
+        helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName, HttpUtil.getClientIP(request));
         return ResponseModel.ok(helpRecord);
     }
 
@@ -276,7 +275,7 @@ public class FrontendController {
     public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
 //        User user = (User)request.getSession().getAttribute(SessionKey.LOGGER);
 //        Console.log(user);
-        return ResponseModel.ok(request.getSession().getAttribute(SessionKey.LOGGER));
+        return ResponseModel.ok(request.getSession().getAttribute(SessionKey.LOGIN_USER));
     }
 
 }

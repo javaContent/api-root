@@ -1,11 +1,13 @@
 package com.wd.cloud.commons.model;
 
+import java.io.Serializable;
+
 /**
  * @author He Zhigang
  * @date 2018/5/3
  * @remark api返回的response对象
  */
-public class ResponseModel<T> {
+public class ResponseModel<T> implements Serializable {
     private Integer code;
     private String msg;
     private T body;
@@ -57,7 +59,7 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel ok() {
+    public static<T> ResponseModel<T> ok() {
         return ResponseModel.ok(null);
     }
 
@@ -67,15 +69,15 @@ public class ResponseModel<T> {
      * @param data
      * @return
      */
-    public static ResponseModel<Object> ok(Object data) {
+    public static<T> ResponseModel<T> ok(T data) {
         return ResponseModel.ok(HttpStatus.HTTP_OK, data);
     }
 
-    public static ResponseModel<Object> ok(String msg) {
+    public static<T> ResponseModel<T> ok(String msg) {
         return ResponseModel.ok(HttpStatus.HTTP_OK, msg, null);
     }
 
-    public static ResponseModel<Object> ok(Integer code, String msg) {
+    public static<T> ResponseModel<T> ok(Integer code, String msg) {
         return ResponseModel.ok(code, msg, null);
     }
 
@@ -86,12 +88,12 @@ public class ResponseModel<T> {
      * @param data
      * @return
      */
-    public static ResponseModel<Object> ok(int code, Object data) {
+    public static<T> ResponseModel<T> ok(int code, T data) {
         return ResponseModel.ok(code, HttpMsg.OK, data);
     }
 
-    public static ResponseModel<Object> ok(int code, String msg, Object data) {
-        return new ResponseModel<Object>(code, msg, data);
+    public static<T> ResponseModel<T> ok(int code, String msg, T data) {
+        return new ResponseModel<T>(code, msg, data);
     }
 
     /**
@@ -99,7 +101,7 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel error() {
+    public static<T> ResponseModel<T> error() {
         return ResponseModel.error(HttpMsg.ERROR);
     }
 
@@ -109,7 +111,7 @@ public class ResponseModel<T> {
      * @param msg
      * @return
      */
-    public static ResponseModel error(String msg) {
+    public static<T> ResponseModel<T> error(String msg) {
         return ResponseModel.error(0, msg);
     }
 
@@ -120,12 +122,12 @@ public class ResponseModel<T> {
      * @param msg
      * @return
      */
-    public static ResponseModel error(int code, String msg) {
+    public static<T> ResponseModel<T> error(int code, String msg) {
         return ResponseModel.error(code, msg, null);
     }
 
-    public static ResponseModel error(int code, String msg, Object body) {
-        return new ResponseModel(code, msg, body);
+    public static<T> ResponseModel<T> error(int code, String msg, T body) {
+        return new ResponseModel<T>(code, msg, body);
     }
 
     /**
@@ -133,7 +135,7 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel notFound() {
+    public static<T> ResponseModel<T> notFound() {
         return ResponseModel.notFound(HttpMsg.NOT_FOUND);
     }
 
@@ -143,8 +145,8 @@ public class ResponseModel<T> {
      * @param msg
      * @return
      */
-    public static ResponseModel notFound(String msg) {
-        return new ResponseModel(HttpStatus.HTTP_NOT_FOUND, msg);
+    public static<T> ResponseModel<T> notFound(String msg) {
+        return new ResponseModel<T>(HttpStatus.HTTP_NOT_FOUND, msg);
     }
 
     /**
@@ -152,7 +154,7 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel clientErr() {
+    public static<T> ResponseModel<T> clientErr() {
         return ResponseModel.clientErr(HttpMsg.CLIENT_ERR);
     }
 
@@ -161,12 +163,12 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel clientErr(String msg) {
+    public static<T> ResponseModel<T> clientErr(String msg) {
         return ResponseModel.clientErr(msg, null);
     }
 
-    public static ResponseModel clientErr(String msg, Object body) {
-        return new ResponseModel(HttpStatus.HTTP_CONFLICT, msg, body);
+    public static<T> ResponseModel<T> clientErr(String msg, T body) {
+        return new ResponseModel<T>(HttpStatus.HTTP_CONFLICT, msg, body);
     }
 
     /**
@@ -174,7 +176,7 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel serverErr() {
+    public static<T> ResponseModel<T> serverErr() {
         return ResponseModel.serverErr(HttpMsg.SERVER_ERR);
     }
 
@@ -184,8 +186,8 @@ public class ResponseModel<T> {
      * @param msg
      * @return
      */
-    public static ResponseModel serverErr(String msg) {
-        return new ResponseModel(HttpStatus.HTTP_INTERNAL_ERROR, msg);
+    public static<T> ResponseModel<T> serverErr(String msg) {
+        return new ResponseModel<T>(HttpStatus.HTTP_INTERNAL_ERROR, msg);
     }
 
     /**
@@ -193,7 +195,7 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel paramErr() {
+    public static<T> ResponseModel<T> paramErr() {
         return ResponseModel.paramErr(HttpMsg.PARAMS_ERR);
     }
 
@@ -202,8 +204,8 @@ public class ResponseModel<T> {
      *
      * @return
      */
-    public static ResponseModel paramErr(String msg) {
-        return new ResponseModel(HttpStatus.HTTP_BAD_REQUEST, msg);
+    public static<T> ResponseModel<T> paramErr(String msg) {
+        return new ResponseModel<T>(HttpStatus.HTTP_BAD_REQUEST, msg);
     }
 
 }

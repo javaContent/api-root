@@ -12,10 +12,11 @@
     <description>微服务根POM</description>
 
     <modules>
+        <module>api-feign</module><!--api调用-->
         <module>api-gateway</module><!--api网关-->
         <module>config-server</module><!--配置中心-->
         <module>discovery</module><!--服务注册中心-->
-        <module>user-server</module><!--用户中心-->
+        <module>auth-server</module><!--鉴权服务-->
         <module>doc-delivery</module><!--文献传递服务-->
         <module>commons</module>
     </modules>
@@ -23,7 +24,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.1.RELEASE</version>
+        <version>2.0.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -32,10 +33,14 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <spring-cloud.version>Finchley.M9</spring-cloud.version>
+        <openfeign.version>1.4.4.RELEASE</openfeign.version>
         <com.alibaba.druid.version>1.1.9</com.alibaba.druid.version>
         <javax.mail.version>1.4.7</javax.mail.version>
         <swagger.version>1.7.0.RELEASE</swagger.version>
         <cn.hutool.all.version>[4.0.12,)</cn.hutool.all.version>
+        <jackson.databind.version>2.9.5</jackson.databind.version>
+        <jackson.core.version>2.9.5</jackson.core.version>
+        <jackson.asl.version>1.9.12</jackson.asl.version>
     </properties>
 
     <dependencyManagement>
@@ -51,6 +56,11 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
                 <version>${com.alibaba.druid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-feign</artifactId>
+                <version>${openfeign.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.spring4all</groupId>
@@ -69,9 +79,29 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
+                <groupId>com.wd.cloud</groupId>
+                <artifactId>api-feign</artifactId>
+                <version>${version}</version>
+            </dependency>
+            <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${cn.hutool.all.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.databind.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.jackson</groupId>
+                <artifactId>jackson-mapper-asl</artifactId>
+                <version>${jackson.asl.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

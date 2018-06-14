@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.repository;
 
-import com.wd.cloud.docdelivery.domain.DocFile;
-import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.entity.DocFile;
+import com.wd.cloud.docdelivery.entity.Literature;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

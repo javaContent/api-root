@@ -3,13 +3,13 @@ package com.wd.cloud.docdelivery.service;
 import java.util.List;
 import java.util.Map;
 
-import com.wd.cloud.docdelivery.domain.DocFile;
-import com.wd.cloud.docdelivery.domain.GiveRecord;
+import com.wd.cloud.docdelivery.entity.DocFile;
+import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import org.springframework.data.domain.Page;
 
-import com.wd.cloud.docdelivery.domain.HelpRecord;
-import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.entity.HelpRecord;
+import com.wd.cloud.docdelivery.entity.Literature;
 
 import org.springframework.data.domain.Pageable;
 

@@ -4,10 +4,10 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
-import com.wd.cloud.docdelivery.domain.DocFile;
-import com.wd.cloud.docdelivery.domain.GiveRecord;
-import com.wd.cloud.docdelivery.domain.HelpRecord;
-import com.wd.cloud.docdelivery.domain.Literature;
+import com.wd.cloud.docdelivery.entity.DocFile;
+import com.wd.cloud.docdelivery.entity.GiveRecord;
+import com.wd.cloud.docdelivery.entity.HelpRecord;
+import com.wd.cloud.docdelivery.entity.Literature;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
@@ -27,6 +27,7 @@ import java.io.IOException;
  */
 @Service("fileService")
 public class FileServiceImpl implements FileService {
+
 
     @Autowired
     GlobalConfig globalConfig;
@@ -73,8 +74,13 @@ public class FileServiceImpl implements FileService {
         String fileName = giveRecord.getDocFile().getFileName();
         String fileType = giveRecord.getDocFile().getFileType();
         String docTitle = helpRecord.getLiterature().getDocTitle();
+        //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。
+        docTitle = FileUtil.cleanInvalid(docTitle);
         DownloadModel downloadModel = new DownloadModel();
-        downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
+
+        File downloadFile = new File(globalConfig.getSavePath(), fileName);
+
+        downloadModel.setDocFile(downloadFile);
         downloadModel.setDownloadFileName(docTitle + "." + fileType);
         return downloadModel;
     }
@@ -84,4 +90,5 @@ public class FileServiceImpl implements FileService {
     public String getDownloadUrl(Long helpRecordId) {
         return globalConfig.getBaseUrl() + "/file/download/" + helpRecordId;
     }
+
 }

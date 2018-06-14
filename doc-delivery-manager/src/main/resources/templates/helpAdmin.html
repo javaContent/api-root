@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>求助管理</title>
+    <script src="./js/jquery.1.91.min.js" type="text/javascript"></script>
+    <script src="./js/WdatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="./js/pagination.js" type="text/javascript"></script>
+    <script src="./js/layer/layer.js" type="text/javascript"></script>
+    <script src="./js/admin.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="./css/common.css">
+
+</head>
+<body>
+<!-- 固定header -->
+<div class="header">
+    <a href="#" class="logo">文献传递管理系统</a>
+    <div class="login-hand">
+        <span class="login-user">欢迎你：heting</span>
+        <a href="#" class="login-out">退出登录</a>
+    </div>
+
+    <div class="navbox">
+        <ul>
+            <li>
+                <a href="./helpAdmin.html" class="in">求助管理</a>
+            </li>
+            <li>
+                <a href="./multiplexAdmin.html">复用管理</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+<!-- 中间主体内容 -->
+<div class="container">
+    <!-- 面包屑导航 -->
+    <div class="breadcrumbs">
+        <i></i>
+        <a href="#">首页</a>&gt;
+        <a href="#" class="in">求助管理</a>
+    </div>
+
+    <!-- 数据筛选-检索 -->
+    <div class="search-box">
+        <form id="change_form">
+            <label class="access-pro">
+                <span class="labt">学校:</span>
+                <div class="sc_selbox">
+                    <i class="i1"></i>
+                    <span id="section_lx">全部学校</span>
+                    <div class="sc_selopt">
+                        <input class="se-val" type="text" value="">
+                        <p class="school" schoolflag="bslib" schoolid="330">宝鸡文理学院</p>
+                        <p class="school" schoolflag="bslib" schoolid="331">宝山图书馆</p>
+                        <p class="school" schoolflag="bslib" schoolid="332">长治医学院</p>
+                        <p class="school" schoolflag="bttc" schoolid="339">包头师范学院</p>
+                        <p class="school" schoolflag="bslib" schoolid="330">宝鸡文理学院1</p>
+                        <p class="school" schoolflag="bslib" schoolid="331">宝山图书馆1</p>
+                        <p class="school" schoolflag="bslib" schoolid="332">长治医学院1</p>
+                        <p class="school" schoolflag="bttc" schoolid="339">包头师范学院1</p>
+                        <p class="school" schoolflag="bslib" schoolid="330">宝鸡文理学院2</p>
+                        <p class="school" schoolflag="bslib" schoolid="331">宝山图书馆2</p>
+                        <p class="school" schoolflag="bslib" schoolid="332">长治医学院2</p>
+                        <p class="school" schoolflag="bttc" schoolid="339">包头师范学院2</p>
+                    </div>
+                </div>
+            </label>
+            <input type="hidden" id="school" name="school" value="">
+
+            <label class="data-type">
+                <span class="labt">状态:</span>
+                <div class="sc_selbox">
+                    <i class="i1"></i>
+                    <span id="section_lx">全部</span>
+                    <div class="sc_selopt">
+                        <p class="type" value="-1">全部</p>
+                        <p class="type" value="1">已成功处理</p>
+                        <p class="type" value="0">未处理</p>
+                        <p class="type" value="2">提交第三方处理</p>
+                        <p class="type" value="4">其他途径</p>
+                        <p class="type" value="3">无结果</p>
+                        <p class="type" value="5">无结果(图书)</p>
+                        <p class="type" value="7">复用</p>
+                        <p class="type" value="6">已复用</p>
+                    </div>
+                    <input type="hidden" name="type" value="">
+                </div>
+            </label>
+
+            <label class="data-type">
+                <span class="labt">日期:</span>
+                <div class="datebox">
+                    <i class="i2"></i>
+                    <input type="text"
+                           onfocus="WdatePicker({minDate:'2015-03-13',maxDate:'#F{$dp.$D(\'endTime\')}',readOnly:true})"
+                           id="beginTime" class="tbSearch" value="2015-03-13">
+                </div>
+                <span class="labm">至</span>
+                <div class="datebox">
+                    <i class="i2"></i>
+                    <input type="text"
+                           onfocus="WdatePicker({minDate:'#F{$dp.$D(\'beginTime\')}',maxDate:'%y-%M-%d',readOnly:true})"
+                           id="endTime" class="tbSearch" value="2018-06-05">
+                </div>
+            </label>
+
+            <div class="input-srch">
+                <input type="text" class="tbSearch" placeholder="请输入标题或邮箱查询">
+                <input class="tbBtn submit" id="search" value="查询" type="submit">
+            </div>
+        </form>
+    </div>
+
+    <div class="scroll-box">
+        <div class="radius">
+            <table class="data-table">
+                <tr>
+                    <th width="8%"><span>序号</span></th>
+                    <th width="30%"><span>标题</span></th>
+                    <th><span>用户</span></th>
+                    <th><span>学校</span></th>
+                    <th><span>申请时间</span></th>
+                    <th><span>状态</span></th>
+                    <th><span>处理时间</span></th>
+                    <th><span>操作人</span></th>
+                    <th width="8%"><span>操作</span></th>
+                </tr>
+                <tr>
+                    <td><span>1</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">Proton ring trapping in a magnetic mirror </a>
+							</span>
+                    </td>
+                    <td><span>22603267@qq.com</span></td>
+                    <td><span>国防科学技术大学</span></td>
+                    <td><span>2018-05-23 15:04</span></td>
+                    <td>
+                        <span class="cd00">无结果</span>
+                    </td>
+                    <td><span>2018-05-30 22:59</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span></span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567"
+                               data_title="Poor diagnostic value of adenosine deaminase in pleural, peritoneal & cerebrospinal fluids in tuberculosis."
+                               data_url="http://europepmc.org/abstract/med/1291460" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a data-thickcon="docdeliverHelp" data_id="12345"
+                               data_title="Association between proton pump inhibitors and microscopic colitis: implications for practice and future"
+                               data_path="http://www.baidu.com" class="oprbtn help">审核</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+                <tr>
+                    <td><span>2</span></td>
+                    <td class="tl">
+							<span>
+								<a href="" title="点击查看" target="_blank">
+									Stability of Runge-Kutta methods for stiff nonlinear differential equations </a>
+							</span>
+                    </td>
+                    <td><span>2929410816@qq.com</span></td>
+                    <td><span>湘潭大学</span></td>
+                    <td><span>2018-06-05 14:01</span></td>
+                    <td><span class="cd00">提交第三方处理</span></td>
+                    <td><span>2018-06-05 14:05</span></td>
+                    <td><span>gansijia</span></td>
+                    <td><span>
+							<a href="javascript:void(0);" data-thickcon="docdeliver" class="oprbtn handle"
+                               data_id="36567" data_title="" data_url="" data_type="2">处理</a>
+						</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="pagination"></div>
+    </div>
+</div>
+
+
+<!-- 弹窗 -->
+<div class="thickWarp">
+    <span class="thickBj"></span>
+    <div class="thickinWrap">
+        <span class="closeThick"></span>
+        <div class="thickhead">
+            <h3 class="thickheadTit"></h3>
+        </div>
+        <div class="thickbody">
+            <!-- 处理 弹窗 -->
+            <div id="docdeliver" class="docdeliver">
+                <form id="process_form">
+                    <input type="hidden" name="id" id="id_input" value="">
+                    <input type="hidden" name="school" value="">
+                    <input type="hidden" name="type" value="">
+                    <input type="hidden" name="beginTime" value="">
+                    <input type="hidden" name="endTime" value="">
+                    <input type="hidden" name="keyword" value="">
+                    <input type="hidden" name="offset" value="">
+
+                    <ul>
+                        <li>
+                            <span class="labt">标题：</span>
+                            <span class="labcon" id="title_div"></span>
+                        </li>
+                        <li class="textOver">
+                            <span class="labt">URL：</span>
+                            <a href="" id="url_href" target="_blank"></a>
+                        </li>
+                        <li>
+                            <span class="labt">处理方式：</span>
+                            <input class="processType" type="radio" name="processType" value="1" checked="checked">
+                            直接处理&nbsp;
+                            <font class="types" style="display:none;">
+                                <input class="processType" type="radio" name="processType" value="2">提交第三方处理&nbsp;
+                                <input class="processType" type="radio" name="processType" value="4">
+                                其他途径&nbsp;
+                            </font>
+                            <input class="processType" type="radio" name="processType" value="3">
+                            无结果&nbsp;
+                            <input class="processType" type="radio" name="processType" value="5">
+                            无结果（图书）
+                        </li>
+                        <li id="file_line">
+                            <span class="labt">文档：</span>
+                            <input type="file" id="file_input" name="file" class="file">
+                        </li>
+                    </ul>
+
+                    <div class="thickBtn">
+                        <input type="submit" class="btnEnsure btn" value="提交">
+                        <input type="reset" class="btnCancle btn" value="取消">
+                    </div>
+                </form>
+            </div>
+
+            <!-- 审核 弹窗 -->
+            <div class="docdeliverHelp" id="docdeliverHelp">
+                <form id="help_form">
+                    <input type="hidden" name="id" class="id">
+                    <input type="hidden" name="school" value="">
+                    <input type="hidden" name="type" value="">
+                    <input type="hidden" name="beginTime" value="">
+                    <input type="hidden" name="endTime" value="">
+                    <input type="hidden" name="keyword" value="">
+                    <input type="hidden" name="offset" value="">
+
+                    <ul>
+                        <li>
+                            <span class="labt">标题：</span>
+                            <span class="labcon title"></span>
+                        </li>
+                        <li>
+                            <span class="labt">操作：</span>
+                            <a id="download" href="" class="labcon path" download="">下载</a>
+                        </li>
+                        <li>
+                            <span class="labt">审核：</span>
+                            <input class="processType" type="radio" name="helpId" value="3" checked="checked">
+                            审核通过&nbsp;
+                            <input class="processType" type="radio" name="helpId" value="0">
+                            审核不通过&nbsp;
+                        </li>
+                    </ul>
+
+                    <div class="thickBtn">
+                        <input type="submit" class="btnEnsure btn" value="提交">
+                        <input type="reset" class="btnCancle btn" value="取消">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- footer -->
+<div class="footer">
+    <p><a href="" target="_blank">Spischolar学术资源在线</a></p>
+    <p>Copyright <span>©</span> 2015-2017 All rights reserved.</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>文献传递-登录</title>
+    <script src="./js/jquery.1.91.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+<div class="login-warp">
+    <div class="login-panel">
+        <div class="title">文献传递管理后台登录</div>
+        <div class="items-panel">
+            <form action="#" id="loginForm">
+                <div class="items">
+                    <span>账&nbsp;号：</span>
+                    <input type="text" placeholder="请输入用户名或邮箱" class="userName" name="userName">
+                </div>
+                <div class="items">
+                    <span>密&nbsp;码：</span>
+                    <input type="password" placeholder="请输入密码" class="userPwd" name="userPwd">
+                </div>
+                <div class="items">
+                    <span>验证码：</span>
+                    <input type="text" class="valCode" name="valCode">
+                    <img src="images/nav.png">
+                </div>
+                <p class="error"></p>
+                <div class="btn-box">
+                    <input type="submit" value="登录" class="submit">
+                    <input type="reset" value="重置" class="reset">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        // 登录 js
+        var user = $(".userName"),
+            pwd = $(".userPwd"),
+            code = $(".valCode"),
+            submit = $(".submit"),
+            error = $(".error"),
+            reg = new RegExp("^[ ]+$");
+        submit.click(function (e) {
+            e.preventDefault();
+            if (reg.test(user.val()) || user.val() == '') {
+                error.text('请输入用户名');
+            } else if (reg.test(pwd.val()) || pwd.val() == '') {
+                error.text('请输入密码');
+            } else if (reg.test(code.val()) || code.val() == '') {
+                error.text('请输入验证码');
+            } else {
+                error.text('');
+                $("#loginForm").submit();
+            }
+        })
+    })
+</script>
+</body>
+</html>

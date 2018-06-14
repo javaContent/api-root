@@ -1,5 +1,8 @@
 package com.wd.cloud.docdelivery.controller;
 
+import cn.hutool.core.util.StrUtil;
+import com.wd.cloud.apifeign.AuthServerApi;
+import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.service.FileService;
 import io.swagger.annotations.Api;
@@ -36,12 +39,13 @@ public class FileController {
     public ResponseEntity download(@PathVariable Long helpRecodeId) {
 
         DownloadModel downloadModel = fileService.getDownloadFile(helpRecodeId);
-        if (downloadModel.getDocFile() == null) {
+        if (!downloadModel.getDocFile().exists()) {
             return ResponseEntity.notFound().build();
         }
         HttpHeaders headers = new HttpHeaders();
+        String disposition = StrUtil.format("attachment; filename=\"{}\"", downloadModel.getDownloadFileName());
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Content-Disposition", "attachment; filename=" + downloadModel.getDownloadFileName());
+        headers.add("Content-Disposition", disposition);
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
         return ResponseEntity
@@ -50,5 +54,13 @@ public class FileController {
                 .contentLength(downloadModel.getDocFile().length())
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .body(new FileSystemResource(downloadModel.getDocFile()));
+    }
+
+    @Autowired
+    AuthServerApi authServerApi;
+
+    @GetMapping("/user/{userid}")
+    public ResponseModel getUser(@PathVariable Long userid){
+        return ResponseModel.ok(authServerApi.getUserInfo(userid).getBody());
     }
 }

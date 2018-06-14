@@ -1,6 +1,6 @@
 package com.wd.cloud.docdelivery.repository;
 
-import com.wd.cloud.docdelivery.domain.AuditMsg;
+import com.wd.cloud.docdelivery.entity.AuditMsg;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

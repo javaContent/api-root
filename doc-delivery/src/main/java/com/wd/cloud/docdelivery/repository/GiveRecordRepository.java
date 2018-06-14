@@ -1,7 +1,7 @@
 package com.wd.cloud.docdelivery.repository;
 
-import com.wd.cloud.docdelivery.domain.GiveRecord;
-import com.wd.cloud.docdelivery.domain.HelpRecord;
+import com.wd.cloud.docdelivery.entity.GiveRecord;
+import com.wd.cloud.docdelivery.entity.HelpRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

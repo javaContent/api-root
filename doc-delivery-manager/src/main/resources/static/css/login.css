@@ -1,0 +1,114 @@
+/**
+ * 登录页 样式
+ */
+
+.login-warp {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    min-height: 768px;
+    background: url(../images/login-bg.png) no-repeat center 105px;
+}
+
+.login-panel {
+    margin: 182px auto 0;
+    width: 390px;
+    background: #ffffff;
+    min-height: 404px;
+}
+
+.login-panel .title {
+    font-size: 18px;
+    height: 56px;
+    line-height: 56px;
+    padding: 0 24px;
+    border-bottom: solid 1px #cacaca;
+    color: #242424;
+}
+
+.login-panel .items-panel {
+    padding: 32px 51px 0 21px;
+    font-size: 14px;
+    position: relative;
+}
+
+.login-panel .items-panel .items {
+    margin-bottom: 24px;
+    height: 40px;
+}
+
+.login-panel .items-panel .items span {
+    float: left;
+    width: 60px;
+    height: 40px;
+    padding-right: 20px;
+    line-height: 40px;
+    text-align: right;
+}
+
+.login-panel .items-panel .items input {
+    float: left;
+    width: 218px;
+    height: 20px;
+    padding: 8px 8px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.login-panel .items-panel .items input:focus {
+    outline-offset: -2px;
+    outline: -webkit-focus-ring-color auto 5px;
+}
+
+.login-panel .items-panel .items input.valCode {
+    width: 100px;
+}
+
+.login-panel .items-panel .items img {
+    width: 100px;
+    height: 40px;
+    float: right;
+}
+
+.login-panel .items-panel .error {
+    padding-left: 80px;
+    height: 24px;
+    line-height: 24px;
+    color: red;
+    margin-top: -12px;
+}
+
+.login-panel .items-panel .btn-box {
+    height: 32px;
+    line-height: 32px;
+    padding-left: 80px;
+    margin-top: 12px;
+}
+
+.login-panel .items-panel .btn-box input {
+    width: 110px;
+    height: 32px;
+    border: 0;
+    outline: 0;
+    background: #3589E4;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+}
+
+.login-panel .items-panel .btn-box input:hover {
+    background: #317DD7;
+}
+
+.login-panel .items-panel .btn-box input.reset {
+    float: right;
+    background: #FED92C;
+    color: #983B1E;
+}
+
+.login-panel .items-panel .btn-box input.reset:hover {
+    background: #FACE0A;
+}

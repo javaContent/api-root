@@ -18,7 +18,8 @@
         <module>auth-server</module><!--鉴权服务-->
         <module>doc-delivery</module><!--文献传递服务-->
         <module>commons</module><!--提取的公共方法和类-->
-    <module>monitoring</module>
+    	<module>monitoring</module><!-- 监控模块 -->
+    	<module>search-service</module><!-- 检索服务 -->
   </modules>
 
     <parent>

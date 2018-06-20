@@ -19,7 +19,7 @@
         <module>doc-delivery</module><!--文献传递服务-->
         <module>commons</module><!--提取的公共方法和类-->
     	<module>monitoring</module><!-- 监控模块 -->
-    	<module>search-service</module><!-- 检索服务 -->
+    	<module>search-server</module><!-- 检索服务 -->
   </modules>
 
     <parent>
@@ -42,6 +42,10 @@
         <jackson.databind.version>2.9.5</jackson.databind.version>
         <jackson.core.version>2.9.5</jackson.core.version>
         <jackson.asl.version>1.9.12</jackson.asl.version>
+        <elasticsearch.version>5.5.1</elasticsearch.version>
+        <log4j-api.version>2.9.1</log4j-api.version>
+        <log4j-core.version>2.9.1</log4j-core.version>
+        <admin.starter>2.0.0</admin.starter>
     </properties>
 
     <dependencyManagement>
@@ -63,6 +67,22 @@
                 <artifactId>spring-cloud-starter-feign</artifactId>
                 <version>${openfeign.version}</version>
             </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${admin.starter}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server</artifactId>
+                <version>${admin.starter}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-server-ui</artifactId>
+                <version>${admin.starter}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.spring4all</groupId>
                 <artifactId>swagger-spring-boot-starter</artifactId>
@@ -104,6 +124,39 @@
                 <artifactId>jackson-mapper-asl</artifactId>
                 <version>${jackson.asl.version}</version>
             </dependency>
+
+            <!-- ==========================ES 依赖包start============================-->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch</groupId>
+                <artifactId>elasticsearch</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>transport</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>rest</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>sniffer</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <!-- ==========================ES 依赖包end============================-->
         </dependencies>
     </dependencyManagement>
 

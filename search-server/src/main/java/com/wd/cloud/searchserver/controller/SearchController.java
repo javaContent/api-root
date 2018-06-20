@@ -1,16 +1,22 @@
-package com.wd.cloud.search.controller;
+package com.wd.cloud.searchserver.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.wd.cloud.search.service.SearchService;
+import com.wd.cloud.searchserver.service.SearchService;
 
+/**
+ * SearchController class
+ *
+ * @author hezhigang
+ * @date 2018/04/08
+ */
 @RestController
 public class SearchController {
 	
-	//@Autowired
+	@Autowired
 	private SearchService service;
 	
 	@HystrixCommand(fallbackMethod = "hiBack")

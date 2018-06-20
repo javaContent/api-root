@@ -53,14 +53,14 @@ public class MonitoringApplication {
 	    private Notifier notifier;
 	    
 	    @Autowired
-	    private InstanceRepository repository;
+	    private InstanceRepository instanceRepository;
 
 	    @Bean
 	    @Primary
 	    public RemindingNotifier remindingNotifier() {
-	        RemindingNotifier remindingNotifier = new RemindingNotifier(notifier, repository);
-	        //remindingNotifier.setReminderPeriod(Duration.ofMinutes(5));
-	        remindingNotifier.setReminderStatuses(new String[]{"DOWN"}); //服务下线
+	        RemindingNotifier remindingNotifier = new RemindingNotifier(notifier, instanceRepository);
+			//服务下线
+	        remindingNotifier.setReminderStatuses(new String[]{"DOWN"});
 	        return remindingNotifier;
 	    }
 	   

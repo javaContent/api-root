@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: search-service
+  profiles:
+    active: dev
+  cloud:
+    config:
+      uri: http://192.168.1.7:8888
+      enabled: true
+  data:
+    elasticsearch:
+      # 192.168.1.75:8300,192.168.1.76:8300,192.168.1.77:8300,192.168.1.78:8300
+      cluster-nodes: 192.168.1.75:8300,192.168.1.76:8300,192.168.1.77:8300
+      # wdkj_test/wdkj
+      cluster-name: wdkj_test
+      client-transport-sniff: false
+elasticsearch:
+  rest:
+    client:
+      user: bse
+      passwd: bse#@!
+      cluster-nodes: 192.168.1.75:9200,192.168.1.76:9200,192.168.1.77:9200
+logging:
+  config: classpath:logback.xml

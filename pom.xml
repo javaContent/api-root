@@ -45,7 +45,7 @@
         <elasticsearch.version>5.5.1</elasticsearch.version>
         <log4j-api.version>2.9.1</log4j-api.version>
         <log4j-core.version>2.9.1</log4j-core.version>
-        <admin.starter>2.0.0</admin.starter>
+        <spring-boot-admin.version>2.0.0</spring-boot-admin.version>
     </properties>
 
     <dependencyManagement>
@@ -58,6 +58,13 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-dependencies</artifactId>
+                <version>${spring-boot-admin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid</artifactId>
                 <version>${com.alibaba.druid.version}</version>
@@ -66,21 +73,6 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-feign</artifactId>
                 <version>${openfeign.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-starter-client</artifactId>
-                <version>${admin.starter}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server</artifactId>
-                <version>${admin.starter}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-server-ui</artifactId>
-                <version>${admin.starter}</version>
             </dependency>
 
             <dependency>
@@ -136,16 +128,7 @@
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j-core.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch</artifactId>
-                <version>${elasticsearch.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>transport</artifactId>
-                <version>${elasticsearch.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>rest</artifactId>

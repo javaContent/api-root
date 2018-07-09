@@ -14,11 +14,12 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
  * @author hezhigang
  * @date 2018/04/08
  */
+
 @EnableSwagger2Doc
-@EnableFeignClients(basePackages = {"com.wd.cloud.apifeign"})
 @EnableRedisHttpSession
 @EnableDiscoveryClient
 @SpringBootApplication
+@EnableFeignClients(basePackages = {"com.wd.cloud.apifeign"})
 public class DocDeliveryApplication {
 
     public static void main(String[] args) {

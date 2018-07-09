@@ -2,12 +2,21 @@ server:
   port: 8888
   servlet:
     context-path: /
+# eureka配置
 eureka:
-  client:
-    service-url:
-      defaultZone: http://192.168.1.103:8761/eureka/
   instance:
-    status-page-url: http://192.168.1.7:8888/swagger-ui.html
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5      # 心跳时间，即服务续约间隔时间（缺省为30s）
+    lease-expiration-duration-in-seconds: 15  # 发呆时间，即服务续约到期时间（缺省为90s）
+    health-check-url-path: /actuator/health
+    status-page-url: http://192.168.1.7:${server.port}/swagger-ui.html
+  client:
+    healthcheck:
+      enabled: true                           # 开启健康检查（依赖spring-boot-starter-actuator）
+    registry-fetch-interval-seconds: 5        # 去拉取服务注册信息间隔(默认为30秒）
+    serviceUrl:
+      defaultZone: http://192.168.1.103:8761/eureka/
+
 spring:
   application:
     name: config-server

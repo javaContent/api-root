@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.wd.cloud</groupId>
@@ -18,9 +19,9 @@
         <module>auth-server</module><!--鉴权服务-->
         <module>doc-delivery</module><!--文献传递服务-->
         <module>commons</module><!--提取的公共方法和类-->
-    	<module>monitoring</module><!-- 监控模块 -->
-    	<module>search-server</module><!-- 检索服务 -->
-  </modules>
+        <module>monitoring</module><!-- 监控模块 -->
+        <module>search-server</module><!-- 检索服务 -->
+    </modules>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -33,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <spring-cloud.version>Finchley.M9</spring-cloud.version>
+        <spring-cloud.version>Finchley.RC2</spring-cloud.version>
         <openfeign.version>1.4.4.RELEASE</openfeign.version>
         <com.alibaba.druid.version>1.1.9</com.alibaba.druid.version>
         <javax.mail.version>1.4.7</javax.mail.version>
@@ -45,7 +46,8 @@
         <elasticsearch.version>5.5.1</elasticsearch.version>
         <log4j-api.version>2.9.1</log4j-api.version>
         <log4j-core.version>2.9.1</log4j-core.version>
-        <spring-boot-admin.version>2.0.0</spring-boot-admin.version>
+        <spring-boot-admin.version>2.0.1</spring-boot-admin.version>
+        <jolokia.version>1.5.0</jolokia.version>
     </properties>
 
     <dependencyManagement>
@@ -59,10 +61,13 @@
             </dependency>
             <dependency>
                 <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-dependencies</artifactId>
+                <artifactId>spring-boot-admin-starter-server</artifactId>
                 <version>${spring-boot-admin.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jolokia</groupId>
+                <artifactId>jolokia-core</artifactId>
+                <version>${jolokia.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -172,6 +177,14 @@
             <url>https://repo.spring.io/libs-milestone</url>
             <snapshots>
                 <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
     </repositories>

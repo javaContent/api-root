@@ -84,7 +84,6 @@ public class FrontendController {
             literatureData = frontService.saveLiterature(literature);
         }
         helpRecord.setLiterature(literatureData);
-        helpRecord = frontService.saveHelpRecord(helpRecord);
         DocFile docFile = frontService.getReusingFile(literatureData);
         // 如果文件已存在，自动应助成功
         if (null != docFile) {
@@ -93,9 +92,9 @@ public class FrontendController {
             giveRecord.setDocFile(docFile);
             giveRecord.setGiverType(GiveTypeEnum.AUTO.getCode());
             //先保存求助记录，得到求助ID，再关联应助记录
+            helpRecord = frontService.saveHelpRecord(helpRecord);
             giveRecord.setHelpRecord(helpRecord);
             frontService.saveGiveRecord(giveRecord);
-            frontService.saveHelpRecord(helpRecord);
             String downloadUrl = fileService.getDownloadUrl(helpRecord.getId());
             mailService.sendMail(helpRecord.getHelpChannel(),
                     helpEmail,

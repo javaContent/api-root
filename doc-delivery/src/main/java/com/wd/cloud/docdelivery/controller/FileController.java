@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.core.util.URLUtil;
 import com.wd.cloud.apifeign.AuthServerApi;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.model.DownloadModel;
@@ -43,7 +44,7 @@ public class FileController {
             return ResponseEntity.notFound().build();
         }
         HttpHeaders headers = new HttpHeaders();
-        String disposition = StrUtil.format("attachment; filename=\"{}\"", downloadModel.getDownloadFileName());
+        String disposition = StrUtil.format("attachment; filename=\"{}\"", URLUtil.encode(downloadModel.getDownloadFileName(),"utf-8"));
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Content-Disposition", disposition);
         headers.add("Pragma", "no-cache");
@@ -56,11 +57,4 @@ public class FileController {
                 .body(new FileSystemResource(downloadModel.getDocFile()));
     }
 
-    @Autowired
-    AuthServerApi authServerApi;
-
-    @GetMapping("/user/{userid}")
-    public ResponseModel getUser(@PathVariable Long userid){
-        return ResponseModel.ok(authServerApi.getUserInfo(userid).getBody());
-    }
 }

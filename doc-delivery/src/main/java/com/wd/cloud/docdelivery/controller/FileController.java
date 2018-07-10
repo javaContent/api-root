@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * @author He Zhigang
  * @date 2018/6/12
@@ -37,14 +39,14 @@ public class FileController {
     @ApiOperation(value = "求助文件下载")
     @ApiImplicitParam(name = "helpRecodeId", value = "求助记录ID", dataType = "Long", paramType = "path")
     @GetMapping("/download/{helpRecodeId}")
-    public ResponseEntity download(@PathVariable Long helpRecodeId) {
+    public ResponseEntity download(@PathVariable Long helpRecodeId) throws UnsupportedEncodingException {
 
         DownloadModel downloadModel = fileService.getDownloadFile(helpRecodeId);
         if (!downloadModel.getDocFile().exists()) {
             return ResponseEntity.notFound().build();
         }
         HttpHeaders headers = new HttpHeaders();
-        String disposition = StrUtil.format("attachment; filename=\"{}\"", StrUtil.utf8Str(downloadModel.getDownloadFileName()));
+        String disposition = StrUtil.format("attachment; filename=\"{}\"", new String(downloadModel.getDownloadFileName().getBytes("UTF-8"),"iso-8859-1"));
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Content-Disposition", disposition);
         headers.add("Pragma", "no-cache");

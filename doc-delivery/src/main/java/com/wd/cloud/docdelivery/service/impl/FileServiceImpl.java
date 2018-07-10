@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 /**
  * @author He Zhigang
@@ -81,7 +82,8 @@ public class FileServiceImpl implements FileService {
         File downloadFile = new File(globalConfig.getSavePath(), fileName);
 
         downloadModel.setDocFile(downloadFile);
-        downloadModel.setDownloadFileName(docTitle + "." + fileType);
+        String downLoadFileName = docTitle + "." + fileType;
+        downloadModel.setDownloadFileName(downLoadFileName);
         return downloadModel;
     }
 

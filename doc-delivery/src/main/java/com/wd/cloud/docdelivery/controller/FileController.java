@@ -44,7 +44,7 @@ public class FileController {
             return ResponseEntity.notFound().build();
         }
         HttpHeaders headers = new HttpHeaders();
-        String disposition = StrUtil.format("attachment; filename=\"{}\"", URLUtil.encode(downloadModel.getDownloadFileName(),"utf-8"));
+        String disposition = StrUtil.format("attachment; filename=\"{}\"", StrUtil.utf8Str(downloadModel.getDownloadFileName()));
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Content-Disposition", disposition);
         headers.add("Pragma", "no-cache");

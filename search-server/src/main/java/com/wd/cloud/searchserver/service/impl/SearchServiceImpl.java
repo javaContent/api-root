@@ -78,12 +78,12 @@ public class SearchServiceImpl implements SearchServiceI {
 		SystemContext.setFacatSize(200);
 		disciplineSystemFacetSearchCondition.addDocTypeFieldLan();
 		
-		QueryBuilder queryBuilder = QueryBuilderUtil.convertQueryBuilder(searchCondition.getQueryCdt());
+		QueryBuilder queryBuilder = QueryBuilderUtil.convertQueryBuilder(disciplineSystemFacetSearchCondition.getQueryCdt());
 		// 构建filter条件
-		BoolQueryBuilder filterBuilder = FilterBuilderUtil.convert(searchCondition.getFilterMap());
+		BoolQueryBuilder filterBuilder = FilterBuilderUtil.convert(disciplineSystemFacetSearchCondition.getFilterMap());
 		// 构建分面条件
-		List<AbstractAggregationBuilder> aggregationList = SearchRequestUtil.buildFacetCondition(searchCondition, Arrays.asList("dbYearDiscipline"));
-		SortBuilder sortBuilder = sortBulider.getSortBuilde(searchCondition);
+		List<AbstractAggregationBuilder> aggregationList = SearchRequestUtil.buildFacetCondition(disciplineSystemFacetSearchCondition, Arrays.asList("dbYearDiscipline"));
+		SortBuilder sortBuilder = sortBulider.getSortBuilde(disciplineSystemFacetSearchCondition);
 		ResponseModel disciplineSystemRes = transportRepository.query(Comm.Journal_INDEX, Comm.Journal_TYPE_DISCIPLINE, queryBuilder,filterBuilder,sortBuilder,aggregationList);
 		Map<String, Map<String, String>> facetMap = JournalResultConvertUtil.convertFacet((SearchResponse)disciplineSystemRes.getBody());
 		return facetMap;

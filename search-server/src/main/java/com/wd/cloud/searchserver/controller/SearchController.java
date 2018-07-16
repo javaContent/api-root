@@ -41,7 +41,7 @@ public class SearchController {
 	 * @return
 	 */
 	@RequestMapping("/subject/{subjectNameId}/{id}/{year}")
-	public ResponseModel subjectList(
+	public SearchResult subjectList(
 			@PathVariable int subjectNameId, 
 			@PathVariable int id, 
 			@PathVariable Integer year, 
@@ -59,7 +59,8 @@ public class SearchController {
             condition.addQueryCdt("scDis_3_1_" + subject);
         }
         SearchResult searchResult = searchInterfaceService.searchSubjectSystem(condition);
-		return ResponseModel.ok(searchResult);
+		return searchResult;
+//        return ResponseModel.ok(searchResult);
 	}
 	
 	

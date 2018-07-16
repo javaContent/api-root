@@ -1,10 +1,13 @@
 package com.wd.cloud.docdelivery.entity;
 
+import cn.hutool.core.util.ReflectUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,7 +28,6 @@ public class HelpRecord extends AbstractEntity {
 
     @OneToMany(mappedBy = "helpRecord")
     @OrderBy(value = "gmt_create desc")
-    @Where(clause = "audit_status != 2")
     private Set<GiveRecord> giveRecords;
 
     /**
@@ -183,5 +185,39 @@ public class HelpRecord extends AbstractEntity {
                 .append("gmtModified", gmtModified)
                 .append("gmtCreate", gmtCreate)
                 .toString();
+    }
+
+    public HelpRecord filterByNotIn(String fieldName, List<Object> values){
+        List<GiveRecord> giveRecords = new ArrayList<>();
+        this.getGiveRecords().stream()
+                .filter(g -> values.contains(ReflectUtil.getFieldValue(g, fieldName)))
+                .forEach(gg -> giveRecords.add(gg));
+        this.getGiveRecords().removeAll(giveRecords);
+        return this;
+    }
+    public HelpRecord filterByNotEq(String fieldName, Object value){
+        List<GiveRecord> giveRecords = new ArrayList<>();
+        this.getGiveRecords().stream()
+                .filter(g -> value.equals(ReflectUtil.getFieldValue(g, fieldName)))
+                .forEach(gg -> giveRecords.add(gg));
+        this.getGiveRecords().removeAll(giveRecords);
+        return this;
+    }
+
+    public HelpRecord filterByIn(String fieldName, List<Object> values){
+        List<GiveRecord> giveRecords = new ArrayList<>();
+        this.getGiveRecords().stream()
+                .filter(g -> !values.contains(ReflectUtil.getFieldValue(g, fieldName)))
+                .forEach(gg -> giveRecords.add(gg));
+        this.getGiveRecords().removeAll(giveRecords);
+        return this;
+    }
+    public HelpRecord filterByEq(String fieldName, Object value){
+        List<GiveRecord> giveRecords = new ArrayList<>();
+        this.getGiveRecords().stream()
+                .filter(g -> !value.equals(ReflectUtil.getFieldValue(g, fieldName)))
+                .forEach(gg -> giveRecords.add(gg));
+        this.getGiveRecords().removeAll(giveRecords);
+        return this;
     }
 }

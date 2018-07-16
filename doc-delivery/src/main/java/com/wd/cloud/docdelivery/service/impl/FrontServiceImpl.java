@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -18,8 +19,19 @@ import com.wd.cloud.docdelivery.service.FrontService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -158,6 +170,22 @@ public class FrontServiceImpl implements FrontService {
                 HelpStatusEnum.WAIT_AUDIT.getCode(),
                 HelpStatusEnum.HELP_THIRD.getCode()};
         Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel, status, pageable);
+
+//        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findAll(new Specification<HelpRecord>() {
+//            @Override
+//            public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+//                List<Predicate> list = new ArrayList<Predicate>();
+//                list.add(cb.equal(root.get("helpChannel").as(Integer.class), helpChannel));
+//                //list.add(root.<Integer>get("status").in(status));
+//                list.add(cb.equal(root.joinSet("giveRecords").get("auditStatus").as(Integer.class),2));
+//                Predicate[] p = new Predicate[list.size()];
+//                return cb.and(list.toArray(p));
+//            }
+//        }, pageable);
+
+        for (HelpRecord helpRecord:waitHelpRecords){
+            helpRecord.filterByNotEq("auditStatus",2);
+        }
         return waitHelpRecords;
     }
 

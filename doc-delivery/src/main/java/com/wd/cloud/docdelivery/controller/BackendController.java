@@ -69,7 +69,7 @@ public class BackendController {
     public ResponseModel helpList(@RequestParam(required = false) Short status, @RequestParam(required = false) Short helperScid,
                                   @RequestParam(required = false) String keyword, @RequestParam(required = false) String beginTime,
                                   @RequestParam(required = false) String endTime,
-                                  @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                  @PageableDefault(value = 20, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("helperScid", helperScid);

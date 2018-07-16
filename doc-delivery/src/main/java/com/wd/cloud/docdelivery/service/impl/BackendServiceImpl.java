@@ -59,7 +59,7 @@ public class BackendServiceImpl implements BackendService {
 
     @Override
     public Page getHelpList(Pageable pageable, Map<String, Object> param) {
-        Short helpUserScid = (Short) param.get("scid");
+        Short helpUserScid = (Short) param.get("helperScid");
         Short status = (Short) param.get("status");
         String keyword = (String) param.get("keyword");
         String beginTime = (String) param.get("beginTime");
@@ -72,10 +72,14 @@ public class BackendServiceImpl implements BackendService {
                     list.add(cb.equal(root.get("helperScid").as(Integer.class), helpUserScid));
                 }
                 if (status != null && status != 0) {
-                    list.add(cb.equal(root.get("status").as(Integer.class), status));
+                	if(status == 1) {//列表查询未处理
+                		list.add(cb.or(cb.equal(root.get("status").as(Integer.class), 0),cb.equal(root.get("status").as(Integer.class), 1),cb.equal(root.get("status").as(Integer.class), 2)));
+                	} else {
+                		list.add(cb.equal(root.get("status").as(Integer.class), status));
+                	}
                 }
                 if (!StringUtils.isEmpty(keyword)) {
-                    list.add(cb.or(cb.like(root.get("literature").get("docTitle").as(String.class), "%" + keyword + "%"), cb.like(root.get("helpEmail").as(String.class), "%" + keyword + "%")));
+                    list.add(cb.or(cb.like(root.get("literature").get("docTitle").as(String.class), "%" + keyword + "%"), cb.like(root.get("helperEmail").as(String.class), "%" + keyword + "%")));
                 }
                 if (!StringUtils.isEmpty(beginTime)) {
                     list.add(cb.between(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime), DateUtil.parse(endTime)));

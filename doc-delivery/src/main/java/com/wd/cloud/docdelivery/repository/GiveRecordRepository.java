@@ -3,8 +3,12 @@ package com.wd.cloud.docdelivery.repository;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.entity.HelpRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author He Zhigang
@@ -64,5 +68,13 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
      */
     @Query("from GiveRecord where helpRecord = :helpRecord and (auditStatus = 1 or giverType <> 2)")
     GiveRecord findByHelpRecord(@Param("helpRecord") HelpRecord helpRecord);
+
+    @Query("FROM GiveRecord WHERE docFile IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmtCreate, now())")
+    List<GiveRecord> findTimeOutRecord();
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM GiveRecord WHERE docFile IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmtCreate, now())")
+    List<GiveRecord> deleteTimeOutRecord();
 
 }

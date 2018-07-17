@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -39,14 +40,21 @@ public class FileController {
     @ApiOperation(value = "求助文件下载")
     @ApiImplicitParam(name = "helpRecodeId", value = "求助记录ID", dataType = "Long", paramType = "path")
     @GetMapping("/download/{helpRecodeId}")
-    public ResponseEntity download(@PathVariable Long helpRecodeId) throws UnsupportedEncodingException {
+    public ResponseEntity download(@PathVariable Long helpRecodeId, HttpServletRequest request) throws UnsupportedEncodingException {
 
         DownloadModel downloadModel = fileService.getDownloadFile(helpRecodeId);
         if (!downloadModel.getDocFile().exists()) {
             return ResponseEntity.notFound().build();
         }
         HttpHeaders headers = new HttpHeaders();
-        String disposition = StrUtil.format("attachment; filename=\"{}\"", new String(downloadModel.getDownloadFileName().getBytes("UTF-8"),"iso-8859-1"));
+        String filename = null;
+        //判断是否是IE浏览器
+        if (request.getHeader("user-agent").toLowerCase().contains("msie")) {
+            filename = URLUtil.encode(downloadModel.getDownloadFileName(), "UTF-8");
+        }else {
+            filename = new String(downloadModel.getDownloadFileName().getBytes("utf-8"),"iso-8859-1");
+        }
+        String disposition = StrUtil.format("attachment; filename=\"{}\"", filename);
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Content-Disposition", disposition);
         headers.add("Pragma", "no-cache");

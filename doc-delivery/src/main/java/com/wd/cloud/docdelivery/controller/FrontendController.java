@@ -91,6 +91,7 @@ public class FrontendController {
             GiveRecord giveRecord = new GiveRecord();
             giveRecord.setDocFile(docFile);
             giveRecord.setGiverType(GiveTypeEnum.AUTO.getCode());
+            giveRecord.setGiverName("自动应助");
             //先保存求助记录，得到求助ID，再关联应助记录
             helpRecord = frontService.saveHelpRecord(helpRecord);
             giveRecord.setHelpRecord(helpRecord);

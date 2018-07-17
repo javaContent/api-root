@@ -29,9 +29,15 @@ import javax.persistence.criteria.Root;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -58,13 +64,13 @@ public class BackendServiceImpl implements BackendService {
     DocFileRepository docFileRepository;
 
     @Override
-    public Page getHelpList(Pageable pageable, Map<String, Object> param) {
+    public Page<HelpRecord> getHelpList(Pageable pageable, Map<String, Object> param) {
         Short helpUserScid = (Short) param.get("helperScid");
         Short status = (Short) param.get("status");
         String keyword = (String) param.get("keyword");
         String beginTime = (String) param.get("beginTime");
         String endTime = (String) param.get("endTime") + " 23:59:59";
-        Page result = helpRecordRepository.findAll(new Specification<HelpRecord>() {
+        Page<HelpRecord> result = helpRecordRepository.findAll(new Specification<HelpRecord>() {
             @Override
             public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> list = new ArrayList<Predicate>();
@@ -79,7 +85,7 @@ public class BackendServiceImpl implements BackendService {
                 	}
                 }
                 if (!StringUtils.isEmpty(keyword)) {
-                    list.add(cb.or(cb.like(root.get("literature").get("docTitle").as(String.class), "%" + keyword + "%"), cb.like(root.get("helperEmail").as(String.class), "%" + keyword + "%")));
+                    list.add(cb.or(cb.like(root.get("literature").get("docTitle").as(String.class), "%" + keyword.trim() + "%"), cb.like(root.get("helperEmail").as(String.class), "%" + keyword.trim() + "%")));
                 }
                 if (!StringUtils.isEmpty(beginTime)) {
                     list.add(cb.between(root.get("gmtCreate").as(Date.class), DateUtil.parse(beginTime), DateUtil.parse(endTime)));
@@ -89,31 +95,63 @@ public class BackendServiceImpl implements BackendService {
                 return cb.and(list.toArray(p));
             }
         }, pageable);
-
+        
+        for (HelpRecord helpRecord:result) {
+        	helpRecord.filterByNotEq("auditStatus", 2);
+        }
         return result;
     }
 
     @Override
     public Page getLiteratureList(Pageable pageable, Map<String, Object> param) {
-        Boolean reusing = (Boolean) param.get("reusing");
-        String keyword = (String) param.get("keyword");
-        Page result = literatureRepository.findAll(new Specification<Literature>() {
-            @Override
-            public Predicate toPredicate(Root<Literature> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Predicate> list = new ArrayList<Predicate>();
-
-                if (reusing != null) {
-                    list.add(cb.equal(root.get("reusing").as(boolean.class), reusing));
-                }
-                if (!StringUtils.isEmpty(keyword)) {
-                    list.add(cb.like(root.get("docTitle").as(String.class), "%" + keyword + "%"));
-                }
-                list.add(cb.isNotEmpty(root.get("docFiles")));
-                Predicate[] p = new Predicate[list.size()];
-                return cb.and(list.toArray(p));
-            }
-        }, pageable);
-        return result;
+		Boolean reusing = (Boolean) param.get("reusing");
+		String keyword = (String) param.get("keyword");
+		Page<Literature> result = literatureRepository.findAll(new Specification<Literature>() {
+			@Override
+			public Predicate toPredicate(Root<Literature> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				List<Predicate> list = new ArrayList<Predicate>();
+				if (reusing != null) {
+					list.add(cb.equal(root.get("reusing").as(boolean.class), reusing));
+				}
+				if (!StringUtils.isEmpty(keyword)) {
+					list.add(cb.like(root.get("docTitle").as(String.class), "%" + keyword + "%"));
+				}
+				list.add(cb.isNotEmpty(root.get("docFiles")));
+				Predicate[] p = new Predicate[list.size()];
+				return cb.and(list.toArray(p));
+			}
+		}, pageable);
+		for (Literature literature : result) {
+			Set<DocFile> docFiles = literature.getDocFiles();
+			List<DocFile> list = new ArrayList<>();
+			list.addAll(docFiles);
+			if(docFiles != null && docFiles.size() > 1) {
+				System.out.println(list.get(0).isReusing());
+				System.out.println(list.get(1).isReusing());
+				Collections.sort(list, new Comparator<DocFile>() {
+			        public int compare(DocFile docFile1, DocFile docFile2) {
+			            /**
+			             * 升序排的话就是第一个参数.compareTo(第二个参数);
+			             * 降序排的话就是第二个参数.compareTo(第一个参数);
+			             */
+			        	if(!literature.isReusing()) {
+			        		 return docFile1.getGmtModified().compareTo(docFile2.getGmtModified());//升序
+			        	} else {
+			        		if(docFile1.isReusing()) {
+			        			return -1;
+			        		}
+			        		return 1;
+			        	}
+			        }
+			    });
+				System.out.println(list.get(0).isReusing());
+				System.out.println(list.get(1).isReusing());
+			}
+			docFiles.clear();
+			docFiles.addAll(list);
+			literature.setDocFiles(docFiles);
+		}
+		return result;
     }
 
     @Override
@@ -192,5 +230,42 @@ public class BackendServiceImpl implements BackendService {
         docFileRepository.save(doc);
         return true;
     }
+    
+    
+    
+    public static void main(String[] args) {
+    	List<DocFile> list = new ArrayList<>();
+    	DocFile docFile1 = new DocFile();
+    	docFile1.setReusing(false);
+    	
+    	DocFile docFile2 = new DocFile();
+    	docFile2.setReusing(true);
+    	
+    	Set<DocFile> set = new HashSet<DocFile>();
+    	
+    	
+    	set.add(docFile1);
+    	set.add(docFile2);
+    	
+    	list.addAll(set);
+		
+		Collections.sort(list, new Comparator<DocFile>() {
+	        public int compare(DocFile docFile1, DocFile docFile2) {
+	            /**
+	             * 升序排的话就是第一个参数.compareTo(第二个参数);
+	             * 降序排的话就是第二个参数.compareTo(第一个参数);
+	             */
+	        	
+        		if(docFile1.isReusing()) {
+        			return -1;
+        		}
+        		return 1;
+	        	
+	        }
+	    });
+		
+		System.out.println(list.get(0).isReusing());
+		System.out.println(list.get(1).isReusing());
+	}
 
 }

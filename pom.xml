@@ -21,6 +21,7 @@
         <module>commons</module><!--提取的公共方法和类-->
         <module>monitoring</module><!-- 监控模块 -->
         <module>search-server</module><!-- 检索服务 -->
+        <module>resources-server</module><!--  文件（图片）资源服务 -->
     </modules>
 
     <parent>

@@ -13,5 +13,5 @@ public enum  SaveDirEnum {
     /**
      * 图片资源目录
      */
-    iamge;
+    image;
 }

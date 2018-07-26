@@ -47,7 +47,7 @@ public class UploadController {
         String msg = null;
 
         try {
-            msg = fileService.save(file,SaveDirEnum.iamge);
+            msg = fileService.save(file,SaveDirEnum.image);
         } catch (IOException e) {
             return ResponseModel.serverErr("IO异常，请重试");
         }

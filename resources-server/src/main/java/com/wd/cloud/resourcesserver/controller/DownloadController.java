@@ -1,7 +1,7 @@
 package com.wd.cloud.resourcesserver.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author He Zhigang
@@ -11,4 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/download")
 public class DownloadController {
+
+    @GetMapping("/{filename}")
+    public ResponseEntity downlowdFile(@PathVariable String filename){
+        return null;
+    }
 }

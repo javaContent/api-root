@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @date 2018/7/24
  * @Description:
  */
-@FeignClient(value = "auth-server", fallback=AuthServerApi.HystrixCalculatorService.class)
+@FeignClient(value = "resources-server", fallback=AuthServerApi.HystrixCalculatorService.class)
 public interface ResourcesServerApi {
 
     @PostMapping("/upload/doc")

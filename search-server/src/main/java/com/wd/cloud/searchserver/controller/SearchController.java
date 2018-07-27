@@ -1,6 +1,8 @@
 package com.wd.cloud.searchserver.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +19,10 @@ import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.searchserver.entity.SearchCondition;
 import com.wd.cloud.searchserver.entity.SearchResult;
 import com.wd.cloud.searchserver.service.SearchServiceI;
+import com.wd.cloud.searchserver.util.PinYinUtil;
 import com.wd.cloud.searchserver.util.SystemContext;
+
+import net.sf.json.JSONArray;
 
 
 /**
@@ -60,7 +65,6 @@ public class SearchController {
         }
         SearchResult searchResult = searchInterfaceService.searchSubjectSystem(condition);
 		return searchResult;
-//        return ResponseModel.ok(searchResult);
 	}
 	
 	
@@ -74,7 +78,6 @@ public class SearchController {
 		int startYear = condition.getDetailYear();
 		SystemContext.setOffset(page*size);
 		SystemContext.setPageSize(size);
-		System.out.println(condition.toString());
 		SearchResult searchResult = searchInterfaceService.search(condition);
 		categoryChuli(searchResult, startYear);
 		long end = System.currentTimeMillis();
@@ -128,7 +131,6 @@ public class SearchController {
 		SystemContext.setOffset(page*size);
 		SystemContext.setPageSize(size);
 		
-		System.out.println(condition.toString());
 		SearchResult searchResult = searchInterfaceService.search(condition);
 		searchChuli(searchResult, condition.getAuthorityDb());
 		Map<String, Map<String, String>> facetMap = searchInterfaceService.searchDisciplineSystem(condition);
@@ -183,7 +185,6 @@ public class SearchController {
 	@RequestMapping("/detail/{id}")
 	public ResponseModel detail(HttpServletRequest request,
 			@PathVariable String id) {
-		System.out.println(id);
 		Map<String, Object> doc = searchInterfaceService.getDoc(id);
 		return ResponseModel.ok(doc);
 	}
@@ -197,6 +198,33 @@ public class SearchController {
 			list.add(doc);
 		}
 		return ResponseModel.ok(list);
+	}
+	
+	
+	@RequestMapping("/subjectJSON")
+	public ResponseModel subjectJSON(HttpServletRequest request,
+			String db, String year) {
+		if (StringUtils.isBlank(db) || StringUtils.isBlank(year)) {
+            return ResponseModel.ok(JSONArray.fromObject(new String[]{}));
+        }
+        SearchCondition condition = new SearchCondition();
+        condition.setSearchComponentFlag("subject_system_search");
+        condition.addQueryCdt("scDB_3_1_" + db);
+        condition.addQueryCdt("scYear_3_1_" + year);
+        SearchResult result = searchInterfaceService.searchSubjectSystem(condition);
+        List<Map<String, Object>> datas = result.getDatas();
+        Collections.sort(datas, new Comparator<Map<String, Object>>() {
+
+            @Override
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                String name1 = (String) o1.get("discipline"), name2 = (String) o2.get("discipline"), p1, p2;
+                p1 = PinYinUtil.getPingYin(name1);
+                p2 = PinYinUtil.getPingYin(name2);
+                return p1.compareTo(p2);
+            }
+
+        });
+		return ResponseModel.ok(JSONArray.fromObject(datas));
 	}
 	
 	

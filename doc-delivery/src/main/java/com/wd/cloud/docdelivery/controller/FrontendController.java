@@ -1,7 +1,9 @@
 package com.wd.cloud.docdelivery.controller;
 
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
+import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.model.SessionKey;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -15,6 +17,7 @@ import com.wd.cloud.docdelivery.model.HelpModel;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
+import feign.Feign;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -123,7 +126,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/wait/{helpChannel}")
     public ResponseEntity helpWaitList(@PathVariable int helpChannel,
-                                       @PageableDefault(sort = {"status"}, direction = Sort.Direction.ASC) Pageable pageable) {
+                                       @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(helpChannel, pageable);
         return ResponseEntity.ok(waitHelpRecords);
     }
@@ -139,7 +142,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/finish/{helpChannel}")
     public ResponseModel helpSuccessList(@PathVariable Integer helpChannel,
-                                         @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                         @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> finishHelpRecords = frontService.getFinishHelpRecords(helpChannel, pageable);
         return ResponseModel.ok(finishHelpRecords);
     }
@@ -183,8 +186,9 @@ public class FrontendController {
             return ResponseModel.clientErr("该求助已经被其它人应助", helpRecord);
         }
         //检查用户是否已经认领了应助
-        if (frontService.checkExistsGiveing(giverId)) {
-            return ResponseModel.error("您已经认领了应助任务，请先处理已认领的任务后再来");
+        String docTitle = frontService.checkExistsGiveing(giverId);
+        if (docTitle!=null) {
+            return ResponseModel.error("请先完成您正在应助的文献："+ docTitle);
         }
         helpRecord = frontService.givingHelp(helpRecordId, giverId, giverName, HttpUtil.getClientIP(request));
         return ResponseModel.ok(helpRecord);
@@ -205,7 +209,8 @@ public class FrontendController {
     public ResponseModel cancelGiving(@PathVariable Long helpRecordId,
                                       @RequestParam Long giverId) {
         //检查用户是否已经认领了应助
-        if (frontService.checkExistsGiveing(giverId)) {
+        String docTtitle = frontService.checkExistsGiveing(giverId);
+        if (docTtitle != null) {
             //有认领记录，可以取消
             frontService.cancelGivingHelp(helpRecordId, giverId);
             return ResponseModel.ok();

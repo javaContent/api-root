@@ -7,9 +7,7 @@ import com.wd.cloud.resourcesserver.enums.SaveDirEnum;
 import com.wd.cloud.resourcesserver.service.FileService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -32,7 +30,7 @@ public class UploadController {
     FileService fileService;
 
     @PostMapping("/doc")
-    public ResponseModel uploadDocDeliveryFile(@NotNull MultipartFile file, HttpServletRequest request) {
+    public ResponseModel uploadDocDeliveryFile(@NotNull MultipartFile file) {
         String msg = null;
         try {
             msg = fileService.save(file, SaveDirEnum.doc);
@@ -43,11 +41,21 @@ public class UploadController {
     }
 
     @PostMapping("/image")
-    public ResponseModel uploadImageFile(@NotNull MultipartFile file,HttpServletRequest request) {
+    public ResponseModel uploadImageFile(@NotNull MultipartFile file) {
         String msg = null;
-
         try {
             msg = fileService.save(file,SaveDirEnum.image);
+        } catch (IOException e) {
+            return ResponseModel.serverErr("IO异常，请重试");
+        }
+        return ResponseModel.ok(msg);
+    }
+
+    @PostMapping("/journal/{journalId}")
+    public ResponseModel uploadImageFile(@NotNull MultipartFile file,@PathVariable String journalId) {
+        String msg = null;
+        try {
+            msg = fileService.save(file,SaveDirEnum.journal,journalId);
         } catch (IOException e) {
             return ResponseModel.serverErr("IO异常，请重试");
         }

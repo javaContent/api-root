@@ -124,5 +124,5 @@ public interface FrontService {
 
     DocFile getReusingFile(Literature literature);
 
-    boolean checkExistsGiveing(long giverId);
+    String checkExistsGiveing(long giverId);
 }

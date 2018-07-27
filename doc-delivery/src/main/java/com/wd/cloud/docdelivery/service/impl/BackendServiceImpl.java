@@ -95,10 +95,7 @@ public class BackendServiceImpl implements BackendService {
                 return cb.and(list.toArray(p));
             }
         }, pageable);
-        
-        for (HelpRecord helpRecord:result) {
-        	helpRecord.filterByNotEq("auditStatus", 2);
-        }
+
         return result;
     }
 
@@ -129,6 +126,7 @@ public class BackendServiceImpl implements BackendService {
 				System.out.println(list.get(0).isReusing());
 				System.out.println(list.get(1).isReusing());
 				Collections.sort(list, new Comparator<DocFile>() {
+				    @Override
 			        public int compare(DocFile docFile1, DocFile docFile2) {
 			            /**
 			             * 升序排的话就是第一个参数.compareTo(第二个参数);

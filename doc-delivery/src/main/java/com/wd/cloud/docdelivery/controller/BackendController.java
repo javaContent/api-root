@@ -124,7 +124,7 @@ public class BackendController {
      */
     @ApiOperation(value = "直接处理，上传文件")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "求助数据id", dataType = "Long", paramType = "path"),
+            @ApiImplicitParam(name = "helpRecordId", value = "求助数据id", dataType = "Long", paramType = "path"),
             @ApiImplicitParam(name = "giverId", value = "应助者(处理人)id", dataType = "Long", paramType = "query"),
             @ApiImplicitParam(name = "giverName", value = "应助者(处理人)username", dataType = "String", paramType = "query")
     })

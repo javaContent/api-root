@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.entity;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -27,6 +28,8 @@ public class Literature extends AbstractEntity {
     private String docTitle;
 
     @OneToMany(mappedBy = "literature")
+    @OrderBy(value = "gmt_create desc")
+    @Where(clause = "audit_status not in (0,2)")
     private Set<DocFile> docFiles;
 
     /**

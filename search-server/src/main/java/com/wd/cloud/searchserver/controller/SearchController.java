@@ -69,7 +69,7 @@ public class SearchController {
 	
 	
 	@RequestMapping("/category/list")
-	public ResponseModel category(HttpServletRequest request,
+	public SearchResult category(HttpServletRequest request,
 			SearchCondition condition,
 			@RequestParam(value="page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(value="size", required = false, defaultValue = "25") Integer size) {
@@ -82,7 +82,7 @@ public class SearchController {
 		categoryChuli(searchResult, startYear);
 		long end = System.currentTimeMillis();
 		searchResult.setTime((end - start)/(float)1000);
-		return ResponseModel.ok(searchResult);
+		return searchResult;
 	}
 	
 	public void categoryChuli(SearchResult searchResult,int startYear) {
@@ -123,7 +123,7 @@ public class SearchController {
 	
 	
 	@RequestMapping("/search/list")
-	public ResponseModel search(HttpServletRequest request,
+	public SearchResult search(HttpServletRequest request,
 			SearchCondition condition,
 			@RequestParam(value="page", required = false, defaultValue = "0") Integer page,
 			@RequestParam(value="size", required = false, defaultValue = "25") Integer size) {
@@ -137,7 +137,7 @@ public class SearchController {
 		searchResult.setFacetDatas(facetMap);
 		long end = System.currentTimeMillis();
 		searchResult.setTime((end - start)/(float)1000);
-		return ResponseModel.ok(searchResult);
+		return searchResult;
 	}
 	
 	public void searchChuli(SearchResult searchResult,String authorityDb) {
@@ -182,23 +182,41 @@ public class SearchController {
 	}
 	
 	
+//	@RequestMapping("/detail/{id}")
+//	public ResponseModel detail(HttpServletRequest request,
+//			@PathVariable String id) {
+//		Map<String, Object> doc = searchInterfaceService.getDoc(id);
+//		return ResponseModel.ok(doc);
+//	}
+//	@RequestMapping("/detail/ids")
+//	public ResponseModel detailByIds(HttpServletRequest request,
+//			String[] ids) {
+//		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+//		for (int i = 0; i < ids.length; i++) {
+//			Map<String, Object> doc = searchInterfaceService.getDoc(ids[i]);
+//			list.add(doc);
+//		}
+//		return ResponseModel.ok(list);
+//	}
+	
 	@RequestMapping("/detail/{id}")
-	public ResponseModel detail(HttpServletRequest request,
+	public Map<String, Object> detail(HttpServletRequest request,
 			@PathVariable String id) {
 		Map<String, Object> doc = searchInterfaceService.getDoc(id);
-		return ResponseModel.ok(doc);
+		return doc;
 	}
 	
 	@RequestMapping("/detail/ids")
-	public ResponseModel detailByIds(HttpServletRequest request,
+	public List<Map<String, Object>> detailByIds(HttpServletRequest request,
 			String[] ids) {
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		for (int i = 0; i < ids.length; i++) {
 			Map<String, Object> doc = searchInterfaceService.getDoc(ids[i]);
 			list.add(doc);
 		}
-		return ResponseModel.ok(list);
+		return list;
 	}
+	
 	
 	
 	@RequestMapping("/subjectJSON")
@@ -222,7 +240,6 @@ public class SearchController {
                 p2 = PinYinUtil.getPingYin(name2);
                 return p1.compareTo(p2);
             }
-
         });
 		return ResponseModel.ok(JSONArray.fromObject(datas));
 	}

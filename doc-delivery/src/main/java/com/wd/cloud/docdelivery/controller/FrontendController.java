@@ -2,6 +2,7 @@ package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
+import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.model.SessionKey;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -49,6 +50,9 @@ public class FrontendController {
 
     @Autowired
     MailService mailService;
+
+//    @Autowired
+//    private ResourcesServerApi resourcesServerApi;
 
     @Autowired
     FrontService frontService;
@@ -123,7 +127,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/wait/{helpChannel}")
     public ResponseEntity helpWaitList(@PathVariable int helpChannel,
-                                       @PageableDefault(sort = {"status"}, direction = Sort.Direction.ASC) Pageable pageable) {
+                                       @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(helpChannel, pageable);
         return ResponseEntity.ok(waitHelpRecords);
     }
@@ -241,7 +245,10 @@ public class FrontendController {
         }
         //保存文件
         DocFile docFile = null;
+        //ResponseModel responseModel;
         try {
+//             responseModel = resourcesServerApi.uploadDocDeliveryFile(file);
+//             responseModel.getMsg();
             docFile = fileService.saveFile(helpRecord.getLiterature(), file);
         } catch (IOException e) {
             return ResponseModel.error("文件上传失败,请重新上传");

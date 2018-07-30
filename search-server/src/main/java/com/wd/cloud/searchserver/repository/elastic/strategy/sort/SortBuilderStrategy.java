@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.wd.cloud.searchserver.entity.SearchCondition;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;

@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.controller;
 
+import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
@@ -48,6 +49,9 @@ public class BackendController {
 
     @Autowired
     FileService fileService;
+
+//    @Autowired
+//    private ResourcesServerApi resourcesServerApi;
 
     @Autowired
     MailService mailService;
@@ -136,7 +140,9 @@ public class BackendController {
                                 HttpServletRequest request) {
         HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
         DocFile docFile = null;
+        //ResponseModel responseModel = null;
         try {
+//            responseModel= resourcesServerApi.uploadDocDeliveryFile(file);
             docFile = fileService.saveFile(helpRecord.getLiterature(), file);
         } catch (IOException e) {
             return ResponseModel.error("文件上传失败,请重新上传");

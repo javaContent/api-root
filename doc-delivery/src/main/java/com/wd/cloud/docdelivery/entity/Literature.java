@@ -29,7 +29,7 @@ public class Literature extends AbstractEntity {
 
     @OneToMany(mappedBy = "literature")
     @OrderBy(value = "gmt_create desc")
-    @Where(clause = "audit_status not in (0,2)")
+    @Where(clause = "audit_status not in (0,2) or audit_status is null")
     private Set<DocFile> docFiles;
 
     /**

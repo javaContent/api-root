@@ -204,8 +204,14 @@ public class BackendController {
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
+        if (HelpStatusEnum.HELP_THIRD.getCode() == (helpRecord.getStatus())){
+            helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.USER.getCode() == giveRecord.getGiverType());
+        }
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
-        GiveRecord giveRecord = new GiveRecord();
+        GiveRecord giveRecord = helpRecord.getGiveRecords().iterator().next();
+        if (giveRecord == null){
+            giveRecord = new GiveRecord();
+        }
         giveRecord.setGiverId(giverId);
         giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
         giveRecord.setGiverName(giverName);

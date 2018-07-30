@@ -19,6 +19,7 @@ import com.wd.cloud.docdelivery.service.FrontService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -169,6 +170,7 @@ public class FrontServiceImpl implements FrontService {
                 HelpStatusEnum.HELPING.getCode(),
                 HelpStatusEnum.WAIT_AUDIT.getCode(),
                 HelpStatusEnum.HELP_THIRD.getCode()};
+
         Page<HelpRecord> waitHelpRecords = helpRecordRepository.findByHelpChannelAndStatusIn(helpChannel, status, pageable);
 
 //        Page<HelpRecord> waitHelpRecords = helpRecordRepository.findAll(new Specification<HelpRecord>() {
@@ -209,12 +211,12 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
-    public boolean checkExistsGiveing(long giverId) {
+    public String checkExistsGiveing(long giverId) {
         GiveRecord giveRecord = giveRecordRepository.findByGiverIdAndAuditStatus(giverId, AuditEnum.WAIT_UPLOAD.getCode());
         if (giveRecord != null) {
-            return true;
+            return giveRecord.getHelpRecord().getLiterature().getDocTitle();
         } else {
-            return false;
+            return null;
         }
     }
 

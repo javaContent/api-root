@@ -272,12 +272,14 @@ public class BackendController {
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
+        DocFile docFile = giveRecord.getDocFile();
         if (giveRecord == null) {
             return ResponseModel.notFound();
         }
         giveRecord.setAuditStatus(AuditEnum.NO_PASS.getCode());
         giveRecord.setAuditorId(auditorId);
         giveRecord.setAuditorName(auditorName);
+        docFile.setAuditStatus(2);
         helpRecord.setStatus(HelpStatusEnum.WAIT_HELP.getCode());
         backendService.updateHelRecord(helpRecord);
         return ResponseModel.ok();

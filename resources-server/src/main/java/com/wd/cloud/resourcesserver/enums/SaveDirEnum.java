@@ -13,5 +13,9 @@ public enum  SaveDirEnum {
     /**
      * 图片资源目录
      */
-    image;
+    image,
+    /**
+     * 期刊封面图片
+     */
+    journal;
 }

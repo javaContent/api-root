@@ -39,6 +39,25 @@ public class FileServiceImpl implements FileService{
 
         String newFileName = md5File +"."+extName;
         //文件如果不存在，则保存，否则直接返回文件的MD5名
+        msg = touch(file, saveDirEnum, savePath, newFileName);
+        return msg;
+    }
+
+    @Override
+    public String save(MultipartFile file, SaveDirEnum saveDirEnum, String fileName) throws IOException {
+        String msg = null;
+        String savePath = globalConfig.getResourcePath()+ saveDirEnum.name();
+        //文件后缀
+        String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
+
+        String newFileName = fileName +"."+extName;
+        msg = touch(file, saveDirEnum, savePath, newFileName);
+
+        return msg;
+    }
+
+    private String touch(MultipartFile file, SaveDirEnum saveDirEnum, String savePath, String newFileName) throws IOException {
+        String msg;//文件如果不存在，则保存，否则直接返回文件的MD5名
         if (!FileUtil.exist(new File(savePath, newFileName))) {
             //创建一个新文件
             File newFile = FileUtil.touch(savePath, newFileName);

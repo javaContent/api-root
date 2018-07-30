@@ -55,6 +55,7 @@ public class FileServiceImpl implements FileService {
             docFile.setFileName(md5File);
             docFile.setFileType(extName);
             docFile.setLiterature(literature);
+            docFile.setAuditStatus(0);
             docFile = docFileRepository.save(docFile);
         }
         //文件如果不存在，则保存，否则直接返回文件的MD5名

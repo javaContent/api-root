@@ -66,7 +66,7 @@ public class MailServiceImpl implements MailService {
             content = String.format(helpMailConfig.getCrs().getOutherContent(), docTitle);
         } else if (HelpStatusEnum.HELP_FAILED.equals(helpStatusEnum)) {
             subject = String.format(helpMailConfig.getCrs().getFailSubject(), docTitle);
-            content = String.format(helpMailConfig.getCrs().getOutherContent(), docTitle);
+            content = String.format(helpMailConfig.getCrs().getFailContent(), docTitle);
         }
 
         MailUtil.send(helpMailConfig.getCrs().getAccount(), helpEmail, subject, content, true);
@@ -85,7 +85,7 @@ public class MailServiceImpl implements MailService {
             content = String.format(helpMailConfig.getSpis().getOutherContent(), docTitle);
         } else if (HelpStatusEnum.HELP_FAILED.equals(helpStatusEnum)) {
             subject = String.format(helpMailConfig.getSpis().getFailSubject(), docTitle);
-            content = String.format(helpMailConfig.getSpis().getOutherContent(), docTitle);
+            content = String.format(helpMailConfig.getSpis().getFailContent(), docTitle);
         }
 
         MailUtil.send(helpMailConfig.getSpis().getAccount(), helpEmail, subject, content, true);
@@ -104,7 +104,7 @@ public class MailServiceImpl implements MailService {
             content = String.format(helpMailConfig.getZhy().getOutherContent(), docTitle);
         } else if (HelpStatusEnum.HELP_FAILED.equals(helpStatusEnum)) {
             subject = String.format(helpMailConfig.getZhy().getFailSubject(), docTitle);
-            content = String.format(helpMailConfig.getZhy().getOutherContent(), docTitle);
+            content = String.format(helpMailConfig.getZhy().getFailContent(), docTitle);
         }
 
         MailUtil.send(helpMailConfig.getZhy().getAccount(), helpEmail, subject, content, true);

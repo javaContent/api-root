@@ -210,8 +210,14 @@ public class BackendController {
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
+        if (HelpStatusEnum.HELP_THIRD.getCode() == (helpRecord.getStatus())){
+            helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.USER.getCode() == giveRecord.getGiverType());
+        }
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
-        GiveRecord giveRecord = new GiveRecord();
+        GiveRecord giveRecord = helpRecord.getGiveRecords().iterator().next();
+        if (giveRecord == null){
+            giveRecord = new GiveRecord();
+        }
         giveRecord.setGiverId(giverId);
         giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
         giveRecord.setGiverName(giverName);
@@ -243,9 +249,12 @@ public class BackendController {
         if (giveRecord == null) {
             return ResponseModel.notFound();
         }
+
         giveRecord.setAuditStatus(AuditEnum.PASS.getCode());
         giveRecord.setAuditorId(auditorId);
         giveRecord.setAuditorName(auditorName);
+        DocFile docFile = giveRecord.getDocFile();
+        docFile.setAuditStatus(1);
         helpRecord.setStatus(HelpStatusEnum.HELP_SUCCESSED.getCode());
         String downloadUrl = fileService.getDownloadUrl(helpRecord.getId());
         mailService.sendMail(helpRecord.getHelpChannel(),
@@ -272,13 +281,14 @@ public class BackendController {
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName) {
         HelpRecord helpRecord = backendService.getHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
-        DocFile docFile = giveRecord.getDocFile();
+
         if (giveRecord == null) {
             return ResponseModel.notFound();
         }
         giveRecord.setAuditStatus(AuditEnum.NO_PASS.getCode());
         giveRecord.setAuditorId(auditorId);
         giveRecord.setAuditorName(auditorName);
+        DocFile docFile = giveRecord.getDocFile();
         docFile.setAuditStatus(2);
         helpRecord.setStatus(HelpStatusEnum.WAIT_HELP.getCode());
         backendService.updateHelRecord(helpRecord);

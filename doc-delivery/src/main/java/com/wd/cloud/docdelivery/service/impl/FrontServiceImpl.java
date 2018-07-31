@@ -211,6 +211,22 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
+    public Page<HelpRecord> search(String keyword, Pageable pageable) {
+        Page<HelpRecord> helpRecords = helpRecordRepository.findAll(new Specification<HelpRecord>() {
+            @Override
+            public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> list = new ArrayList<Predicate>();
+                if (!StringUtils.isEmpty(keyword)) {
+                    list.add(criteriaBuilder.or(criteriaBuilder.like(root.get("literature").get("docTitle").as(String.class), "%" + keyword.trim() + "%"), criteriaBuilder.like(root.get("helperEmail").as(String.class), "%" + keyword.trim() + "%")));
+                }
+                Predicate[] p = new Predicate[list.size()];
+                return criteriaBuilder.and(list.toArray(p));
+            }
+        },pageable);
+        return helpRecords;
+    }
+
+    @Override
     public String checkExistsGiveing(long giverId) {
         GiveRecord giveRecord = giveRecordRepository.findByGiverIdAndAuditStatus(giverId, AuditEnum.WAIT_UPLOAD.getCode());
         if (giveRecord != null) {

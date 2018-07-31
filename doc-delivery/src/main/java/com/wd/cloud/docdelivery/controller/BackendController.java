@@ -176,7 +176,7 @@ public class BackendController {
         helpRecord.setStatus(HelpStatusEnum.HELP_THIRD.getCode());
         GiveRecord giveRecord = new GiveRecord();
         giveRecord.setGiverId(giverId);
-        giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
+        giveRecord.setGiverType(GiveTypeEnum.THIRD.getCode());
         giveRecord.setGiverName(giverName);
         mailService.sendMail(helpRecord.getHelpChannel(),
                 helpRecord.getHelperEmail(),

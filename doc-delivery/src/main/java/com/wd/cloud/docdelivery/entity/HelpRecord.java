@@ -66,9 +66,9 @@ public class HelpRecord extends AbstractEntity {
     private String helperIp;
 
     /**
-     * 求助渠道，1：QQ，2：SPIS，3：CRS，4：ZHY
+     * 求助渠道，1：QQ，2：SPIS，3：ZHY，4：CRS
      */
-    @Column(name = "help_channel", columnDefinition = "tinyint default 0 COMMENT '求助渠道，1：QQ，2：SPIS，3：CRS，4：ZHY'")
+    @Column(name = "help_channel", columnDefinition = "tinyint default 0 COMMENT '求助渠道，1：QQ，2：SPIS，3：ZHY，4：CRS'")
     private int helpChannel;
 
 

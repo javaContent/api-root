@@ -266,17 +266,25 @@ public class FrontendController {
     @ApiOperation(value = "根据邮箱查询求助记录")
     @ApiImplicitParam(name = "email", value = "条件email", dataType = "String", paramType = "query")
     @GetMapping("/help/records")
-    public ResponseModel recordsByEmail(String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email, pageable);
-
-        return ResponseModel.ok(literatureList);
+    public ResponseModel recordsByEmail(@RequestParam String email, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> helpRecords = frontService.getHelpRecordsForEmail(email, pageable);
+        return ResponseModel.ok(helpRecords);
     }
 
+    @ApiOperation(value = "邮箱或标题查询记录")
+    @ApiImplicitParam(name = "keyword", value = "条件keyword", dataType = "String", paramType = "query")
+    @GetMapping("/help/search")
+    public ResponseModel recordsBySearch(@RequestParam String keyword, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> helpRecords = frontService.search(keyword, pageable);
+
+        return ResponseModel.ok(helpRecords);
+    }
     /**
      * 文献求助记录
      *
      * @return
      */
+
     @GetMapping("/help/records/all")
     public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
 //        User user = (User)request.getSession().getAttribute(SessionKey.LOGGER);

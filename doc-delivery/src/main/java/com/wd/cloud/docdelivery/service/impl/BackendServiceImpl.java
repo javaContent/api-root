@@ -118,22 +118,17 @@ public class BackendServiceImpl implements BackendService {
 				return cb.and(list.toArray(p));
 			}
 		}, pageable);
+
 		for (Literature literature : result) {
 			Set<DocFile> docFiles = literature.getDocFiles();
 			List<DocFile> list = new ArrayList<>();
 			list.addAll(docFiles);
 			if(docFiles != null && docFiles.size() > 1) {
-				System.out.println(list.get(0).isReusing());
-				System.out.println(list.get(1).isReusing());
 				Collections.sort(list, new Comparator<DocFile>() {
 				    @Override
 			        public int compare(DocFile docFile1, DocFile docFile2) {
-			            /**
-			             * 升序排的话就是第一个参数.compareTo(第二个参数);
-			             * 降序排的话就是第二个参数.compareTo(第一个参数);
-			             */
 			        	if(!literature.isReusing()) {
-			        		 return docFile1.getGmtModified().compareTo(docFile2.getGmtModified());//升序
+			        		 return docFile1.getGmtModified().compareTo(docFile2.getGmtModified());
 			        	} else {
 			        		if(docFile1.isReusing()) {
 			        			return -1;
@@ -142,8 +137,6 @@ public class BackendServiceImpl implements BackendService {
 			        	}
 			        }
 			    });
-				System.out.println(list.get(0).isReusing());
-				System.out.println(list.get(1).isReusing());
 			}
 			docFiles.clear();
 			docFiles.addAll(list);
@@ -156,7 +149,7 @@ public class BackendServiceImpl implements BackendService {
     public List<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
         Literature literature = new Literature();
         literature.setId(literatureId);
-        return docFileRepository.findByLiterature(literature);
+        return docFileRepository.getResuingDoc(literature);
     }
 
     @Override
@@ -203,7 +196,7 @@ public class BackendServiceImpl implements BackendService {
         literature.setId((long) param.get("literatureId"));
         long docFileId = (long) param.get("docFileId");
         boolean reusing = (boolean) param.get("reusing");
-        List<DocFile> list = docFileRepository.findByLiterature(literature);
+        List<DocFile> list = docFileRepository.getResuingDoc(literature);
         DocFile doc = null;
         for (DocFile docFile : list) {
             //如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入

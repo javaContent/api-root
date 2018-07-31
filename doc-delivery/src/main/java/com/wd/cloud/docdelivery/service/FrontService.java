@@ -124,5 +124,7 @@ public interface FrontService {
 
     DocFile getReusingFile(Literature literature);
 
+    Page<HelpRecord> search(String keyword,Pageable pageable);
+
     String checkExistsGiveing(long giverId);
 }

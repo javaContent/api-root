@@ -1,5 +1,7 @@
 package com.wd.cloud.docdelivery.controller;
 
+import cn.hutool.json.JSONObject;
+import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
@@ -51,6 +53,9 @@ public class BackendController {
 
     @Autowired
     MailService mailService;
+
+    @Autowired
+    ResourcesServerApi resourcesServerApi;
 
     /**
      * 文献互助列表
@@ -136,11 +141,10 @@ public class BackendController {
                                 HttpServletRequest request) {
         HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
         DocFile docFile = null;
-        try {
-            docFile = fileService.saveFile(helpRecord.getLiterature(), file);
-        } catch (IOException e) {
-            return ResponseModel.error("文件上传失败,请重新上传");
-        }
+        ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        String fileName = jsonObjectResponseModel.getBody().getStr("file");
+        docFile = backendService.saveDocFile(helpRecord.getLiterature(),fileName);
+
         GiveRecord giveRecord = new GiveRecord();
 
         giveRecord.setHelpRecord(helpRecord);
@@ -348,32 +352,5 @@ public class BackendController {
         }
     }
 
-    /**
-     * 文献下载
-     *
-     * @return
-     */
-    @ApiOperation(value = "后台文件下载")
-    @ApiImplicitParam(name = "docFileId", value = "文件ID", dataType = "Long", paramType = "path")
-    @GetMapping("/download/{docFileId}")
-    public ResponseEntity download(@PathVariable Long docFileId) {
-        DownloadModel downloadModel;
-        try {
-            downloadModel = backendService.getDowloadFile(docFileId);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Content-Disposition", "attachment; filename=" + downloadModel.getDownloadFileName());
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentLength(downloadModel.getDocFile().length())
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(new FileSystemResource(downloadModel.getDocFile()));
-    }
 
 }

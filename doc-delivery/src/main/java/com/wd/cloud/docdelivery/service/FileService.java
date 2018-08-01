@@ -14,16 +14,6 @@ import java.io.IOException;
  */
 public interface FileService {
 
-    /**
-     * 保存文件
-     *
-     * @param file
-     * @return
-     * @throws IOException
-     */
-    DocFile saveFile(Literature literature, MultipartFile file) throws IOException;
-
-
     DownloadModel getDownloadFile(Long helpRecordId);
 
     String getDownloadUrl(Long helpRecordId);

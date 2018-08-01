@@ -19,7 +19,7 @@ public interface DocFileRepository extends JpaRepository<DocFile, Long> {
 
     DocFile findByLiteratureAndReusingIsTrue(Literature literature);
 
-    DocFile findByLiteratureAndFileNameAndFileType(Literature literature, String fileName, String fileType);
+    DocFile findByLiteratureAndFileName(Literature literature, String fileName);
 
     @Query("from DocFile where literature = :literature and (auditStatus is null or auditStatus = 1)")
     List<DocFile> getResuingDoc(@Param("literature") Literature literature);

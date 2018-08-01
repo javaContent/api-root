@@ -8,6 +8,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,7 @@ public interface ResourcesServerApi {
 
     @PostMapping(value = "/upload/{dir}",consumes = "multipart/form-data")
     public ResponseModel<JSONObject> uploadCustomer(@RequestPart(value = "file") MultipartFile file,
-                                                    @PathVariable String dir);
+                                                    @RequestParam("dir") String dir);
 
     @PostMapping(value = "/upload/doc",consumes = "multipart/form-data")
     public ResponseModel<JSONObject> uploadDocDeliveryFile(@RequestPart(value = "file") MultipartFile file);
@@ -33,7 +34,7 @@ public interface ResourcesServerApi {
 
     @PostMapping(value = "/upload/journal/{journalId}",consumes = "multipart/form-data")
     public ResponseModel<JSONObject> uploadJournalImageFile(@RequestPart(value = "file") MultipartFile file,
-                                                            @PathVariable String journalId);
+                                                            @RequestParam("journalId") String journalId);
 
 
 

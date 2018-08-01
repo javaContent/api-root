@@ -19,8 +19,6 @@ public class DocFile extends AbstractEntity {
     @NotNull
     private String fileName;
 
-    private String fileType;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnore
     private Literature literature;
@@ -52,14 +50,6 @@ public class DocFile extends AbstractEntity {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public String getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
     }
 
     public Literature getLiterature() {
@@ -115,7 +105,6 @@ public class DocFile extends AbstractEntity {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("fileName", fileName)
-                .append("fileType", fileType)
                 .append("literature", literature)
                 .append("auditorId", auditorId)
                 .append("auditorName", auditorName)
@@ -129,12 +118,15 @@ public class DocFile extends AbstractEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DocFile docFile = (DocFile) o;
         return reusing == docFile.reusing &&
                 Objects.equals(fileName, docFile.fileName) &&
-                Objects.equals(fileType, docFile.fileType) &&
                 Objects.equals(literature, docFile.literature) &&
                 Objects.equals(auditorId, docFile.auditorId) &&
                 Objects.equals(auditorName, docFile.auditorName) &&
@@ -144,6 +136,6 @@ public class DocFile extends AbstractEntity {
     @Override
     public int hashCode() {
 
-        return Objects.hash(fileName, fileType, literature, auditorId, auditorName, reusing, reMark);
+        return Objects.hash(fileName, literature, auditorId, auditorName, reusing, reMark);
     }
 }

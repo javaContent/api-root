@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
  */
 public interface FrontService {
 
+    DocFile saveDocFile(Literature literature,String filePath);
     /**
      * 我要应助
      *

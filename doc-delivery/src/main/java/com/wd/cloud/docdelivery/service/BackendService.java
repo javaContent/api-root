@@ -32,8 +32,7 @@ public interface BackendService {
 
     List<DocFile> getDocFileList(Pageable pageable, Long literatureId);
 
-    DownloadModel getDowloadFile(long docFileId);
-
+    DocFile saveDocFile(Literature literature, String fileName);
     /**
      * 获取单条互助记录
      *

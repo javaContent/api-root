@@ -3,6 +3,7 @@ package com.wd.cloud.docdelivery.controller;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.model.SessionKey;
@@ -55,6 +56,9 @@ public class FrontendController {
 
     @Autowired
     FrontService frontService;
+
+    @Autowired
+    ResourcesServerApi resourcesServerApi;
 
     /**
      * 1. 文献求助
@@ -246,11 +250,10 @@ public class FrontendController {
         }
         //保存文件
         DocFile docFile = null;
-        try {
-            docFile = fileService.saveFile(helpRecord.getLiterature(), file);
-        } catch (IOException e) {
-            return ResponseModel.error("文件上传失败,请重新上传");
-        }
+        ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        String filename = fileModel.getBody().getStr("file");
+        docFile = frontService.saveDocFile(helpRecord.getLiterature(),filename);
+
         //更新记录
         frontService.createGiveRecord(helpRecord, giverId, docFile, HttpUtil.getClientIP(request));
         return ResponseModel.ok("应助成功，感谢您的帮助");

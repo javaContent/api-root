@@ -153,14 +153,15 @@ public class BackendServiceImpl implements BackendService {
     }
 
     @Override
-    public DownloadModel getDowloadFile(long docFileId) {
-        DocFile docFile = docFileRepository.getOne(docFileId);
-        DownloadModel downloadModel = new DownloadModel();
-        String fileName = docFile.getFileName();
-        String fileType = docFile.getFileType();
-        downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
-        downloadModel.setDownloadFileName(fileName + "." + fileType);
-        return downloadModel;
+    public DocFile saveDocFile(Literature literature, String fileName) {
+        DocFile docFile = docFileRepository.findByLiteratureAndFileName(literature, fileName);
+        if (docFile == null) {
+            docFile = new DocFile();
+        }
+        docFile.setFileName(fileName);
+        docFile.setLiterature(literature);
+        docFile = docFileRepository.save(docFile);
+        return docFile;
     }
 
 

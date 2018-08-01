@@ -44,6 +44,7 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class FrontServiceImpl implements FrontService {
 
+
     @Autowired
     GlobalConfig globalConfig;
     @Autowired
@@ -69,6 +70,19 @@ public class FrontServiceImpl implements FrontService {
         return literatureData;
     }
 
+
+    @Override
+    public DocFile saveDocFile(Literature literature, String fileName) {
+        DocFile docFile = docFileRepository.findByLiteratureAndFileName(literature, fileName);
+        if (docFile == null) {
+            docFile = new DocFile();
+        }
+        docFile.setFileName(fileName);
+        docFile.setLiterature(literature);
+        docFile.setAuditStatus(0);
+        docFile = docFileRepository.save(docFile);
+        return docFile;
+    }
 
     @Override
     public HelpRecord givingHelp(long helpRecordId, long giverId, String giverName, String giverIp) {

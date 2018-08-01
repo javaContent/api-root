@@ -52,6 +52,10 @@
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-all</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.wd.cloud</groupId>
+			<artifactId>api-feign</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

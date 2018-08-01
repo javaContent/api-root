@@ -1,10 +1,7 @@
 package com.wd.cloud.resourcesserver.service;
 
-import cn.hutool.extra.mail.MailUtil;
-import com.wd.cloud.resourcesserver.enums.SaveDirEnum;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -14,7 +11,7 @@ import java.io.IOException;
  */
 public interface FileService {
 
-    String save(MultipartFile file, SaveDirEnum saveDirEnum) throws IOException;
+    String save(MultipartFile file, String savePath) throws IOException;
 
-    String save(MultipartFile file, SaveDirEnum saveDirEnum, String fileName) throws IOException;
+    String save(MultipartFile file, String savePath, String journalId) throws IOException;
 }

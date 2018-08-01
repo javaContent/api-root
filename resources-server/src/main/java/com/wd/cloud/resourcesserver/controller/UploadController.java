@@ -48,7 +48,7 @@ public class UploadController {
         JSONObject jsonObject = new JSONObject();
         try {
             fileName = fileService.save(file, globalConfig.getResources()+dir);
-            jsonObject.append("file",fileName);
+            jsonObject.put("file",fileName);
         } catch (IOException e) {
             return ResponseModel.serverErr("IO异常，请重试");
         }
@@ -67,7 +67,7 @@ public class UploadController {
         JSONObject jsonObject = new JSONObject();
         try {
             fileName = fileService.save(file, globalConfig.getDocPath());
-            jsonObject.append("file",fileName);
+            jsonObject.put("file",fileName);
         } catch (IOException e) {
             return ResponseModel.serverErr("IO异常，请重试");
         }
@@ -86,7 +86,7 @@ public class UploadController {
         JSONObject jsonObject = new JSONObject();
         try {
             fileName = fileService.save(file,globalConfig.getImagePath());
-            jsonObject.append("file",fileName);
+            jsonObject.put("file",fileName);
         } catch (IOException e) {
             return ResponseModel.serverErr("IO异常，请重试");
         }
@@ -109,7 +109,7 @@ public class UploadController {
         JSONObject jsonObject = new JSONObject();
         try {
             fileName = fileService.save(file,globalConfig.getJournalPath(),journalId);
-            jsonObject.append("file",fileName);
+            jsonObject.put("file",fileName);
         } catch (IOException e) {
             return ResponseModel.serverErr("IO异常，请重试");
         }

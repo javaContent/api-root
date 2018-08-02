@@ -52,6 +52,10 @@ public class FileController {
     @GetMapping("/download/{helpRecodeId}")
     public void download(@PathVariable Long helpRecodeId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         DownloadModel downloadModel = fileService.getDownloadFile(helpRecodeId);
+        if (downloadModel == null){
+            response.sendRedirect("/404FileNotFind.html");
+            return;
+        }
         String filename = null;
         //判断是否是IE浏览器
         if (request.getHeader(Header.USER_AGENT.toString()).toLowerCase().contains("msie")) {

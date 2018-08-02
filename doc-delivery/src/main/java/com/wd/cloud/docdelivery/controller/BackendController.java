@@ -142,6 +142,9 @@ public class BackendController {
         HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
         DocFile docFile = null;
         ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        if (jsonObjectResponseModel.getCode() != 200){
+            return ResponseModel.serverErr("文件上传失败，请重试");
+        }
         String fileName = jsonObjectResponseModel.getBody().getStr("file");
         docFile = backendService.saveDocFile(helpRecord.getLiterature(),fileName);
 

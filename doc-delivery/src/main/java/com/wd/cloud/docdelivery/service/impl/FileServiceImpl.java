@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,6 +54,9 @@ public class FileServiceImpl implements FileService {
     @Override
     public DownloadModel getDownloadFile(Long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
+        if (checkTimeOut(helpRecord.getGmtModified())){
+            return null;
+        }
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
         String fileName = giveRecord.getDocFile().getFileName();
         String docTitle = helpRecord.getLiterature().getDocTitle();
@@ -85,6 +90,13 @@ public class FileServiceImpl implements FileService {
         return downloadModel;
     }
 
+
+    private boolean checkTimeOut(Date startDate){
+       if (15 < DateUtil.betweenDay(startDate, new Date(),true)){
+           return true;
+       }
+       return false;
+    }
 
     @Override
     public String getDownloadUrl(Long helpRecordId) {

@@ -66,7 +66,7 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
      * @param helpRecord
      * @return
      */
-    @Query("FORM GiveRecord WHERE helpRecord = :helpRecord AND (auditStatus = 1 OR giverType <> 2)")
+    @Query("FROM GiveRecord WHERE helpRecord = :helpRecord AND (auditStatus = 1 OR giverType <> 2)")
     GiveRecord findByHelpRecord(@Param("helpRecord") HelpRecord helpRecord);
 
     GiveRecord findByHelpRecordAndAuditStatusEquals(HelpRecord helpRecord,Integer status);

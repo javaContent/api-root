@@ -213,7 +213,7 @@ public class BackendController {
         }
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
         GiveRecord giveRecord = new GiveRecord();
-        if (helpRecord.getGiveRecords() != null){
+        if (!helpRecord.getGiveRecords().isEmpty()){
             giveRecord = helpRecord.getGiveRecords().iterator().next();
         }
         giveRecord.setGiverId(giverId);

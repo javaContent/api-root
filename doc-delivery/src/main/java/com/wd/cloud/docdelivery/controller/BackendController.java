@@ -212,9 +212,9 @@ public class BackendController {
             helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.USER.getCode() == giveRecord.getGiverType());
         }
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
-        GiveRecord giveRecord = helpRecord.getGiveRecords().iterator().next();
-        if (giveRecord == null){
-            giveRecord = new GiveRecord();
+        GiveRecord giveRecord = new GiveRecord();
+        if (helpRecord.getGiveRecords() != null){
+            giveRecord = helpRecord.getGiveRecords().iterator().next();
         }
         giveRecord.setGiverId(giverId);
         giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());

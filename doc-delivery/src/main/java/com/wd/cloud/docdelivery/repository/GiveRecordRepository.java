@@ -66,8 +66,10 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
      * @param helpRecord
      * @return
      */
-    @Query("from GiveRecord where helpRecord = :helpRecord and (auditStatus = 1 or giverType <> 2)")
+    @Query("FORM GiveRecord WHERE helpRecord = :helpRecord AND (auditStatus = 1 OR giverType <> 2)")
     GiveRecord findByHelpRecord(@Param("helpRecord") HelpRecord helpRecord);
+
+    GiveRecord findByHelpRecordAndAuditStatusEquals(HelpRecord helpRecord,Integer status);
 
     @Query("FROM GiveRecord WHERE docFile IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmtCreate, now())")
     List<GiveRecord> findTimeOutRecord();

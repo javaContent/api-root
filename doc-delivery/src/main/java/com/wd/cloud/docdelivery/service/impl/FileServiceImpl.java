@@ -11,6 +11,7 @@ import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.entity.HelpRecord;
 import com.wd.cloud.docdelivery.entity.Literature;
+import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
@@ -52,6 +53,24 @@ public class FileServiceImpl implements FileService {
     public DownloadModel getDownloadFile(Long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
+        String fileName = giveRecord.getDocFile().getFileName();
+        String docTitle = helpRecord.getLiterature().getDocTitle();
+        //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。
+        docTitle = FileUtil.cleanInvalid(docTitle);
+        DownloadModel downloadModel = new DownloadModel();
+        InputStream inputStream = HttpRequest.get(getResourceUrl(fileName)).execute().bodyStream();
+
+        downloadModel.setInputStream(inputStream);
+        String ext = StrUtil.subAfter(fileName,".",true);
+        String downLoadFileName = docTitle + "." + ext;
+        downloadModel.setDownloadFileName(downLoadFileName);
+        return downloadModel;
+    }
+
+    @Override
+    public DownloadModel getWaitAuditFile(Long helpRecordId) {
+        HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
+        GiveRecord giveRecord = giveRecordRepository.findByHelpRecordAndAuditStatusEquals(helpRecord, AuditEnum.WAIT.getCode());
         String fileName = giveRecord.getDocFile().getFileName();
         String docTitle = helpRecord.getLiterature().getDocTitle();
         //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。

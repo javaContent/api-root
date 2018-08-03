@@ -16,8 +16,7 @@ import java.util.Set;
  * @Description: 求助记录
  */
 @Entity
-@Table(name = "help_record",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"helper_email", "literature_id","gmt_create"})})
+@Table(name = "help_record")
 public class HelpRecord extends AbstractEntity {
 
     /**

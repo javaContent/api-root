@@ -90,13 +90,13 @@ public class FrontendController {
         literature.setDocHref(helpModel.getDocHref().trim());
         // 先查询元数据是否存在
         Literature literatureData = frontService.queryLiterature(literature);
-        if (frontService.checkExists(helpEmail,literature)){
-            return ResponseModel.clientErr("error:您最近15天内已求助过这篇文献,请注意查收邮箱");
-        }
         String msg = "waiting:文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收";
         if (null == literatureData) {
             // 如果不存在，则新增一条元数据
             literatureData = frontService.saveLiterature(literature);
+        }
+        if (frontService.checkExists(helpEmail,literature)){
+            return ResponseModel.clientErr("error:您最近15天内已求助过这篇文献,请注意查收邮箱");
         }
         helpRecord.setLiterature(literatureData);
         DocFile docFile = frontService.getReusingFile(literatureData);

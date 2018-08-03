@@ -23,6 +23,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/front")
 public class FrontendController {
+
+    private static final Logger log = LoggerFactory.getLogger(FrontendController.class);
     @Autowired
     GlobalConfig globalConfig;
 
@@ -251,6 +255,7 @@ public class FrontendController {
         //保存文件
         DocFile docFile = null;
         ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        log.info("code={}:msg={}:body={}",fileModel.getCode(),fileModel.getMsg(),fileModel.getBody().toString());
         if (fileModel.getCode() != 200){
             return ResponseModel.serverErr("文件上传失败，请重试");
         }

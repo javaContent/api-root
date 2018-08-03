@@ -25,6 +25,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +47,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/backend")
 public class BackendController {
 
+    private static final Logger log = LoggerFactory.getLogger(BackendController.class);
     @Autowired
     BackendService backendService;
 
@@ -142,6 +145,7 @@ public class BackendController {
         HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
         DocFile docFile = null;
         ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        log.info("code={}:msg={}:body={}",jsonObjectResponseModel.getCode(),jsonObjectResponseModel.getMsg(),jsonObjectResponseModel.getBody().toString());
         if (jsonObjectResponseModel.getCode() != 200){
             return ResponseModel.serverErr("文件上传失败，请重试");
         }

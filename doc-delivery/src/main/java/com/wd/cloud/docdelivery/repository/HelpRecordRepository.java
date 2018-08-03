@@ -54,7 +54,7 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
      */
     Page<HelpRecord> findByHelperEmail(String helperEmail, Pageable pageable);
 
-    @Query("FROM HelpRecode where helperEmail = :helperEmail AND literature = :literature AND 15 > TIMESTAMPDIFF(DAY, gmtCreate, now())")
+    @Query("FROM HelpRecord where helperEmail = :helperEmail AND literature = :literature AND 15 > TIMESTAMPDIFF(DAY, gmtCreate, now())")
     HelpRecord findByHelperEmailAndLiterature(@Param("helperEmail") String helperEmail,@Param("literature") Literature literature);
     /**
      * 根据互助状态查询

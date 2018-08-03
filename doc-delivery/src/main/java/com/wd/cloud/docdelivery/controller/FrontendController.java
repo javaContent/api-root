@@ -86,8 +86,8 @@ public class FrontendController {
 
         Literature literature = new Literature();
         // 防止调用者传过来的docTitle包含HTML标签，在这里将标签去掉
-        literature.setDocTitle(frontService.clearHtml(helpModel.getDocTitle()));
-        literature.setDocHref(helpModel.getDocHref());
+        literature.setDocTitle(frontService.clearHtml(helpModel.getDocTitle().trim()));
+        literature.setDocHref(helpModel.getDocHref().trim());
         // 先查询元数据是否存在
         Literature literatureData = frontService.queryLiterature(literature);
         if (frontService.checkExists(helpEmail,literature)){

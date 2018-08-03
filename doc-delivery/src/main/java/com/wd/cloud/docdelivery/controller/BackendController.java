@@ -155,8 +155,11 @@ public class BackendController {
         String fileName = jsonObjectResponseModel.getBody().getStr("file");
         docFile = backendService.saveDocFile(helpRecord.getLiterature(),fileName);
 
-        GiveRecord giveRecord = new GiveRecord();
-
+        GiveRecord  giveRecord = new GiveRecord();
+        helpRecord.getGiveRecords().stream().filter(g -> g.getGiverType()!=GiveTypeEnum.THIRD.getCode());
+        if (!helpRecord.getGiveRecords().isEmpty()){
+            giveRecord = helpRecord.getGiveRecords().iterator().next();
+        }
         giveRecord.setHelpRecord(helpRecord);
         giveRecord.setDocFile(docFile);
         //设置应助类型为管理员应助

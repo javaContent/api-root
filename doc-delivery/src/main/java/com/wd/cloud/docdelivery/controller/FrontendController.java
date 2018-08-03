@@ -95,7 +95,7 @@ public class FrontendController {
             // 如果不存在，则新增一条元数据
             literatureData = frontService.saveLiterature(literature);
         }
-        if (frontService.checkExists(helpEmail,literature)){
+        if (frontService.checkExists(helpEmail,literatureData)){
             return ResponseModel.clientErr("error:您最近15天内已求助过这篇文献,请注意查收邮箱");
         }
         helpRecord.setLiterature(literatureData);

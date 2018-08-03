@@ -5,6 +5,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.sql.Date;
+import java.util.List;
 
 
 /**
@@ -29,6 +33,7 @@ public interface HelpRecordRepository extends JpaRepository<HelpRecord, Long>, J
 
     HelpRecord findByIdAndStatusNotIn(long id, int[] status);
 
+    List<HelpRecord> findByHelperEmailAndGmtCreateAfter(String email, Date date);
     /**
      * 根据求助用户ID查询
      *

@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery;
 
 import com.wd.cloud.docdelivery.service.FileService;
+import com.wd.cloud.docdelivery.service.FrontService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,12 @@ public class DocDeliveryApplicationTests {
 
     @Autowired
     FileService fileService;
+
+    @Autowired
+    FrontService frontService;
     @Test
     public void contextLoads() {
-        fileService.getDownloadUrl(1L);
+        frontService.getCountHelpRecordToDay("hezhigang@hnwdkj.com");
     }
 
 }

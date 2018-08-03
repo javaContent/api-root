@@ -165,11 +165,19 @@ public class FrontendController {
     @ApiOperation(value = "我的求助记录")
     @ApiImplicitParam(name = "helperId", value = "用户ID", dataType = "Long", paramType = "path")
     @GetMapping("/help/records/{helperId}")
-    public ResponseModel myRecords(@PathVariable Long helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel myRecords(@PathVariable Long helperId,
+                                   @PageableDefault(sort = {"id"},
+                                           direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.ok(myHelpRecords);
     }
 
+    @ApiOperation(value = "获取用户当天已求助记录的数量")
+    @ApiImplicitParam(name = "email", value = "用户邮箱", dataType = "String", paramType = "query")
+    @GetMapping("/help/count")
+    public int getHelpCountToDay(@RequestParam String email){
+        return frontService.getCountHelpRecordToDay(email);
+    }
 
     /**
      * 应助认领

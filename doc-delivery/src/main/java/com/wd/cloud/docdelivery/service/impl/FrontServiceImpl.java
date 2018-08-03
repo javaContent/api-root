@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.format.DateParser;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -119,6 +120,11 @@ public class FrontServiceImpl implements FrontService {
     @Override
     public HelpRecord getHelpingRecord(long helpRecordId) {
         return helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.HELPING.getCode());
+    }
+
+    @Override
+    public int getCountHelpRecordToDay(String email) {
+        return helpRecordRepository.findByHelperEmailAndGmtCreateAfter(email, DateUtil.beginOfDay(new Date()).toSqlDate()).size();
     }
 
     @Override

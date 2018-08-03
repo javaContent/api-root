@@ -34,6 +34,12 @@ public interface FrontService {
      */
     HelpRecord getHelpingRecord(long helpRecordId);
 
+    /**
+     * 获取用户今天的求助次数
+     * @param email
+     * @return
+     */
+    int getCountHelpRecordToDay(String email);
 
     /**
      * 获取单条可应助的记录

@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.wd.cloud.resourcesserver.config.GlobalConfig;
 import com.wd.cloud.resourcesserver.service.FileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,11 +22,13 @@ import java.io.IOException;
 @Service("fileService")
 public class FileServiceImpl implements FileService{
 
+    private static final Logger log = LoggerFactory.getLogger(FileServiceImpl.class);
     @Autowired
     GlobalConfig globalConfig;
 
     @Override
     public String save(MultipartFile file, String savePath) throws IOException {
+        log.info(file.getOriginalFilename());
         //文件MD5值
         String md5File = DigestUtil.md5Hex(file.getInputStream());
         //文件后缀
@@ -37,6 +41,7 @@ public class FileServiceImpl implements FileService{
 
     @Override
     public String save(MultipartFile file, String savePath, String journalId) throws IOException {
+        log.info(file.getOriginalFilename());
         //文件后缀
         String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
         String newFileName = journalId +"."+extName;

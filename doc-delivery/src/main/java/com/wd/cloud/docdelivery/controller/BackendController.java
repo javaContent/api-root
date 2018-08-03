@@ -144,11 +144,14 @@ public class BackendController {
                                 HttpServletRequest request) {
         HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
         DocFile docFile = null;
+        log.info("正在上传文件。。。");
         ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadDocDeliveryFile(file);
         log.info("code={}:msg={}:body={}",jsonObjectResponseModel.getCode(),jsonObjectResponseModel.getMsg(),jsonObjectResponseModel.getBody().toString());
         if (jsonObjectResponseModel.getCode() != 200){
+            log.info("文件上传失败 。。。");
             return ResponseModel.serverErr("文件上传失败，请重试");
         }
+        log.info("文件上传成功 。。。");
         String fileName = jsonObjectResponseModel.getBody().getStr("file");
         docFile = backendService.saveDocFile(helpRecord.getLiterature(),fileName);
 

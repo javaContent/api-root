@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.apifeign.ResourcesServerApi;
+import com.wd.cloud.commons.model.HttpStatus;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.model.SessionKey;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -188,9 +189,9 @@ public class FrontendController {
                                 @RequestParam Long giverId,
                                 @RequestParam String giverName,
                                 HttpServletRequest request) {
-        HelpRecord helpRecord = frontService.getNotWaitRecord(helpRecordId);
+        HelpRecord helpRecord = frontService.getWaitOrThirdHelpRecord(helpRecordId);
         // 该求助记录状态为非待应助，那么可能已经被其他人应助过或已应助完成
-        if (helpRecord != null) {
+        if (helpRecord == null) {
             return ResponseModel.clientErr("该求助已经被其它人应助", helpRecord);
         }
         //检查用户是否已经认领了应助
@@ -256,7 +257,7 @@ public class FrontendController {
         DocFile docFile = null;
         ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadDocDeliveryFile(file);
         log.info("code={}:msg={}:body={}",fileModel.getCode(),fileModel.getMsg(),fileModel.getBody().toString());
-        if (fileModel.getCode() != 200){
+        if (fileModel.getCode() != HttpStatus.HTTP_OK){
             return ResponseModel.serverErr("文件上传失败，请重试");
         }
         String filename = fileModel.getBody().getStr("file");

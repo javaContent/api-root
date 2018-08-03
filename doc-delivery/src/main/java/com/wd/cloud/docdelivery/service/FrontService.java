@@ -34,6 +34,15 @@ public interface FrontService {
      */
     HelpRecord getHelpingRecord(long helpRecordId);
 
+
+    /**
+     * 获取单条可应助的记录
+     *
+     * @param id
+     * @return
+     */
+    HelpRecord getWaitOrThirdHelpRecord(Long id);
+
     /**
      * 获取非待应助的求助记录
      *

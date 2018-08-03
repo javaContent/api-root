@@ -2,6 +2,7 @@ package com.wd.cloud.docdelivery.controller;
 
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.apifeign.ResourcesServerApi;
+import com.wd.cloud.commons.model.HttpStatus;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
@@ -142,12 +143,12 @@ public class BackendController {
                                 @RequestParam String giverName,
                                 @NotNull MultipartFile file,
                                 HttpServletRequest request) {
-        HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
+        HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(helpRecordId);
         DocFile docFile = null;
         log.info("正在上传文件。。。");
         ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadDocDeliveryFile(file);
         log.info("code={}:msg={}:body={}",jsonObjectResponseModel.getCode(),jsonObjectResponseModel.getMsg(),jsonObjectResponseModel.getBody().toString());
-        if (jsonObjectResponseModel.getCode() != 200){
+        if (jsonObjectResponseModel.getCode() != HttpStatus.HTTP_OK){
             log.info("文件上传失败 。。。");
             return ResponseModel.serverErr("文件上传失败，请重试");
         }
@@ -189,7 +190,7 @@ public class BackendController {
     })
     @PostMapping("/third/{id}")
     public ResponseModel helpThird(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+        HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(id);
         helpRecord.setStatus(HelpStatusEnum.HELP_THIRD.getCode());
         GiveRecord giveRecord = new GiveRecord();
         giveRecord.setGiverId(giverId);
@@ -220,7 +221,7 @@ public class BackendController {
     })
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+        HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(id);
         if (HelpStatusEnum.HELP_THIRD.getCode() == (helpRecord.getStatus())){
             helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.USER.getCode() == giveRecord.getGiverType());
         }
@@ -255,7 +256,7 @@ public class BackendController {
     })
     @PatchMapping("/audit/pass/{id}")
     public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName, HttpServletRequest request) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+        HelpRecord helpRecord = backendService.getWaitAuditHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
         if (giveRecord == null) {
             return ResponseModel.notFound();
@@ -290,7 +291,7 @@ public class BackendController {
     })
     @PatchMapping("/audit/nopass/{id}")
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+        HelpRecord helpRecord = backendService.getWaitAuditHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
 
         if (giveRecord == null) {

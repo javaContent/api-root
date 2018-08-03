@@ -6,6 +6,7 @@ import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.entity.HelpRecord;
 import com.wd.cloud.docdelivery.entity.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
@@ -166,8 +167,14 @@ public class BackendServiceImpl implements BackendService {
 
 
     @Override
-    public HelpRecord getHelpRecord(Long id) {
-        return helpRecordRepository.getOne(id);
+    public HelpRecord getWaitOrThirdHelpRecord(Long id) {
+        return helpRecordRepository.findByIdAndStatusIn(id,
+                new int[]{ HelpStatusEnum.WAIT_HELP.getCode(), HelpStatusEnum.HELP_THIRD.getCode()});
+    }
+
+    @Override
+    public HelpRecord getWaitAuditHelpRecord(Long id) {
+        return helpRecordRepository.findByIdAndStatus(id,HelpStatusEnum.WAIT_AUDIT.getCode());
     }
 
     @Override

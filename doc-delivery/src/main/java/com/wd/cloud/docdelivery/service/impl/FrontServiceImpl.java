@@ -122,6 +122,12 @@ public class FrontServiceImpl implements FrontService {
     }
 
     @Override
+    public HelpRecord getWaitOrThirdHelpRecord(Long id) {
+        return helpRecordRepository.findByIdAndStatusIn(id,
+                new int[]{ HelpStatusEnum.WAIT_HELP.getCode(), HelpStatusEnum.HELP_THIRD.getCode()});
+    }
+
+    @Override
     public HelpRecord getNotWaitRecord(long helpRecordId) {
         return helpRecordRepository.findByIdAndStatusNot(helpRecordId, HelpStatusEnum.WAIT_HELP.getCode());
     }

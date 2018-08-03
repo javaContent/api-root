@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
  */
 public interface FrontService {
 
+    boolean checkExists(String email,Literature literature);
+
     DocFile saveDocFile(Literature literature,String filePath);
     /**
      * 我要应助

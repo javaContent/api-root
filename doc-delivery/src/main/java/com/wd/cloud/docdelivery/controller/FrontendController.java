@@ -72,7 +72,7 @@ public class FrontendController {
      */
     @ApiOperation(value = "文献求助")
     @PostMapping(value = "/help/form")
-    public ResponseModel helpFrom(@Valid HelpModel helpModel, HttpServletRequest request) {
+    public ResponseModel<HelpRecord> helpFrom(@Valid HelpModel helpModel, HttpServletRequest request) {
 
         HelpRecord helpRecord = new HelpRecord();
         String helpEmail = helpModel.getHelperEmail();
@@ -90,7 +90,10 @@ public class FrontendController {
         literature.setDocHref(helpModel.getDocHref());
         // 先查询元数据是否存在
         Literature literatureData = frontService.queryLiterature(literature);
-        String msg = "文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收";
+        if (frontService.checkExists(helpEmail,literature)){
+            return ResponseModel.clientErr("error:您最近15天内已求助过这篇文献,请注意查收邮箱");
+        }
+        String msg = "waiting:文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收";
         if (null == literatureData) {
             // 如果不存在，则新增一条元数据
             literatureData = frontService.saveLiterature(literature);
@@ -114,13 +117,13 @@ public class FrontendController {
                     helpRecord.getLiterature().getDocTitle(),
                     downloadUrl,
                     HelpStatusEnum.HELP_SUCCESSED);
-            msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
+            msg = "success:文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         } else {
             try {
                 // 保存求助记录
                 frontService.saveHelpRecord(helpRecord);
             } catch (Exception e) {
-                return ResponseModel.clientErr();
+                return ResponseModel.clientErr("error:主键冲突!");
             }
         }
         return ResponseModel.ok(msg);

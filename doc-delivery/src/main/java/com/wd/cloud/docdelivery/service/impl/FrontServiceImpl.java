@@ -73,6 +73,15 @@ public class FrontServiceImpl implements FrontService {
 
 
     @Override
+    public boolean checkExists(String email, Literature literature) {
+        HelpRecord helpRecord = helpRecordRepository.findByHelperEmailAndLiterature(email,literature);
+        if (helpRecord != null){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public DocFile saveDocFile(Literature literature, String fileName) {
         DocFile docFile = docFileRepository.findByLiteratureAndFileName(literature, fileName);
         if (docFile == null) {

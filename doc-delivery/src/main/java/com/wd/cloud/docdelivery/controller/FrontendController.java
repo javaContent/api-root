@@ -251,6 +251,9 @@ public class FrontendController {
         //保存文件
         DocFile docFile = null;
         ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        if (fileModel.getCode() != 200){
+            return ResponseModel.serverErr("文件上传失败，请重试");
+        }
         String filename = fileModel.getBody().getStr("file");
         docFile = frontService.saveDocFile(helpRecord.getLiterature(),filename);
 

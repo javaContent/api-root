@@ -1,5 +1,6 @@
 package com.wd.cloud.docdelivery.controller;
 
+import cn.hutool.core.lang.Console;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.HttpStatus;
@@ -16,6 +17,7 @@ import com.wd.cloud.docdelivery.service.BackendService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -156,11 +158,14 @@ public class BackendController {
         String fileName = jsonObjectResponseModel.getBody().getStr("file");
         docFile = backendService.saveDocFile(helpRecord.getLiterature(),fileName);
 
-        GiveRecord  giveRecord = new GiveRecord();
-        helpRecord.getGiveRecords().stream().filter(g -> g.getGiverType()!=GiveTypeEnum.THIRD.getCode());
-        if (!helpRecord.getGiveRecords().isEmpty()){
-            giveRecord = helpRecord.getGiveRecords().iterator().next();
-        }
+        //如果有求助第三方的状态的应助记录，则直接处理更新这个记录
+        Optional<GiveRecord> giveRecordOptional = helpRecord.getGiveRecords().stream()
+                .filter(g -> g.getGiverType() == GiveTypeEnum.THIRD.getCode())
+                .findFirst();
+
+        //如果没有第三方状态的记录，则新建一条应助记录
+        GiveRecord giveRecord = giveRecordOptional.orElse(new GiveRecord());
+
         giveRecord.setHelpRecord(helpRecord);
         giveRecord.setDocFile(docFile);
         //设置应助类型为管理员应助
@@ -222,14 +227,13 @@ public class BackendController {
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
         HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(id);
-
-        helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.THIRD.getCode() != giveRecord.getGiverType());
-
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
-        GiveRecord giveRecord = new GiveRecord();
-        if (!helpRecord.getGiveRecords().isEmpty()){
-            giveRecord = helpRecord.getGiveRecords().iterator().next();
-        }
+        //如果有求助第三方的状态的应助记录，则直接处理更新这个记录
+        Optional<GiveRecord> giveRecordOptional = helpRecord.getGiveRecords().stream()
+                .filter(g1 -> GiveTypeEnum.THIRD.getCode() == g1.getGiverType())
+                .findFirst();
+        //如果没有第三方状态的记录，则新建一条应助记录
+        GiveRecord giveRecord = giveRecordOptional.orElse(new GiveRecord());
         giveRecord.setGiverId(giverId);
         giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
         giveRecord.setGiverName(giverName);

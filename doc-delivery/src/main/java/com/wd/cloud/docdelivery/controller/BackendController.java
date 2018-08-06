@@ -222,9 +222,9 @@ public class BackendController {
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
         HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(id);
-        if (HelpStatusEnum.HELP_THIRD.getCode() == (helpRecord.getStatus())){
-            helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.USER.getCode() == giveRecord.getGiverType());
-        }
+
+        helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.THIRD.getCode() != giveRecord.getGiverType());
+
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
         GiveRecord giveRecord = new GiveRecord();
         if (!helpRecord.getGiveRecords().isEmpty()){

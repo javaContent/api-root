@@ -47,9 +47,9 @@ public class MailServiceImpl implements MailService {
         if (ChannelEnum.SPIS.equals(channelEnum)) {
             sendSpisMail(helpEmail, docTitle, url, helpStatusEnum);
         } else if (ChannelEnum.CRS.equals(channelEnum)) {
-            sendSpisMail(helpEmail, docTitle, url, helpStatusEnum);
+            sendCrsMail(helpEmail, docTitle, url, helpStatusEnum);
         } else if (ChannelEnum.ZHY.equals(channelEnum)) {
-            sendSpisMail(helpEmail, docTitle, url, helpStatusEnum);
+            sendZhyMail(helpEmail, docTitle, url, helpStatusEnum);
         }
     }
 

@@ -32,15 +32,21 @@ public interface BackendService {
 
     List<DocFile> getDocFileList(Pageable pageable, Long literatureId);
 
-    DownloadModel getDowloadFile(long docFileId);
-
+    DocFile saveDocFile(Literature literature, String fileName);
     /**
-     * 获取单条互助记录
+     * 获取单条可处理的记录
      *
      * @param id
      * @return
      */
-    HelpRecord getHelpRecord(Long id);
+    HelpRecord getWaitOrThirdHelpRecord(Long id);
+
+    /**
+     * 获取待审核的求助记录
+     * @param id
+     * @return
+     */
+    HelpRecord getWaitAuditHelpRecord(Long id);
 
     /**
      * 查询待审核的

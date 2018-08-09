@@ -23,7 +23,7 @@ insert into audit_msg (msg) values ("文不对题"),("文档无法打开"),("文
 
 
 
-drop PROCEDURE IF EXISTS give_timeout;
-DROP EVENT IF EXISTS e_give_timeout;
-CREATE PROCEDURE give_timeout () BEGIN DECLARE helpRecordId INT DEFAULT 0 ; SELECT help_record_id INTO helpRecordId FROM give_record WHERE doc_file_id IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmt_create, now()) ; DELETE FROM give_record WHERE help_record_id = helpRecordId AND doc_file_id IS NULL ; UPDATE help_record SET STATUS = 0 WHERE STATUS = 1 AND id = helpRecordId ; END;
-CREATE EVENT e_give_timeout ON SCHEDULE EVERY 60 SECOND STARTS TIMESTAMP '2018-05-31 00:00:00' ON COMPLETION PRESERVE DO CALL give_timeout ();
+-- drop PROCEDURE IF EXISTS give_timeout;
+-- DROP EVENT IF EXISTS e_give_timeout;
+-- CREATE PROCEDURE give_timeout () BEGIN DECLARE helpRecordId INT DEFAULT 0 ; SELECT help_record_id INTO helpRecordId FROM give_record WHERE doc_file_id IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmt_create, now()) ; DELETE FROM give_record WHERE help_record_id = helpRecordId AND doc_file_id IS NULL ; UPDATE help_record SET STATUS = 0 WHERE STATUS = 1 AND id = helpRecordId ; END;
+-- CREATE EVENT e_give_timeout ON SCHEDULE EVERY 60 SECOND STARTS TIMESTAMP '2018-05-31 00:00:00' ON COMPLETION PRESERVE DO CALL give_timeout ();

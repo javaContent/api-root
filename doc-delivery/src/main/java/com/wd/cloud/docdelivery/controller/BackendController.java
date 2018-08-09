@@ -1,6 +1,5 @@
 package com.wd.cloud.docdelivery.controller;
 
-import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
@@ -14,6 +13,7 @@ import com.wd.cloud.docdelivery.service.BackendService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
@@ -24,6 +24,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Pageable;
@@ -44,17 +46,18 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/backend")
 public class BackendController {
 
+    private static final Logger log = LoggerFactory.getLogger(BackendController.class);
     @Autowired
     BackendService backendService;
 
     @Autowired
     FileService fileService;
 
-//    @Autowired
-//    private ResourcesServerApi resourcesServerApi;
-
     @Autowired
     MailService mailService;
+
+    @Autowired
+    ResourcesServerApi resourcesServerApi;
 
     /**
      * 文献互助列表
@@ -138,16 +141,26 @@ public class BackendController {
                                 @RequestParam String giverName,
                                 @NotNull MultipartFile file,
                                 HttpServletRequest request) {
-        HelpRecord helpRecord = backendService.getHelpRecord(helpRecordId);
+        HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(helpRecordId);
         DocFile docFile = null;
-        //ResponseModel responseModel = null;
-        try {
-//            responseModel= resourcesServerApi.uploadDocDeliveryFile(file);
-            docFile = fileService.saveFile(helpRecord.getLiterature(), file);
-        } catch (IOException e) {
-            return ResponseModel.error("文件上传失败,请重新上传");
+        log.info("正在上传文件。。。");
+        ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        log.info("code={}:msg={}:body={}",jsonObjectResponseModel.getCode(),jsonObjectResponseModel.getMsg(),jsonObjectResponseModel.getBody().toString());
+        if (jsonObjectResponseModel.getCode() != HttpStatus.HTTP_OK){
+            log.info("文件上传失败 。。。");
+            return ResponseModel.serverErr("文件上传失败，请重试");
         }
-        GiveRecord giveRecord = new GiveRecord();
+        log.info("文件上传成功 。。。");
+        String fileName = jsonObjectResponseModel.getBody().getStr("file");
+        docFile = backendService.saveDocFile(helpRecord.getLiterature(),fileName);
+
+        //如果有求助第三方的状态的应助记录，则直接处理更新这个记录
+        Optional<GiveRecord> giveRecordOptional = helpRecord.getGiveRecords().stream()
+                .filter(g -> g.getGiverType() == GiveTypeEnum.THIRD.getCode())
+                .findFirst();
+
+        //如果没有第三方状态的记录，则新建一条应助记录
+        GiveRecord giveRecord = giveRecordOptional.orElse(new GiveRecord());
 
         giveRecord.setHelpRecord(helpRecord);
         giveRecord.setDocFile(docFile);
@@ -178,11 +191,11 @@ public class BackendController {
     })
     @PostMapping("/third/{id}")
     public ResponseModel helpThird(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+        HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(id);
         helpRecord.setStatus(HelpStatusEnum.HELP_THIRD.getCode());
         GiveRecord giveRecord = new GiveRecord();
         giveRecord.setGiverId(giverId);
-        giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
+        giveRecord.setGiverType(GiveTypeEnum.THIRD.getCode());
         giveRecord.setGiverName(giverName);
         mailService.sendMail(helpRecord.getHelpChannel(),
                 helpRecord.getHelperEmail(),
@@ -209,15 +222,14 @@ public class BackendController {
     })
     @PostMapping("/fiaied/{id}")
     public ResponseModel helpFail(@PathVariable Long id, @RequestParam Long giverId, @RequestParam String giverName) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
-        if (HelpStatusEnum.HELP_THIRD.getCode() == (helpRecord.getStatus())){
-            helpRecord.getGiveRecords().stream().filter(giveRecord -> GiveTypeEnum.USER.getCode() == giveRecord.getGiverType());
-        }
+        HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(id);
         helpRecord.setStatus(HelpStatusEnum.HELP_FAILED.getCode());
-        GiveRecord giveRecord = helpRecord.getGiveRecords().iterator().next();
-        if (giveRecord == null){
-            giveRecord = new GiveRecord();
-        }
+        //如果有求助第三方的状态的应助记录，则直接处理更新这个记录
+        Optional<GiveRecord> giveRecordOptional = helpRecord.getGiveRecords().stream()
+                .filter(g1 -> GiveTypeEnum.THIRD.getCode() == g1.getGiverType())
+                .findFirst();
+        //如果没有第三方状态的记录，则新建一条应助记录
+        GiveRecord giveRecord = giveRecordOptional.orElse(new GiveRecord());
         giveRecord.setGiverId(giverId);
         giveRecord.setGiverType(GiveTypeEnum.MANAGER.getCode());
         giveRecord.setGiverName(giverName);
@@ -244,7 +256,7 @@ public class BackendController {
     })
     @PatchMapping("/audit/pass/{id}")
     public ResponseModel auditPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName, HttpServletRequest request) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+        HelpRecord helpRecord = backendService.getWaitAuditHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
         if (giveRecord == null) {
             return ResponseModel.notFound();
@@ -279,7 +291,7 @@ public class BackendController {
     })
     @PatchMapping("/audit/nopass/{id}")
     public ResponseModel auditNoPass(@PathVariable Long id, @RequestParam(name = "auditorId") Long auditorId, @RequestParam(name = "auditorName") String auditorName) {
-        HelpRecord helpRecord = backendService.getHelpRecord(id);
+        HelpRecord helpRecord = backendService.getWaitAuditHelpRecord(id);
         GiveRecord giveRecord = backendService.getGiverRecord(helpRecord, 0, 2);
 
         if (giveRecord == null) {
@@ -354,32 +366,5 @@ public class BackendController {
         }
     }
 
-    /**
-     * 文献下载
-     *
-     * @return
-     */
-    @ApiOperation(value = "后台文件下载")
-    @ApiImplicitParam(name = "docFileId", value = "文件ID", dataType = "Long", paramType = "path")
-    @GetMapping("/download/{docFileId}")
-    public ResponseEntity download(@PathVariable Long docFileId) {
-        DownloadModel downloadModel;
-        try {
-            downloadModel = backendService.getDowloadFile(docFileId);
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Content-Disposition", "attachment; filename=" + downloadModel.getDownloadFileName());
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentLength(downloadModel.getDocFile().length())
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(new FileSystemResource(downloadModel.getDocFile()));
-    }
 
 }

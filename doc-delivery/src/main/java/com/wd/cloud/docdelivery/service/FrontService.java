@@ -14,6 +14,9 @@ import org.springframework.data.domain.Pageable;
  */
 public interface FrontService {
 
+    boolean checkExists(String email,Literature literature);
+
+    DocFile saveDocFile(Literature literature,String filePath);
     /**
      * 我要应助
      *
@@ -32,6 +35,21 @@ public interface FrontService {
      * @return
      */
     HelpRecord getHelpingRecord(long helpRecordId);
+
+    /**
+     * 获取用户今天的求助次数
+     * @param email
+     * @return
+     */
+    int getCountHelpRecordToDay(String email);
+
+    /**
+     * 获取单条可应助的记录
+     *
+     * @param id
+     * @return
+     */
+    HelpRecord getWaitOrThirdHelpRecord(Long id);
 
     /**
      * 获取非待应助的求助记录
@@ -123,6 +141,8 @@ public interface FrontService {
     Page<HelpRecord> getAllHelpRecord(Pageable pageable);
 
     DocFile getReusingFile(Literature literature);
+
+    Page<HelpRecord> search(String keyword,Pageable pageable);
 
     String checkExistsGiveing(long giverId);
 }

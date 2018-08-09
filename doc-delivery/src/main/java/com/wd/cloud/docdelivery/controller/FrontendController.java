@@ -3,7 +3,9 @@ package com.wd.cloud.docdelivery.controller;
 import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import com.wd.cloud.apifeign.ResourcesServerApi;
+import com.wd.cloud.commons.model.HttpStatus;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.commons.model.SessionKey;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -22,6 +24,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +48,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/front")
 public class FrontendController {
+
+    private static final Logger log = LoggerFactory.getLogger(FrontendController.class);
     @Autowired
     GlobalConfig globalConfig;
 
@@ -53,11 +59,11 @@ public class FrontendController {
     @Autowired
     MailService mailService;
 
-//    @Autowired
-//    private ResourcesServerApi resourcesServerApi;
-
     @Autowired
     FrontService frontService;
+
+    @Autowired
+    ResourcesServerApi resourcesServerApi;
 
     /**
      * 1. 文献求助
@@ -66,7 +72,7 @@ public class FrontendController {
      */
     @ApiOperation(value = "文献求助")
     @PostMapping(value = "/help/form")
-    public ResponseModel helpFrom(@Valid HelpModel helpModel, HttpServletRequest request) {
+    public ResponseModel<HelpRecord> helpFrom(@Valid HelpModel helpModel, HttpServletRequest request) {
 
         HelpRecord helpRecord = new HelpRecord();
         String helpEmail = helpModel.getHelperEmail();
@@ -80,14 +86,17 @@ public class FrontendController {
 
         Literature literature = new Literature();
         // 防止调用者传过来的docTitle包含HTML标签，在这里将标签去掉
-        literature.setDocTitle(frontService.clearHtml(helpModel.getDocTitle()));
-        literature.setDocHref(helpModel.getDocHref());
+        literature.setDocTitle(frontService.clearHtml(helpModel.getDocTitle().trim()));
+        literature.setDocHref(helpModel.getDocHref().trim());
         // 先查询元数据是否存在
         Literature literatureData = frontService.queryLiterature(literature);
-        String msg = "文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收";
+        String msg = "waiting:文献求助已发送，应助结果将会在24h内发送至您的邮箱，请注意查收";
         if (null == literatureData) {
             // 如果不存在，则新增一条元数据
             literatureData = frontService.saveLiterature(literature);
+        }
+        if (frontService.checkExists(helpEmail,literatureData)){
+            return ResponseModel.clientErr("error:您最近15天内已求助过这篇文献,请注意查收邮箱");
         }
         helpRecord.setLiterature(literatureData);
         DocFile docFile = frontService.getReusingFile(literatureData);
@@ -108,13 +117,13 @@ public class FrontendController {
                     helpRecord.getLiterature().getDocTitle(),
                     downloadUrl,
                     HelpStatusEnum.HELP_SUCCESSED);
-            msg = "文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
+            msg = "success:文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         } else {
             try {
                 // 保存求助记录
                 frontService.saveHelpRecord(helpRecord);
             } catch (Exception e) {
-                return ResponseModel.clientErr();
+                return ResponseModel.clientErr("error:主键冲突!");
             }
         }
         return ResponseModel.ok(msg);
@@ -159,11 +168,19 @@ public class FrontendController {
     @ApiOperation(value = "我的求助记录")
     @ApiImplicitParam(name = "helperId", value = "用户ID", dataType = "Long", paramType = "path")
     @GetMapping("/help/records/{helperId}")
-    public ResponseModel myRecords(@PathVariable Long helperId, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel myRecords(@PathVariable Long helperId,
+                                   @PageableDefault(sort = {"id"},
+                                           direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.ok(myHelpRecords);
     }
 
+    @ApiOperation(value = "获取用户当天已求助记录的数量")
+    @ApiImplicitParam(name = "email", value = "用户邮箱", dataType = "String", paramType = "query")
+    @GetMapping("/help/count")
+    public int getHelpCountToDay(@RequestParam String email){
+        return frontService.getCountHelpRecordToDay(email);
+    }
 
     /**
      * 应助认领
@@ -183,9 +200,9 @@ public class FrontendController {
                                 @RequestParam Long giverId,
                                 @RequestParam String giverName,
                                 HttpServletRequest request) {
-        HelpRecord helpRecord = frontService.getNotWaitRecord(helpRecordId);
+        HelpRecord helpRecord = frontService.getWaitOrThirdHelpRecord(helpRecordId);
         // 该求助记录状态为非待应助，那么可能已经被其他人应助过或已应助完成
-        if (helpRecord != null) {
+        if (helpRecord == null) {
             return ResponseModel.clientErr("该求助已经被其它人应助", helpRecord);
         }
         //检查用户是否已经认领了应助
@@ -249,14 +266,14 @@ public class FrontendController {
         }
         //保存文件
         DocFile docFile = null;
-        //ResponseModel responseModel;
-        try {
-//             responseModel = resourcesServerApi.uploadDocDeliveryFile(file);
-//             responseModel.getMsg();
-            docFile = fileService.saveFile(helpRecord.getLiterature(), file);
-        } catch (IOException e) {
-            return ResponseModel.error("文件上传失败,请重新上传");
+        ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        log.info("code={}:msg={}:body={}",fileModel.getCode(),fileModel.getMsg(),fileModel.getBody().toString());
+        if (fileModel.getCode() != HttpStatus.HTTP_OK){
+            return ResponseModel.serverErr("文件上传失败，请重试");
         }
+        String filename = fileModel.getBody().getStr("file");
+        docFile = frontService.saveDocFile(helpRecord.getLiterature(),filename);
+
         //更新记录
         frontService.createGiveRecord(helpRecord, giverId, docFile, HttpUtil.getClientIP(request));
         return ResponseModel.ok("应助成功，感谢您的帮助");
@@ -272,17 +289,25 @@ public class FrontendController {
     @ApiOperation(value = "根据邮箱查询求助记录")
     @ApiImplicitParam(name = "email", value = "条件email", dataType = "String", paramType = "query")
     @GetMapping("/help/records")
-    public ResponseModel recordsByEmail(String email, @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<HelpRecord> literatureList = frontService.getHelpRecordsForEmail(email, pageable);
-
-        return ResponseModel.ok(literatureList);
+    public ResponseModel recordsByEmail(@RequestParam String email, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> helpRecords = frontService.getHelpRecordsForEmail(email, pageable);
+        return ResponseModel.ok(helpRecords);
     }
 
+    @ApiOperation(value = "邮箱或标题查询记录")
+    @ApiImplicitParam(name = "keyword", value = "条件keyword", dataType = "String", paramType = "query")
+    @GetMapping("/help/search")
+    public ResponseModel recordsBySearch(@RequestParam String keyword, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<HelpRecord> helpRecords = frontService.search(keyword, pageable);
+
+        return ResponseModel.ok(helpRecords);
+    }
     /**
      * 文献求助记录
      *
      * @return
      */
+
     @GetMapping("/help/records/all")
     public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
 //        User user = (User)request.getSession().getAttribute(SessionKey.LOGGER);

@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.service.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.format.DateParser;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HtmlUtil;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
@@ -44,6 +45,7 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class FrontServiceImpl implements FrontService {
 
+
     @Autowired
     GlobalConfig globalConfig;
     @Autowired
@@ -69,6 +71,28 @@ public class FrontServiceImpl implements FrontService {
         return literatureData;
     }
 
+
+    @Override
+    public boolean checkExists(String email, Literature literature) {
+        HelpRecord helpRecord = helpRecordRepository.findByHelperEmailAndLiterature(email,literature);
+        if (helpRecord != null){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public DocFile saveDocFile(Literature literature, String fileName) {
+        DocFile docFile = docFileRepository.findByLiteratureAndFileName(literature, fileName);
+        if (docFile == null) {
+            docFile = new DocFile();
+        }
+        docFile.setFileName(fileName);
+        docFile.setLiterature(literature);
+        docFile.setAuditStatus(0);
+        docFile = docFileRepository.save(docFile);
+        return docFile;
+    }
 
     @Override
     public HelpRecord givingHelp(long helpRecordId, long giverId, String giverName, String giverIp) {
@@ -105,6 +129,17 @@ public class FrontServiceImpl implements FrontService {
     @Override
     public HelpRecord getHelpingRecord(long helpRecordId) {
         return helpRecordRepository.findByIdAndStatus(helpRecordId, HelpStatusEnum.HELPING.getCode());
+    }
+
+    @Override
+    public int getCountHelpRecordToDay(String email) {
+        return helpRecordRepository.findByHelperEmailAndGmtCreateAfter(email, DateUtil.beginOfDay(new Date()).toSqlDate()).size();
+    }
+
+    @Override
+    public HelpRecord getWaitOrThirdHelpRecord(Long id) {
+        return helpRecordRepository.findByIdAndStatusIn(id,
+                new int[]{ HelpStatusEnum.WAIT_HELP.getCode(), HelpStatusEnum.HELP_THIRD.getCode()});
     }
 
     @Override
@@ -208,6 +243,22 @@ public class FrontServiceImpl implements FrontService {
     public DocFile getReusingFile(Literature literature) {
         DocFile docFiles = docFileRepository.findByLiteratureAndReusingIsTrue(literature);
         return docFiles;
+    }
+
+    @Override
+    public Page<HelpRecord> search(String keyword, Pageable pageable) {
+        Page<HelpRecord> helpRecords = helpRecordRepository.findAll(new Specification<HelpRecord>() {
+            @Override
+            public Predicate toPredicate(Root<HelpRecord> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> list = new ArrayList<Predicate>();
+                if (!StringUtils.isEmpty(keyword)) {
+                    list.add(criteriaBuilder.or(criteriaBuilder.like(root.get("literature").get("docTitle").as(String.class), "%" + keyword.trim() + "%"), criteriaBuilder.like(root.get("helperEmail").as(String.class), "%" + keyword.trim() + "%")));
+                }
+                Predicate[] p = new Predicate[list.size()];
+                return criteriaBuilder.and(list.toArray(p));
+            }
+        },pageable);
+        return helpRecords;
     }
 
     @Override

@@ -1,25 +1,35 @@
 package com.wd.cloud.docdelivery.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import com.alibaba.druid.util.HttpClientUtils;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.entity.HelpRecord;
 import com.wd.cloud.docdelivery.entity.Literature;
+import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author He Zhigang
@@ -28,7 +38,6 @@ import java.nio.charset.Charset;
  */
 @Service("fileService")
 public class FileServiceImpl implements FileService {
-
 
     @Autowired
     GlobalConfig globalConfig;
@@ -43,55 +52,59 @@ public class FileServiceImpl implements FileService {
     GiveRecordRepository giveRecordRepository;
 
     @Override
-    public DocFile saveFile(Literature literature, MultipartFile file) throws IOException {
-
-        //文件MD5值
-        String md5File = DigestUtil.md5Hex(file.getInputStream());
-        //文件后缀
-        String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
-        DocFile docFile = docFileRepository.findByLiteratureAndFileNameAndFileType(literature, md5File, extName);
-        if (docFile == null) {
-            docFile = new DocFile();
-            docFile.setFileName(md5File);
-            docFile.setFileType(extName);
-            docFile.setLiterature(literature);
-            docFile.setAuditStatus(0);
-            docFile = docFileRepository.save(docFile);
-        }
-        //文件如果不存在，则保存，否则直接返回文件的MD5名
-        if (!FileUtil.exist(new File(globalConfig.getSavePath(), md5File))) {
-            //创建一个新文件
-            File attachFile = FileUtil.touch(globalConfig.getSavePath(), md5File);
-            //将文件流写入文件中
-            FileUtil.writeFromStream(file.getInputStream(), attachFile);
-        }
-
-        return docFile;
-    }
-
-    @Override
     public DownloadModel getDownloadFile(Long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
+        if (checkTimeOut(helpRecord.getGmtModified())){
+            return null;
+        }
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
         String fileName = giveRecord.getDocFile().getFileName();
-        String fileType = giveRecord.getDocFile().getFileType();
         String docTitle = helpRecord.getLiterature().getDocTitle();
         //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。
         docTitle = FileUtil.cleanInvalid(docTitle);
         DownloadModel downloadModel = new DownloadModel();
+        InputStream inputStream = HttpRequest.get(getResourceUrl(fileName)).execute().bodyStream();
 
-        File downloadFile = new File(globalConfig.getSavePath(), fileName);
+        downloadModel.setInputStream(inputStream);
+        String ext = StrUtil.subAfter(fileName,".",true);
+        String downLoadFileName = docTitle + "." + ext;
+        downloadModel.setDownloadFileName(downLoadFileName);
+        return downloadModel;
+    }
 
-        downloadModel.setDocFile(downloadFile);
-        String downLoadFileName = docTitle + "." + fileType;
+    @Override
+    public DownloadModel getWaitAuditFile(Long helpRecordId) {
+        HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
+        GiveRecord giveRecord = giveRecordRepository.findByHelpRecordAndAuditStatusEquals(helpRecord, AuditEnum.WAIT.getCode());
+        String fileName = giveRecord.getDocFile().getFileName();
+        String docTitle = helpRecord.getLiterature().getDocTitle();
+        //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。
+        docTitle = FileUtil.cleanInvalid(docTitle);
+        DownloadModel downloadModel = new DownloadModel();
+        InputStream inputStream = HttpRequest.get(getResourceUrl(fileName)).execute().bodyStream();
+
+        downloadModel.setInputStream(inputStream);
+        String ext = StrUtil.subAfter(fileName,".",true);
+        String downLoadFileName = docTitle + "." + ext;
         downloadModel.setDownloadFileName(downLoadFileName);
         return downloadModel;
     }
 
 
+    private boolean checkTimeOut(Date startDate){
+       if (15 < DateUtil.betweenDay(startDate, new Date(),true)){
+           return true;
+       }
+       return false;
+    }
+
     @Override
     public String getDownloadUrl(Long helpRecordId) {
-        return globalConfig.getBaseUrl() + "/file/download/" + helpRecordId;
+        return globalConfig.getCloudDomain() + "/doc-delivery/file/download/" + helpRecordId;
+    }
+
+    private String getResourceUrl(String fileName) {
+        return globalConfig.getCloudDomain()+ "/resources-server/" + fileName;
     }
 
 }

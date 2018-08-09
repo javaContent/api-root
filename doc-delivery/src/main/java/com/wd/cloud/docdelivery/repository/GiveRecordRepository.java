@@ -66,15 +66,17 @@ public interface GiveRecordRepository extends JpaRepository<GiveRecord, Long> {
      * @param helpRecord
      * @return
      */
-    @Query("from GiveRecord where helpRecord = :helpRecord and (auditStatus = 1 or giverType <> 2)")
+    @Query("FROM GiveRecord WHERE helpRecord = :helpRecord AND (auditStatus = 1 OR giverType <> 2)")
     GiveRecord findByHelpRecord(@Param("helpRecord") HelpRecord helpRecord);
 
-    @Query("FROM GiveRecord WHERE docFile IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmtCreate, now())")
+    GiveRecord findByHelpRecordAndAuditStatusEquals(HelpRecord helpRecord,Integer status);
+
+    @Query("FROM GiveRecord WHERE giverType = 2 AND docFile IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmtCreate, now())")
     List<GiveRecord> findTimeOutRecord();
 
     @Transactional
     @Modifying
-    @Query("DELETE FROM GiveRecord WHERE docFile IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmtCreate, now())")
+    @Query("DELETE FROM GiveRecord WHERE giverType = 2 AND docFile IS NULL AND 15 < TIMESTAMPDIFF(MINUTE, gmtCreate, now())")
     List<GiveRecord> deleteTimeOutRecord();
 
 }

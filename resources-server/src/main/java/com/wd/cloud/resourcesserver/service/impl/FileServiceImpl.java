@@ -3,19 +3,16 @@ package com.wd.cloud.resourcesserver.service.impl;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
-import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.resourcesserver.config.GlobalConfig;
-import com.wd.cloud.resourcesserver.enums.SaveDirEnum;
 import com.wd.cloud.resourcesserver.service.FileService;
-import org.apache.tomcat.util.http.RequestUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author He Zhigang
@@ -25,49 +22,42 @@ import java.io.InputStream;
 @Service("fileService")
 public class FileServiceImpl implements FileService{
 
+    private static final Logger log = LoggerFactory.getLogger(FileServiceImpl.class);
     @Autowired
     GlobalConfig globalConfig;
 
     @Override
-    public String save(MultipartFile file, SaveDirEnum saveDirEnum) throws IOException {
-        String msg = null;
-        String savePath = globalConfig.getResourcePath()+ saveDirEnum.name();
+    public String save(MultipartFile file, String savePath) throws IOException {
+        log.info(file.getOriginalFilename());
         //文件MD5值
         String md5File = DigestUtil.md5Hex(file.getInputStream());
         //文件后缀
         String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
-
         String newFileName = md5File +"."+extName;
         //文件如果不存在，则保存，否则直接返回文件的MD5名
-        msg = touch(file, saveDirEnum, savePath, newFileName);
-        return msg;
+        newFileName = touch(file, savePath, newFileName);
+        return newFileName;
     }
 
     @Override
-    public String save(MultipartFile file, SaveDirEnum saveDirEnum, String fileName) throws IOException {
-        String msg = null;
-        String savePath = globalConfig.getResourcePath()+ saveDirEnum.name();
+    public String save(MultipartFile file, String savePath, String journalId) throws IOException {
+        log.info(file.getOriginalFilename());
         //文件后缀
         String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
-
-        String newFileName = fileName +"."+extName;
-        msg = touch(file, saveDirEnum, savePath, newFileName);
-
-        return msg;
+        String newFileName = journalId +"."+extName;
+        newFileName = touch(file, savePath, newFileName);
+        return newFileName;
     }
 
-    private String touch(MultipartFile file, SaveDirEnum saveDirEnum, String savePath, String newFileName) throws IOException {
-        String msg;//文件如果不存在，则保存，否则直接返回文件的MD5名
+    private String touch(MultipartFile file, String savePath, String newFileName) throws IOException {
+        //文件如果不存在，则保存，否则直接返回文件的MD5名
         if (!FileUtil.exist(new File(savePath, newFileName))) {
             //创建一个新文件
             File newFile = FileUtil.touch(savePath, newFileName);
             //将文件流写入文件中
             FileUtil.writeFromStream(file.getInputStream(), newFile);
-            msg = "上传成功: "+saveDirEnum.name()+"/"+newFileName;
-        }else {
-            msg = "文件已存在: "+saveDirEnum.name()+"/"+newFileName;
         }
-        return msg;
+        return newFileName;
     }
 
 

@@ -6,6 +6,7 @@ import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.entity.HelpRecord;
 import com.wd.cloud.docdelivery.entity.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
+import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
 import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
@@ -118,22 +119,17 @@ public class BackendServiceImpl implements BackendService {
 				return cb.and(list.toArray(p));
 			}
 		}, pageable);
+
 		for (Literature literature : result) {
 			Set<DocFile> docFiles = literature.getDocFiles();
 			List<DocFile> list = new ArrayList<>();
 			list.addAll(docFiles);
 			if(docFiles != null && docFiles.size() > 1) {
-				System.out.println(list.get(0).isReusing());
-				System.out.println(list.get(1).isReusing());
 				Collections.sort(list, new Comparator<DocFile>() {
 				    @Override
 			        public int compare(DocFile docFile1, DocFile docFile2) {
-			            /**
-			             * 升序排的话就是第一个参数.compareTo(第二个参数);
-			             * 降序排的话就是第二个参数.compareTo(第一个参数);
-			             */
 			        	if(!literature.isReusing()) {
-			        		 return docFile1.getGmtModified().compareTo(docFile2.getGmtModified());//升序
+			        		 return docFile1.getGmtModified().compareTo(docFile2.getGmtModified());
 			        	} else {
 			        		if(docFile1.isReusing()) {
 			        			return -1;
@@ -142,8 +138,6 @@ public class BackendServiceImpl implements BackendService {
 			        	}
 			        }
 			    });
-				System.out.println(list.get(0).isReusing());
-				System.out.println(list.get(1).isReusing());
 			}
 			docFiles.clear();
 			docFiles.addAll(list);
@@ -156,24 +150,31 @@ public class BackendServiceImpl implements BackendService {
     public List<DocFile> getDocFileList(Pageable pageable, Long literatureId) {
         Literature literature = new Literature();
         literature.setId(literatureId);
-        return docFileRepository.findByLiterature(literature);
+        return docFileRepository.getResuingDoc(literature);
     }
 
     @Override
-    public DownloadModel getDowloadFile(long docFileId) {
-        DocFile docFile = docFileRepository.getOne(docFileId);
-        DownloadModel downloadModel = new DownloadModel();
-        String fileName = docFile.getFileName();
-        String fileType = docFile.getFileType();
-        downloadModel.setDocFile(new File(globalConfig.getSavePath(), fileName));
-        downloadModel.setDownloadFileName(fileName + "." + fileType);
-        return downloadModel;
+    public DocFile saveDocFile(Literature literature, String fileName) {
+        DocFile docFile = docFileRepository.findByLiteratureAndFileName(literature, fileName);
+        if (docFile == null) {
+            docFile = new DocFile();
+        }
+        docFile.setFileName(fileName);
+        docFile.setLiterature(literature);
+        docFile = docFileRepository.save(docFile);
+        return docFile;
     }
 
 
     @Override
-    public HelpRecord getHelpRecord(Long id) {
-        return helpRecordRepository.getOne(id);
+    public HelpRecord getWaitOrThirdHelpRecord(Long id) {
+        return helpRecordRepository.findByIdAndStatusIn(id,
+                new int[]{ HelpStatusEnum.WAIT_HELP.getCode(), HelpStatusEnum.HELP_THIRD.getCode()});
+    }
+
+    @Override
+    public HelpRecord getWaitAuditHelpRecord(Long id) {
+        return helpRecordRepository.findByIdAndStatus(id,HelpStatusEnum.WAIT_AUDIT.getCode());
     }
 
     @Override
@@ -203,7 +204,7 @@ public class BackendServiceImpl implements BackendService {
         literature.setId((long) param.get("literatureId"));
         long docFileId = (long) param.get("docFileId");
         boolean reusing = (boolean) param.get("reusing");
-        List<DocFile> list = docFileRepository.findByLiterature(literature);
+        List<DocFile> list = docFileRepository.getResuingDoc(literature);
         DocFile doc = null;
         for (DocFile docFile : list) {
             //如果是复用操作，并且已经有文档被复用，则返回false，如果是取消复用，则不会进入

@@ -14,7 +14,7 @@ import java.util.List;
 @ConfigurationProperties(value = "help.global")
 public class GlobalConfig {
 
-    private String baseUrl = "http://192.168.1.103:8080/doc-delivery";
+    private String cloudDomain;
     /**
      * 求助的来源渠道
      */
@@ -54,11 +54,11 @@ public class GlobalConfig {
         this.fileTypes = fileTypes;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getCloudDomain() {
+        return cloudDomain;
     }
 
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setCloudDomain(String cloudDomain) {
+        this.cloudDomain = cloudDomain;
     }
 }

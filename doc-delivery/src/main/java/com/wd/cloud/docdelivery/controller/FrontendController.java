@@ -137,10 +137,10 @@ public class FrontendController {
     @ApiOperation(value = "待应助列表")
     @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/wait/{helpChannel}")
-    public ResponseEntity helpWaitList(@PathVariable int helpChannel,
+    public ResponseModel helpWaitList(@PathVariable int helpChannel,
                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> waitHelpRecords = frontService.getWaitHelpRecords(helpChannel, pageable);
-        return ResponseEntity.ok(waitHelpRecords);
+        return ResponseModel.ok(waitHelpRecords);
     }
 
     /**

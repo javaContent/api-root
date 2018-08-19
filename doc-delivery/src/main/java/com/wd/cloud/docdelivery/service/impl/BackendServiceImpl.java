@@ -229,42 +229,6 @@ public class BackendServiceImpl implements BackendService {
         docFileRepository.save(doc);
         return true;
     }
-    
-    
-    
-    public static void main(String[] args) {
-    	List<DocFile> list = new ArrayList<>();
-    	DocFile docFile1 = new DocFile();
-    	docFile1.setReusing(false);
-    	
-    	DocFile docFile2 = new DocFile();
-    	docFile2.setReusing(true);
-    	
-    	Set<DocFile> set = new HashSet<DocFile>();
-    	
-    	
-    	set.add(docFile1);
-    	set.add(docFile2);
-    	
-    	list.addAll(set);
-		
-		Collections.sort(list, new Comparator<DocFile>() {
-	        public int compare(DocFile docFile1, DocFile docFile2) {
-	            /**
-	             * 升序排的话就是第一个参数.compareTo(第二个参数);
-	             * 降序排的话就是第二个参数.compareTo(第一个参数);
-	             */
-	        	
-        		if(docFile1.isReusing()) {
-        			return -1;
-        		}
-        		return 1;
-	        	
-	        }
-	    });
-		
-		System.out.println(list.get(0).isReusing());
-		System.out.println(list.get(1).isReusing());
-	}
+
 
 }

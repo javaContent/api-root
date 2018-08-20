@@ -289,7 +289,8 @@ public class FrontendController {
     @ApiOperation(value = "根据邮箱查询求助记录")
     @ApiImplicitParam(name = "email", value = "条件email", dataType = "String", paramType = "query")
     @GetMapping("/help/records")
-    public ResponseModel recordsByEmail(@RequestParam String email, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel recordsByEmail(@RequestParam String email,
+                                        @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> helpRecords = frontService.getHelpRecordsForEmail(email, pageable);
         return ResponseModel.ok(helpRecords);
     }
@@ -310,8 +311,6 @@ public class FrontendController {
 
     @GetMapping("/help/records/all")
     public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
-//        User user = (User)request.getSession().getAttribute(SessionKey.LOGGER);
-//        Console.log(user);
         return ResponseModel.ok(request.getSession().getAttribute(SessionKey.LOGIN_USER));
     }
 

@@ -7,6 +7,7 @@ import com.wd.cloud.docdelivery.enums.ChannelEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
 import com.wd.cloud.docdelivery.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,7 +20,7 @@ public class MailServiceImpl implements MailService {
 
     @Autowired
     HelpMailConfig helpMailConfig;
-
+    @Async
     @Override
     public void sendMail(Integer channel, String helpEmail, String docTitle, String url, Integer processType) {
         HelpStatusEnum helpStatusEnum = null;
@@ -30,7 +31,7 @@ public class MailServiceImpl implements MailService {
         }
         sendMail(channel, helpEmail, docTitle, url, helpStatusEnum);
     }
-
+    @Async
     @Override
     public void sendMail(Integer channel, String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum) {
         ChannelEnum channelEnum = null;
@@ -41,7 +42,7 @@ public class MailServiceImpl implements MailService {
         }
         sendMail(channelEnum, helpEmail, docTitle, url, helpStatusEnum);
     }
-
+    @Async
     @Override
     public void sendMail(ChannelEnum channelEnum, String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum) {
         if (ChannelEnum.SPIS.equals(channelEnum)) {
@@ -52,7 +53,7 @@ public class MailServiceImpl implements MailService {
             sendZhyMail(helpEmail, docTitle, url, helpStatusEnum);
         }
     }
-
+    @Async
     @Override
     public void sendCrsMail(String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum) {
         String subject = null;
@@ -71,7 +72,7 @@ public class MailServiceImpl implements MailService {
 
         MailUtil.send(helpMailConfig.getCrs().getAccount(), helpEmail, subject, content, true);
     }
-
+    @Async
     @Override
     public void sendSpisMail(String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum) {
         String subject = null;
@@ -90,7 +91,7 @@ public class MailServiceImpl implements MailService {
 
         MailUtil.send(helpMailConfig.getSpis().getAccount(), helpEmail, subject, content, true);
     }
-
+    @Async
     @Override
     public void sendZhyMail(String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum) {
         String subject = null;

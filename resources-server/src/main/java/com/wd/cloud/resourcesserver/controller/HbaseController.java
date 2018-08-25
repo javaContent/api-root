@@ -51,13 +51,13 @@ public class HbaseController {
             String fileName = FileUtil.fileMd5(file);
             boolean flag = fileService.saveToHbase(tableName, fileName, file);
             if (!flag){
-                return ResponseModel.serverErr("上传失败，请重试");
+                return ResponseModel.serverErr("上传失败，请重试...");
             }
             jsonObject.put("file",fileName);
         } catch (IOException e) {
-            return ResponseModel.serverErr("上传失败，请重试");
+            return ResponseModel.serverErr("上传失败，请重试...");
         }
-        return ResponseModel.ok(jsonObject);
+        return ResponseModel.ok("上传成功",jsonObject);
     }
 
 
@@ -81,13 +81,13 @@ public class HbaseController {
         try {
             boolean flag = fileService.saveToHbase(tableName,newFileName,file);
             if (!flag){
-                return ResponseModel.serverErr("上传失败，请重试");
+                return ResponseModel.serverErr("上传失败，请重试...");
             }
             jsonObject.put("file",newFileName);
         } catch (IOException e) {
-            return ResponseModel.serverErr("上传失败，请重试");
+            return ResponseModel.serverErr("上传失败，请重试...");
         }
-        return ResponseModel.ok(jsonObject);
+        return ResponseModel.ok("上传成功",jsonObject);
     }
 
     @ApiOperation(value = "下载")
@@ -105,7 +105,7 @@ public class HbaseController {
                     .ok()
                     .headers(HttpHeaderUtil.buildHttpHeaders(fileName, request))
                     .contentLength(fileModel.getFile().length)
-                    .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .contentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                     .body(fileModel.getFile());
         }else{
             return ResponseEntity.notFound().build();

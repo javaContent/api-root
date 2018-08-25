@@ -59,13 +59,13 @@ public class DiskController {
             String fileName = FileUtil.fileMd5(file);
             boolean flag = fileService.saveToDisk(globalConfig.getResources() + dir, fileName, file);
             if (!flag) {
-                return ResponseModel.serverErr("上传失败，请重试");
+                return ResponseModel.serverErr("上传失败，请重试...");
             }
             jsonObject.put("file", fileName);
         } catch (IOException e) {
-            return ResponseModel.serverErr("上传失败，请重试");
+            return ResponseModel.serverErr("上传失败，请重试...");
         }
-        return ResponseModel.ok(jsonObject);
+        return ResponseModel.ok("上传成功",jsonObject);
     }
 
     /**
@@ -78,7 +78,7 @@ public class DiskController {
     @ApiOperation(value = "文件上传，返回自定义文件名")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "dir", value = "文件上传目录", dataType = "String", paramType = "path"),
-            @ApiImplicitParam(name = "filename", value = "文件名称", dataType = "String", paramType = "path")
+            @ApiImplicitParam(name = "fileName", value = "文件名称", dataType = "String", paramType = "path")
     })
     @PostMapping("/{dir}/{fileName}")
     public ResponseModel<JSONObject> uploadCustomFile(@PathVariable String dir,
@@ -90,19 +90,19 @@ public class DiskController {
         try {
             boolean flag = fileService.saveToDisk(globalConfig.getResources() + dir, newFileName, file);
             if (!flag) {
-                return ResponseModel.serverErr("上传失败，请重试");
+                return ResponseModel.serverErr("上传失败，请重试...");
             }
             jsonObject.put("file", newFileName);
         } catch (IOException e) {
-            return ResponseModel.serverErr("上传失败，请重试");
+            return ResponseModel.serverErr("上传失败，请重试...");
         }
-        return ResponseModel.ok(jsonObject);
+        return ResponseModel.ok("上传成功",jsonObject);
     }
 
     @ApiOperation(value = "文件下载")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "dir", value = "文件所在目录", dataType = "String", paramType = "path"),
-            @ApiImplicitParam(name = "filename", value = "文件名称", dataType = "String", paramType = "path")
+            @ApiImplicitParam(name = "fileName", value = "文件名称", dataType = "String", paramType = "path")
     })
     @GetMapping("/{dir}/{fileName}")
     public ResponseEntity downlowdFile(@PathVariable String dir, @PathVariable String fileName, HttpServletRequest request) throws UnsupportedEncodingException {
@@ -112,7 +112,7 @@ public class DiskController {
                     .ok()
                     .headers(HttpHeaderUtil.buildHttpHeaders(fileName, request))
                     .contentLength(file.length())
-                    .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .contentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
                     .body(new FileSystemResource(file));
         }else{
             return ResponseEntity.notFound().build();

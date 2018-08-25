@@ -52,7 +52,8 @@ public class DiskController {
             @ApiImplicitParam(name = "dir", value = "文件上传目录", dataType = "String", paramType = "path")
     })
     @PostMapping("/{dir}")
-    public ResponseModel<JSONObject> uploadMd5File(@NotNull MultipartFile file, @PathVariable String dir) {
+    public ResponseModel<JSONObject> uploadMd5File(@PathVariable String dir,
+                                                   @NotNull MultipartFile file) {
 
         JSONObject jsonObject = new JSONObject();
         try {
@@ -105,7 +106,10 @@ public class DiskController {
             @ApiImplicitParam(name = "fileName", value = "文件名称", dataType = "String", paramType = "path")
     })
     @GetMapping("/{dir}/{fileName}")
-    public ResponseEntity downlowdFile(@PathVariable String dir, @PathVariable String fileName, HttpServletRequest request) throws UnsupportedEncodingException {
+    public ResponseEntity downloadFile(@PathVariable String dir,
+                                       @PathVariable String fileName,
+                                       HttpServletRequest request)
+            throws UnsupportedEncodingException {
         File file = new File(globalConfig.getResources() + dir + "/" + fileName);
         if (file.exists()){
             return ResponseEntity

@@ -43,7 +43,7 @@ public class HbaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "tableName", value = "hbaseTableName", dataType = "String", paramType = "path")
     })
-    @PostMapping("/{tableName}/")
+    @PostMapping("/{tableName}")
     public ResponseModel<JSONObject> uploadMd5File(@PathVariable String tableName,
                                                    @NotNull MultipartFile file) {
         JSONObject jsonObject = new JSONObject();
@@ -96,7 +96,7 @@ public class HbaseController {
             @ApiImplicitParam(name = "fileName", value = "文件名", dataType = "String", paramType = "path")
     })
     @GetMapping("/{tableName}/{fileName}")
-    public ResponseEntity downloadJournalImageFile(@PathVariable String tableName,
+    public ResponseEntity downloadFile(@PathVariable String tableName,
                                                    @PathVariable String fileName,
                                                    HttpServletRequest request) throws UnsupportedEncodingException {
         FileModel fileModel = fileService.getFileToHbase(fileName,tableName);
@@ -111,4 +111,5 @@ public class HbaseController {
             return ResponseEntity.notFound().build();
         }
     }
+
 }

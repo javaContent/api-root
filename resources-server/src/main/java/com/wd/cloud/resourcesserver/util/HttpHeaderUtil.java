@@ -29,4 +29,14 @@ public class HttpHeaderUtil {
         headers.add("Expires", "0");
         return headers;
     }
+
+    public static HttpHeaders buildHttpHeaders(String fileName) throws UnsupportedEncodingException {
+        HttpHeaders headers = new HttpHeaders();
+        String disposition = StrUtil.format("attachment; filename=\"{}\"", fileName);
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Content-Disposition", disposition);
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+        return headers;
+    }
 }

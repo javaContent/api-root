@@ -22,12 +22,14 @@
         <module>monitoring</module><!-- 监控模块 -->
         <module>search-server</module><!-- 检索服务 -->
         <module>resources-server</module><!--  文件（图片）资源服务 -->
+        <module>org-server</module>
+        <module>sub-analysis</module>
     </modules>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.2.RELEASE</version>
+        <version>2.0.4.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -40,19 +42,37 @@
         <com.alibaba.druid.version>1.1.9</com.alibaba.druid.version>
         <javax.mail.version>1.4.7</javax.mail.version>
         <swagger.version>1.7.0.RELEASE</swagger.version>
-        <cn.hutool.all.version>4.1.2</cn.hutool.all.version>
+        <cn.hutool.all.version>4.1.8</cn.hutool.all.version>
         <jackson.databind.version>2.9.5</jackson.databind.version>
         <jackson.core.version>2.9.5</jackson.core.version>
         <jackson.asl.version>1.9.12</jackson.asl.version>
-        <elasticsearch.version>5.5.1</elasticsearch.version>
         <log4j-api.version>2.9.1</log4j-api.version>
         <log4j-core.version>2.9.1</log4j-core.version>
         <spring-boot-admin.version>2.0.1</spring-boot-admin.version>
         <jolokia.version>1.5.0</jolokia.version>
+        <spring.data.elastic>3.0.9.RELEASE</spring.data.elastic>
+        <hbase.client.version>1.1.2</hbase.client.version>
+        <spring.data.hadoop.version>2.5.0.RELEASE</spring.data.hadoop.version>
+        <spring.data.elasticsearch.version>3.0.9.RELEASE</spring.data.elasticsearch.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-hadoop</artifactId>
+                <version>${spring.data.hadoop.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-client</artifactId>
+                <version>${hbase.client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-elasticsearch</artifactId>
+                <version>${spring.data.elastic}</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -85,6 +105,11 @@
                 <groupId>com.spring4all</groupId>
                 <artifactId>swagger-spring-boot-starter</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.spring4all</groupId>
+                <artifactId>spring-boot-starter-hbase</artifactId>
+                <version>1.0.0.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>
@@ -134,16 +159,10 @@
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j-core.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>rest</artifactId>
-                <version>${elasticsearch.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch.client</groupId>
-                <artifactId>sniffer</artifactId>
-                <version>${elasticsearch.version}</version>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-elasticsearch</artifactId>
+                <version>${spring.data.elasticsearch.version}</version>
             </dependency>
             <!-- ==========================ES 依赖包end============================-->
         </dependencies>
@@ -171,22 +190,4 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/libs-milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>

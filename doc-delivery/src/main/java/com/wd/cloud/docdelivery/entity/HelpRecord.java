@@ -58,6 +58,16 @@ public class HelpRecord extends AbstractEntity {
      */
     private String helperScname;
 
+    private int monitor;
+
+    public int getMonitor() {
+        return monitor;
+    }
+
+    public void setMonitor(int monitor) {
+        this.monitor = monitor;
+    }
+
     /**
      * 求助IP
      */

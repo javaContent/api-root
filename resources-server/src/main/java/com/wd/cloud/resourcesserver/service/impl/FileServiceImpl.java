@@ -1,8 +1,8 @@
 package com.wd.cloud.resourcesserver.service.impl;
 
 import com.wd.cloud.resourcesserver.config.GlobalConfig;
-import com.wd.cloud.resourcesserver.model.FileModel;
-import com.wd.cloud.resourcesserver.model.HbaseModel;
+import com.wd.cloud.resourcesserver.model.FileObjModel;
+import com.wd.cloud.resourcesserver.model.HbaseObjModel;
 import com.wd.cloud.resourcesserver.service.FileService;
 import com.wd.cloud.resourcesserver.util.FileUtil;
 import org.apache.hadoop.hbase.Cell;
@@ -37,12 +37,12 @@ public class FileServiceImpl implements FileService {
     HbaseTemplate hbaseTemplate;
 
     @Override
-    public boolean saveToDisk(String savePath, String fileName, MultipartFile file) throws IOException {
+    public boolean saveToDisk(String dir, String fileName, MultipartFile file) throws IOException {
         //文件如果不存在，则保存
-        if (!FileUtil.exist(new File(savePath, fileName))) {
+        if (!FileUtil.exist(new File(dir, fileName))) {
             try {
                 //创建一个新文件
-                File newFile = FileUtil.touch(savePath, fileName);
+                File newFile = FileUtil.touch(dir, fileName);
                 //将文件流写入文件中
                 FileUtil.writeFromStream(file.getInputStream(), newFile);
             } catch (IOException e) {
@@ -54,44 +54,29 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean saveToHbase(String tableName, String fileName, MultipartFile file) throws IOException {
-        HbaseModel hbaseModel = new HbaseModel(tableName,
-                fileName.getBytes(),
-                file.getBytes());
-        return saveToHbase(hbaseModel);
+    public FileObjModel getFileToDisk(String dir, String fileName) {
+        FileObjModel fileObjModel = new FileObjModel();
+        File file = new File(dir, fileName);
+        if (FileUtil.exist(file)) {
+            fileObjModel.setFile(file);
+            fileObjModel.setFileByte(FileUtil.readBytes(file));
+            fileObjModel.setFileName(fileName);
+            return fileObjModel;
+        }
+        return fileObjModel;
     }
 
     @Override
-    public FileModel getFileToHbase(String rowKey, String tableName) {
-        return hbaseTemplate.get(tableName, rowKey, new RowMapper<FileModel>() {
-            @Override
-            public FileModel mapRow(Result result, int i) {
-                FileModel fileModel = new FileModel();
-                List<Cell> cells = result.listCells();
-                if (cells != null) {
-                    Cell cell = result.listCells().stream().findFirst().orElseGet(null);
-                    byte[] hbaseFileByte = cell != null ? cell.getValueArray() : null;
-                    //hbase读取的byte在原文件byte数组前多了38个byte字节，这里去掉前面这38个字节，否则读取的文件有错误
-                    byte[] fileByte = Arrays.copyOfRange(hbaseFileByte, 38, hbaseFileByte.length);
-                    fileModel.setFile(fileByte);
-                }
-                return fileModel;
-            }
-        }).setRowKey(rowKey);
-    }
-
-    /**
-     * 保存文件到hbase
-     *
-     * @param hbaseModel
-     * @return
-     */
-    private boolean saveToHbase(HbaseModel hbaseModel) {
-        return hbaseTemplate.execute(hbaseModel.getTableName(), (hTableInterface) -> {
+    public boolean saveToHbase(String tableName, String fileName, MultipartFile file) throws IOException {
+        HbaseObjModel hbaseObjModel = new HbaseObjModel(tableName,
+                fileName.getBytes(),
+                file.getBytes());
+        log.info("上传文件：{}，size：{} byte", file.getOriginalFilename(), file.getBytes().length);
+        return hbaseTemplate.execute(hbaseObjModel.getTableName(), (hTableInterface) -> {
             boolean flag = false;
             try {
-                Put put = new Put(hbaseModel.getRowKey());
-                put.addColumn(hbaseModel.getFamily(), hbaseModel.getQualifier(), hbaseModel.getValue());
+                Put put = new Put(hbaseObjModel.getRowKey());
+                put.addColumn(hbaseObjModel.getFamily(), hbaseObjModel.getQualifier(), hbaseObjModel.getValue());
                 hTableInterface.put(put);
                 flag = true;
             } catch (Exception e) {
@@ -100,5 +85,25 @@ public class FileServiceImpl implements FileService {
             return flag;
         });
     }
+
+    @Override
+    public FileObjModel getFileToHbase(String tableName, String fileName) {
+        return hbaseTemplate.get(tableName, fileName, new RowMapper<FileObjModel>() {
+            @Override
+            public FileObjModel mapRow(Result result, int i) {
+                FileObjModel fileObjModel = new FileObjModel();
+                List<Cell> cells = result.listCells();
+                if (cells != null) {
+                    Cell cell = result.listCells().stream().findFirst().orElseGet(null);
+                    byte[] hbaseFileByte = cell != null ? cell.getValueArray() : null;
+                    byte[] fileByte = Arrays.copyOfRange(hbaseFileByte, cell.getValueOffset(), hbaseFileByte.length);
+                    log.info("读取文件：{}，size：{} byte", fileName, fileByte.length);
+                    fileObjModel.setFileByte(fileByte);
+                }
+                return fileObjModel;
+            }
+        }).setFileName(fileName);
+    }
+
 
 }

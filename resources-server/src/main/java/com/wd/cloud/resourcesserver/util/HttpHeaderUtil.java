@@ -15,7 +15,7 @@ import java.io.UnsupportedEncodingException;
 public class HttpHeaderUtil {
 
     public static HttpHeaders buildHttpHeaders(String fileName, HttpServletRequest request) throws UnsupportedEncodingException {
-        //判断是否是IE浏览器
+        //判断是否是IE浏览器，对文件名进行编码，防止乱码
         if (request.getHeader("user-agent").toLowerCase().contains("msie")) {
             fileName = URLUtil.encode(fileName, "UTF-8");
         } else {

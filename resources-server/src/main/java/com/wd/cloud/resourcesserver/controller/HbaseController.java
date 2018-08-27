@@ -75,7 +75,7 @@ public class HbaseController {
                                        @RequestParam String fileName,
                                        HttpServletRequest request) throws UnsupportedEncodingException {
         FileObjModel fileObjModel = fileService.getFileToHbase(tableName, fileName);
-        if (fileObjModel.getFile() != null) {
+        if (fileObjModel.getFileByte() != null) {
             return ResponseEntity
                     .ok()
                     .headers(HttpHeaderUtil.buildHttpHeaders(fileName, request))

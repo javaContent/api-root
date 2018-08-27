@@ -74,7 +74,7 @@ public class HbaseController {
     public ResponseEntity<byte[]> downloadFile(@PathVariable String tableName,
                                        @RequestParam String fileName,
                                        HttpServletRequest request) throws UnsupportedEncodingException {
-        FileObjModel fileObjModel = fileService.getFileToHbase(fileName, tableName);
+        FileObjModel fileObjModel = fileService.getFileToHbase(tableName, fileName);
         if (fileObjModel.getFile() != null) {
             return ResponseEntity
                     .ok()

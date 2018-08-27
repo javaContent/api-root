@@ -1,6 +1,5 @@
 package com.wd.cloud.docdelivery.controller;
 
-import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
@@ -19,7 +18,6 @@ import com.wd.cloud.docdelivery.model.HelpModel;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
-import feign.Feign;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -31,14 +29,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 
 /**
  * @author He Zhigang
@@ -266,7 +262,7 @@ public class FrontendController {
         }
         //保存文件
         DocFile docFile = null;
-        ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadFileToHf(globalConfig.getHbaseTableName(),null,true,file);
         log.info("code={}:msg={}:body={}",fileModel.getCode(),fileModel.getMsg(),fileModel.getBody().toString());
         if (fileModel.getCode() != HttpStatus.HTTP_OK){
             return ResponseModel.serverErr("文件上传失败，请重试");

@@ -12,18 +12,29 @@ public class DownloadModel {
     /**
      * 下载的真实文件对象
      */
-    private InputStream inputStream;
+    private byte[] fileByte;
+    private File file;
     /**
      * 下载文件名，以文献标题对MD5文件进行重命名
      */
     private String downloadFileName;
 
-    public InputStream getInputStream() {
-        return inputStream;
+    public byte[] getFileByte() {
+        return fileByte;
     }
 
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
+    public DownloadModel setFileByte(byte[] fileByte) {
+        this.fileByte = fileByte;
+        return this;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public DownloadModel setFile(File file) {
+        this.file = file;
+        return this;
     }
 
     public String getDownloadFileName() {

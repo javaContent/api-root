@@ -77,7 +77,7 @@ public class BackendController {
     public ResponseModel helpList(@RequestParam(required = false) Short status, @RequestParam(required = false) Short helperScid,
                                   @RequestParam(required = false) String keyword, @RequestParam(required = false) String beginTime,
                                   @RequestParam(required = false) String endTime,
-                                  @PageableDefault(value = 20, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                  @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("helperScid", helperScid);
@@ -102,7 +102,7 @@ public class BackendController {
     })
     @GetMapping("/literature/list")
     public ResponseModel literatureList(@RequestParam(required = false) Boolean reusing, @RequestParam(required = false) String keyword,
-                                        @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reusing", reusing);
         param.put("keyword", keyword);
@@ -120,7 +120,7 @@ public class BackendController {
     })
     @GetMapping("/docFile/list")
     public ResponseModel getDocFileList(@RequestParam Long literatureId,
-                                        @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         return ResponseModel.ok(backendService.getDocFileList(pageable, literatureId));
     }

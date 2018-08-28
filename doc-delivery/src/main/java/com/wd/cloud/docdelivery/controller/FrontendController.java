@@ -150,7 +150,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/finish/{helpChannel}")
     public ResponseModel helpSuccessList(@PathVariable Integer helpChannel,
-                                         @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                         @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> finishHelpRecords = frontService.getFinishHelpRecords(helpChannel, pageable);
         return ResponseModel.ok(finishHelpRecords);
     }
@@ -165,7 +165,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helperId", value = "用户ID", dataType = "Long", paramType = "path")
     @GetMapping("/help/records/{helperId}")
     public ResponseModel myRecords(@PathVariable Long helperId,
-                                   @PageableDefault(sort = {"id"},
+                                   @PageableDefault(sort = {"gmtCreate"},
                                            direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.ok(myHelpRecords);
@@ -286,7 +286,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "email", value = "条件email", dataType = "String", paramType = "query")
     @GetMapping("/help/records")
     public ResponseModel recordsByEmail(@RequestParam String email,
-                                        @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> helpRecords = frontService.getHelpRecordsForEmail(email, pageable);
         return ResponseModel.ok(helpRecords);
     }
@@ -294,7 +294,7 @@ public class FrontendController {
     @ApiOperation(value = "邮箱或标题查询记录")
     @ApiImplicitParam(name = "keyword", value = "条件keyword", dataType = "String", paramType = "query")
     @GetMapping("/help/search")
-    public ResponseModel recordsBySearch(@RequestParam String keyword, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel recordsBySearch(@RequestParam String keyword, @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> helpRecords = frontService.search(keyword, pageable);
 
         return ResponseModel.ok(helpRecords);
@@ -306,7 +306,7 @@ public class FrontendController {
      */
 
     @GetMapping("/help/records/all")
-    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
+    public ResponseModel allRecords(@PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
         return ResponseModel.ok(request.getSession().getAttribute(SessionKey.LOGIN_USER));
     }
 

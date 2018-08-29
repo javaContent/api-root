@@ -1,0 +1,12 @@
+host = smtp.exmail.qq.com
+port = 465
+user = hnlat@hnwdkj.com
+pass = Weidu8888
+auth = true
+from = hnlat@hnwdkj.com
+startttlsEnable = true
+html = true
+# 收件人列表
+tos = [spischolar@126.com]
+# 抄送人列表
+ccs = [hezhigang@hnwdkj.com]

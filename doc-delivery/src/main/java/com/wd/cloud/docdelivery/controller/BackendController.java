@@ -140,8 +140,7 @@ public class BackendController {
     public ResponseModel upload(@PathVariable Long helpRecordId,
                                 @RequestParam Long giverId,
                                 @RequestParam String giverName,
-                                @NotNull MultipartFile file,
-                                HttpServletRequest request) {
+                                @NotNull MultipartFile file) {
         HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(helpRecordId);
         DocFile docFile = null;
         log.info("正在上传文件。。。");

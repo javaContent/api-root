@@ -1,57 +1,34 @@
 package com.wd.cloud.docdelivery.model;
 
-import cn.hutool.extra.mail.MailAccount;
+import cn.hutool.extra.mail.Mail;
 
 /**
  * @author He Zhigang
  * @date 2018/5/17
  * @Description:
  */
-public class MailModel {
-
-    /**
-     * 发送邮件账号对象
-     */
-    private MailAccount account;
+public class MailModel extends Mail{
 
     /**
      * 有效期毫秒数
      */
     private long exp = 1000 * 60 * 60 * 24 * 15;
 
+    private MailContentTemplate notify;
     /**
      * 提交第三方处理
      */
-    private String outherSubject;
-    /**
-     * 提交第三方处理邮件内容
-     */
-    private String outherContent;
+    private MailContentTemplate outher;
+
     /**
      * 应助成功标题
      */
-    private String successSubject;
-    /**
-     * 应助成功邮件内容
-     */
-    private String successContent;
+    private MailContentTemplate success;
+
     /**
      * 无有效应助，应助失败
      */
-    private String failSubject;
-    /**
-     * 无有效应助，应助失败邮件内容
-     */
-    private String failContent;
-
-
-    public MailAccount getAccount() {
-        return account;
-    }
-
-    public void setAccount(MailAccount account) {
-        this.account = account;
-    }
+    private MailContentTemplate failed;
 
     public long getExp() {
         return exp;
@@ -61,53 +38,36 @@ public class MailModel {
         this.exp = exp;
     }
 
-    public String getOutherSubject() {
-        return outherSubject;
+    public MailContentTemplate getNotify() {
+        return notify;
     }
 
-    public void setOutherSubject(String outherSubject) {
-        this.outherSubject = outherSubject;
+    public void setNotify(MailContentTemplate notify) {
+        this.notify = notify;
     }
 
-    public String getOutherContent() {
-        return outherContent;
+    public MailContentTemplate getOuther() {
+        return outher;
     }
 
-    public void setOutherContent(String outherContent) {
-        this.outherContent = outherContent;
+    public void setOuther(MailContentTemplate outher) {
+        this.outher = outher;
     }
 
-    public String getSuccessSubject() {
-        return successSubject;
+    public MailContentTemplate getSuccess() {
+        return success;
     }
 
-    public void setSuccessSubject(String successSubject) {
-        this.successSubject = successSubject;
+    public void setSuccess(MailContentTemplate success) {
+        this.success = success;
     }
 
-    public String getSuccessContent() {
-        return successContent;
+    public MailContentTemplate getFailed() {
+        return failed;
     }
 
-    public void setSuccessContent(String successContent) {
-        this.successContent = successContent;
+    public void setFailed(MailContentTemplate failed) {
+        this.failed = failed;
     }
-
-    public String getFailSubject() {
-        return failSubject;
-    }
-
-    public void setFailSubject(String failSubject) {
-        this.failSubject = failSubject;
-    }
-
-    public String getFailContent() {
-        return failContent;
-    }
-
-    public void setFailContent(String failContent) {
-        this.failContent = failContent;
-    }
-
 
 }

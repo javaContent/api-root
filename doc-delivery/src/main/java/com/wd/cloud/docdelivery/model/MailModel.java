@@ -1,6 +1,7 @@
 package com.wd.cloud.docdelivery.model;
 
 import cn.hutool.extra.mail.Mail;
+import cn.hutool.extra.mail.MailAccount;
 
 /**
  * @author He Zhigang

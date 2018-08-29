@@ -1,9 +1,9 @@
 package com.wd.cloud.resourcesserver.controller;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.resourcesserver.config.GlobalConfig;
+import com.wd.cloud.resourcesserver.model.FileObjModel;
 import com.wd.cloud.resourcesserver.service.FileService;
 import com.wd.cloud.resourcesserver.util.FileUtil;
 import com.wd.cloud.resourcesserver.util.HttpHeaderUtil;
@@ -47,16 +47,20 @@ public class DiskController {
      * @param dir
      * @return
      */
-    @ApiOperation(value = "文件上传，返回MD5文件名")
+    @ApiOperation(value = "文件上传")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "dir", value = "文件上传目录", dataType = "String", paramType = "path")
+            @ApiImplicitParam(name = "dir", value = "文件上传目录", dataType = "String", paramType = "path"),
+            @ApiImplicitParam(name = "fileName", value = "文件名称（非必传）", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "rename", value = "是否重命名", dataType = "boolean", paramType = "query")
     })
     @PostMapping("/{dir}")
-    public ResponseModel<JSONObject> uploadMd5File(@NotNull MultipartFile file, @PathVariable String dir) {
-
+    public ResponseModel<JSONObject> uploadFile(@PathVariable String dir,
+                                                @RequestParam(required = false) String fileName,
+                                                @RequestParam(required = false,defaultValue = "false")boolean rename,
+                                                @NotNull MultipartFile file) {
         JSONObject jsonObject = new JSONObject();
         try {
-            String fileName = FileUtil.fileMd5(file);
+            fileName = FileUtil.buildFileName(fileName, rename, file);
             boolean flag = fileService.saveToDisk(globalConfig.getResources() + dir, fileName, file);
             if (!flag) {
                 return ResponseModel.serverErr("上传失败，请重试...");
@@ -65,56 +69,30 @@ public class DiskController {
         } catch (IOException e) {
             return ResponseModel.serverErr("上传失败，请重试...");
         }
-        return ResponseModel.ok("上传成功",jsonObject);
+        return ResponseModel.ok("上传成功", jsonObject);
     }
 
-    /**
-     * 自定义上传
-     *
-     * @param file
-     * @param dir
-     * @return
-     */
-    @ApiOperation(value = "文件上传，返回自定义文件名")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "dir", value = "文件上传目录", dataType = "String", paramType = "path"),
-            @ApiImplicitParam(name = "fileName", value = "文件名称", dataType = "String", paramType = "path")
-    })
-    @PostMapping("/{dir}/{fileName}")
-    public ResponseModel<JSONObject> uploadCustomFile(@PathVariable String dir,
-                                                      @PathVariable String fileName,
-                                                      @NotNull MultipartFile file) {
-        JSONObject jsonObject = new JSONObject();
-        String extName = StrUtil.subAfter(file.getOriginalFilename(), ".", true);
-        String newFileName = fileName + "." + extName;
-        try {
-            boolean flag = fileService.saveToDisk(globalConfig.getResources() + dir, newFileName, file);
-            if (!flag) {
-                return ResponseModel.serverErr("上传失败，请重试...");
-            }
-            jsonObject.put("file", newFileName);
-        } catch (IOException e) {
-            return ResponseModel.serverErr("上传失败，请重试...");
-        }
-        return ResponseModel.ok("上传成功",jsonObject);
-    }
+
 
     @ApiOperation(value = "文件下载")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "dir", value = "文件所在目录", dataType = "String", paramType = "path"),
-            @ApiImplicitParam(name = "fileName", value = "文件名称", dataType = "String", paramType = "path")
+            @ApiImplicitParam(name = "fileName", value = "文件名称", dataType = "String", paramType = "query")
     })
-    @GetMapping("/{dir}/{fileName}")
-    public ResponseEntity downlowdFile(@PathVariable String dir, @PathVariable String fileName, HttpServletRequest request) throws UnsupportedEncodingException {
-        File file = new File(globalConfig.getResources() + dir + "/" + fileName);
-        if (file.exists()){
+    @GetMapping("/{dir}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String dir,
+                                       @RequestParam String fileName,
+                                       HttpServletRequest request)
+            throws UnsupportedEncodingException {
+        FileObjModel fileObjModel = fileService.getFileToDisk(globalConfig.getResources() + dir, fileName);
+        if (fileObjModel.getFile().exists()) {
             return ResponseEntity
                     .ok()
                     .headers(HttpHeaderUtil.buildHttpHeaders(fileName, request))
-                    .contentLength(file.length())
+                    .contentLength(fileObjModel.getFileByte().length)
                     .contentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
-                    .body(new FileSystemResource(file));
-        }else{
+                    .body(fileObjModel.getFileByte());
+        } else {
             return ResponseEntity.notFound().build();
         }
 

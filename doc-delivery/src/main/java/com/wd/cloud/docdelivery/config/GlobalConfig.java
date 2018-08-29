@@ -26,6 +26,11 @@ public class GlobalConfig {
     private String savePath;
 
     /**
+     * 文件在hbase的位置
+     */
+    private String hbaseTableName = "journalImage";
+
+    /**
      * 上传文件类型
      */
     private List<String> fileTypes;
@@ -44,6 +49,15 @@ public class GlobalConfig {
 
     public void setSavePath(String savePath) {
         this.savePath = savePath;
+    }
+
+    public String getHbaseTableName() {
+        return hbaseTableName;
+    }
+
+    public GlobalConfig setHbaseTableName(String hbaseTableName) {
+        this.hbaseTableName = hbaseTableName;
+        return this;
     }
 
     public List<String> getFileTypes() {

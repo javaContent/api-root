@@ -69,13 +69,7 @@ public class FileController {
         response.setHeader(Header.PRAGMA.toString(), "no-cache");
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         OutputStream out = response.getOutputStream();
-        byte[] buf = new byte[1024];
-        int len = 0;
-        BufferedInputStream br = new BufferedInputStream(downloadModel.getInputStream());
-        while ((len = br.read(buf)) > 0){
-            out.write(buf, 0, len);
-        }
-        br.close();
+        out.write(downloadModel.getFileByte());
         out.close();
     }
 
@@ -85,7 +79,7 @@ public class FileController {
      *
      * @return
      */
-    @ApiOperation(value = "求助文件下载")
+    @ApiOperation(value = "求助文件预览/下载")
     @ApiImplicitParam(name = "helpRecodeId", value = "求助记录ID", dataType = "Long", paramType = "path")
     @GetMapping("/view/{helpRecodeId}")
     public void viewFile(@PathVariable Long helpRecodeId, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -103,13 +97,7 @@ public class FileController {
         response.setHeader(Header.PRAGMA.toString(), "no-cache");
         response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         OutputStream out = response.getOutputStream();
-        byte[] buf = new byte[1024];
-        int len = 0;
-        BufferedInputStream br = new BufferedInputStream(downloadModel.getInputStream());
-        while ((len = br.read(buf)) > 0){
-            out.write(buf, 0, len);
-        }
-        br.close();
+        out.write(downloadModel.getFileByte());
         out.close();
     }
 }

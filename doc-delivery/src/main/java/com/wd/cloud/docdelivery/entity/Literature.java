@@ -19,12 +19,12 @@ public class Literature extends AbstractEntity {
     /**
      * 文献的链接地址
      */
-    @Column(name = "doc_href")
+    @Column(name = "doc_href",length = 510)
     private String docHref;
     /**
      * 文献标题
      */
-    @Column(name = "doc_title")
+    @Column(name = "doc_title",length = 510)
     private String docTitle;
 
     @OneToMany(mappedBy = "literature")

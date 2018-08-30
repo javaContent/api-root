@@ -12,19 +12,18 @@ import java.util.Set;
  * @Description: 文献元数据
  */
 @Entity
-@Table(name = "literature",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"doc_href", "doc_title"})})
+@Table(name = "literature")
 public class Literature extends AbstractEntity {
 
     /**
      * 文献的链接地址
      */
-    @Column(name = "doc_href",length = 510)
+    @Column(name = "doc_href",length = 1000)
     private String docHref;
     /**
      * 文献标题
      */
-    @Column(name = "doc_title",length = 510)
+    @Column(name = "doc_title",length = 1000)
     private String docTitle;
 
     @OneToMany(mappedBy = "literature")

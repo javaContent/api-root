@@ -116,6 +116,8 @@ public class FrontendController {
             msg = "success:文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         } else {
             try {
+                // 发送通知邮件
+                mailService.sendNotifyMail(helpRecord.getHelpChannel(),helpModel.getHelperScname(),helpModel.getHelperEmail());
                 // 保存求助记录
                 frontService.saveHelpRecord(helpRecord);
             } catch (Exception e) {

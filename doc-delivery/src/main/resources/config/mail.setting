@@ -1,0 +1,7 @@
+host = smtp.exmail.qq.com
+port = 465
+user = hnlat@hnwdkj.com
+pass = Weidu8888
+auth = true
+from = 文献互助中心<hnlat@hnwdkj.com>
+startttlsEnable = true

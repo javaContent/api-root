@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.mail.MailUtil;
+import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.config.HelpMailConfig;
 import com.wd.cloud.docdelivery.enums.ChannelEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
@@ -35,6 +36,9 @@ public class MailServiceImpl implements MailService {
     @Autowired
     MailModel zhy;
 
+    @Autowired
+    GlobalConfig globalConfig;
+
 
 
     @Override
@@ -63,6 +67,7 @@ public class MailServiceImpl implements MailService {
     }
 
     private void sendNotifyMail(MailModel mailModel,String orgName, String helpEmail){
+        mailModel.setTos(globalConfig.getNotifyMail());
         mailModel.setTitle(mailModel.getNotify().getTitle())
                 .setContent(String.format(mailModel.getNotify().getContent(), orgName, helpEmail));
         mailModel.send();

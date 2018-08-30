@@ -29,6 +29,8 @@ public class GlobalConfig {
      */
     private List<String> fileTypes;
 
+    private String[] notifyMail;
+
     public List<String> getChannels() {
         return channels;
     }
@@ -59,5 +61,13 @@ public class GlobalConfig {
 
     public void setCloudDomain(String cloudDomain) {
         this.cloudDomain = cloudDomain;
+    }
+
+    public String[] getNotifyMail() {
+        return notifyMail;
+    }
+
+    public void setNotifyMail(String[] notifyMail) {
+        this.notifyMail = notifyMail;
     }
 }

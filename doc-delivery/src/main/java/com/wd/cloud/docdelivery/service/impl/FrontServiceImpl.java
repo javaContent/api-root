@@ -149,7 +149,7 @@ public class FrontServiceImpl implements FrontService {
 
     @Override
     public String clearHtml(String docTitle) {
-        return HtmlUtil.restoreEscaped(HtmlUtil.cleanHtmlTag(docTitle));
+        return HtmlUtil.unescape(HtmlUtil.cleanHtmlTag(docTitle));
     }
 
     @Override

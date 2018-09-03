@@ -3,15 +3,12 @@ package com.wd.cloud.docdelivery.service.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import com.alibaba.druid.util.HttpClientUtils;
+import com.wd.cloud.apifeign.ResourcesServerApi;
+import com.wd.cloud.commons.model.ResponseModel;
 import com.wd.cloud.docdelivery.config.GlobalConfig;
-import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.entity.HelpRecord;
-import com.wd.cloud.docdelivery.entity.Literature;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.repository.DocFileRepository;
@@ -19,17 +16,12 @@ import com.wd.cloud.docdelivery.repository.GiveRecordRepository;
 import com.wd.cloud.docdelivery.repository.HelpRecordRepository;
 import com.wd.cloud.docdelivery.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author He Zhigang
@@ -51,6 +43,8 @@ public class FileServiceImpl implements FileService {
     @Autowired
     GiveRecordRepository giveRecordRepository;
 
+    @Autowired
+    ResourcesServerApi resourcesServerApi;
     @Override
     public DownloadModel getDownloadFile(Long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
@@ -58,17 +52,7 @@ public class FileServiceImpl implements FileService {
             return null;
         }
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecord(helpRecord);
-        String fileName = giveRecord.getDocFile().getFileName();
-        String docTitle = helpRecord.getLiterature().getDocTitle();
-        //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。
-        docTitle = FileUtil.cleanInvalid(docTitle);
-        DownloadModel downloadModel = new DownloadModel();
-        InputStream inputStream = HttpRequest.get(getResourceUrl(fileName)).execute().bodyStream();
-
-        downloadModel.setInputStream(inputStream);
-        String ext = StrUtil.subAfter(fileName,".",true);
-        String downLoadFileName = docTitle + "." + ext;
-        downloadModel.setDownloadFileName(downLoadFileName);
+        DownloadModel downloadModel = buildDownloadModel(helpRecord, giveRecord);
         return downloadModel;
     }
 
@@ -76,14 +60,18 @@ public class FileServiceImpl implements FileService {
     public DownloadModel getWaitAuditFile(Long helpRecordId) {
         HelpRecord helpRecord = helpRecordRepository.getOne(helpRecordId);
         GiveRecord giveRecord = giveRecordRepository.findByHelpRecordAndAuditStatusEquals(helpRecord, AuditEnum.WAIT.getCode());
+        DownloadModel downloadModel = buildDownloadModel(helpRecord, giveRecord);
+        return downloadModel;
+    }
+
+    private DownloadModel buildDownloadModel(HelpRecord helpRecord, GiveRecord giveRecord) {
         String fileName = giveRecord.getDocFile().getFileName();
         String docTitle = helpRecord.getLiterature().getDocTitle();
         //以文献标题作为文件名，标题中可能存在不符合系统文件命名规范，在这里规范一下。
         docTitle = FileUtil.cleanInvalid(docTitle);
         DownloadModel downloadModel = new DownloadModel();
-        InputStream inputStream = HttpRequest.get(getResourceUrl(fileName)).execute().bodyStream();
-
-        downloadModel.setInputStream(inputStream);
+        ResponseModel<byte[]> fileByte = resourcesServerApi.getFileByteToHf(globalConfig.getHbaseTableName(),fileName);
+        downloadModel.setFileByte(fileByte.getBody());
         String ext = StrUtil.subAfter(fileName,".",true);
         String downLoadFileName = docTitle + "." + ext;
         downloadModel.setDownloadFileName(downLoadFileName);
@@ -102,9 +90,4 @@ public class FileServiceImpl implements FileService {
     public String getDownloadUrl(Long helpRecordId) {
         return globalConfig.getCloudDomain() + "/doc-delivery/file/download/" + helpRecordId;
     }
-
-    private String getResourceUrl(String fileName) {
-        return globalConfig.getCloudDomain()+ "/resources-server/" + fileName;
-    }
-
 }

@@ -1,20 +1,18 @@
 package com.wd.cloud.docdelivery.controller;
 
-import cn.hutool.core.lang.Console;
 import cn.hutool.json.JSONObject;
 import com.wd.cloud.apifeign.ResourcesServerApi;
 import com.wd.cloud.commons.model.HttpStatus;
 import com.wd.cloud.commons.model.ResponseModel;
+import com.wd.cloud.docdelivery.config.GlobalConfig;
 import com.wd.cloud.docdelivery.entity.DocFile;
 import com.wd.cloud.docdelivery.entity.GiveRecord;
 import com.wd.cloud.docdelivery.entity.HelpRecord;
 import com.wd.cloud.docdelivery.enums.AuditEnum;
 import com.wd.cloud.docdelivery.enums.GiveTypeEnum;
 import com.wd.cloud.docdelivery.enums.HelpStatusEnum;
-import com.wd.cloud.docdelivery.model.DownloadModel;
 import com.wd.cloud.docdelivery.service.BackendService;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -31,13 +29,9 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,7 +55,10 @@ public class BackendController {
     MailService mailService;
 
     @Autowired
+    GlobalConfig globalConfig;
+    @Autowired
     ResourcesServerApi resourcesServerApi;
+
 
     /**
      * 文献互助列表
@@ -80,7 +77,7 @@ public class BackendController {
     public ResponseModel helpList(@RequestParam(required = false) Short status, @RequestParam(required = false) Short helperScid,
                                   @RequestParam(required = false) String keyword, @RequestParam(required = false) String beginTime,
                                   @RequestParam(required = false) String endTime,
-                                  @PageableDefault(value = 20, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                  @PageableDefault(value = 20, sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("helperScid", helperScid);
@@ -105,7 +102,7 @@ public class BackendController {
     })
     @GetMapping("/literature/list")
     public ResponseModel literatureList(@RequestParam(required = false) Boolean reusing, @RequestParam(required = false) String keyword,
-                                        @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reusing", reusing);
         param.put("keyword", keyword);
@@ -123,7 +120,7 @@ public class BackendController {
     })
     @GetMapping("/docFile/list")
     public ResponseModel getDocFileList(@RequestParam Long literatureId,
-                                        @PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
 
         return ResponseModel.ok(backendService.getDocFileList(pageable, literatureId));
     }
@@ -143,12 +140,11 @@ public class BackendController {
     public ResponseModel upload(@PathVariable Long helpRecordId,
                                 @RequestParam Long giverId,
                                 @RequestParam String giverName,
-                                @NotNull MultipartFile file,
-                                HttpServletRequest request) {
+                                @NotNull MultipartFile file) {
         HelpRecord helpRecord = backendService.getWaitOrThirdHelpRecord(helpRecordId);
         DocFile docFile = null;
         log.info("正在上传文件。。。");
-        ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        ResponseModel<JSONObject> jsonObjectResponseModel = resourcesServerApi.uploadFileToHf(globalConfig.getHbaseTableName(),null,true,file);
         log.info("code={}:msg={}:body={}",jsonObjectResponseModel.getCode(),jsonObjectResponseModel.getMsg(),jsonObjectResponseModel.getBody().toString());
         if (jsonObjectResponseModel.getCode() != HttpStatus.HTTP_OK){
             log.info("文件上传失败 。。。");

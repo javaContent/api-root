@@ -43,33 +43,5 @@ public interface MailService {
      */
     void sendMail(Integer channel, String helpEmail, String docTitle, String url, Integer processType);
 
-    /**
-     * 发送CRS邮件
-     *
-     * @param helpEmail
-     * @param docTitle
-     * @param url
-     * @param helpStatusEnum
-     */
-    void sendCrsMail(String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum);
-
-    /**
-     * 发送SPIS邮件
-     *
-     * @param helpEmail
-     * @param docTitle
-     * @param url
-     * @param helpStatusEnum
-     */
-    void sendSpisMail(String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum);
-
-    /**
-     * 发送智汇云邮件
-     *
-     * @param helpEmail
-     * @param docTitle
-     * @param url
-     * @param helpStatusEnum
-     */
-    void sendZhyMail(String helpEmail, String docTitle, String url, HelpStatusEnum helpStatusEnum);
+    void sendNotifyMail(Integer channel,String orgName,String helpEmail);
 }

@@ -1,6 +1,5 @@
 package com.wd.cloud.docdelivery.controller;
 
-import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
@@ -19,7 +18,6 @@ import com.wd.cloud.docdelivery.model.HelpModel;
 import com.wd.cloud.docdelivery.service.FileService;
 import com.wd.cloud.docdelivery.service.FrontService;
 import com.wd.cloud.docdelivery.service.MailService;
-import feign.Feign;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -31,14 +29,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 
 /**
  * @author He Zhigang
@@ -120,6 +116,8 @@ public class FrontendController {
             msg = "success:文献求助成功,请登陆邮箱" + helpEmail + "查收结果";
         } else {
             try {
+                // 发送通知邮件
+                mailService.sendNotifyMail(helpRecord.getHelpChannel(),helpModel.getHelperScname(),helpModel.getHelperEmail());
                 // 保存求助记录
                 frontService.saveHelpRecord(helpRecord);
             } catch (Exception e) {
@@ -154,7 +152,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helpChannel", value = "求助渠道", dataType = "Integer", paramType = "path")
     @GetMapping("/help/finish/{helpChannel}")
     public ResponseModel helpSuccessList(@PathVariable Integer helpChannel,
-                                         @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                         @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> finishHelpRecords = frontService.getFinishHelpRecords(helpChannel, pageable);
         return ResponseModel.ok(finishHelpRecords);
     }
@@ -169,7 +167,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "helperId", value = "用户ID", dataType = "Long", paramType = "path")
     @GetMapping("/help/records/{helperId}")
     public ResponseModel myRecords(@PathVariable Long helperId,
-                                   @PageableDefault(sort = {"id"},
+                                   @PageableDefault(sort = {"gmtCreate"},
                                            direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> myHelpRecords = frontService.getHelpRecordsForUser(helperId, pageable);
         return ResponseModel.ok(myHelpRecords);
@@ -266,7 +264,7 @@ public class FrontendController {
         }
         //保存文件
         DocFile docFile = null;
-        ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadDocDeliveryFile(file);
+        ResponseModel<JSONObject> fileModel = resourcesServerApi.uploadFileToHf(globalConfig.getHbaseTableName(),null,true,file);
         log.info("code={}:msg={}:body={}",fileModel.getCode(),fileModel.getMsg(),fileModel.getBody().toString());
         if (fileModel.getCode() != HttpStatus.HTTP_OK){
             return ResponseModel.serverErr("文件上传失败，请重试");
@@ -290,7 +288,7 @@ public class FrontendController {
     @ApiImplicitParam(name = "email", value = "条件email", dataType = "String", paramType = "query")
     @GetMapping("/help/records")
     public ResponseModel recordsByEmail(@RequestParam String email,
-                                        @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+                                        @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> helpRecords = frontService.getHelpRecordsForEmail(email, pageable);
         return ResponseModel.ok(helpRecords);
     }
@@ -298,7 +296,7 @@ public class FrontendController {
     @ApiOperation(value = "邮箱或标题查询记录")
     @ApiImplicitParam(name = "keyword", value = "条件keyword", dataType = "String", paramType = "query")
     @GetMapping("/help/search")
-    public ResponseModel recordsBySearch(@RequestParam String keyword, @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseModel recordsBySearch(@RequestParam String keyword, @PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable) {
         Page<HelpRecord> helpRecords = frontService.search(keyword, pageable);
 
         return ResponseModel.ok(helpRecords);
@@ -310,7 +308,7 @@ public class FrontendController {
      */
 
     @GetMapping("/help/records/all")
-    public ResponseModel allRecords(@PageableDefault(value = 10, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
+    public ResponseModel allRecords(@PageableDefault(sort = {"gmtCreate"}, direction = Sort.Direction.DESC) Pageable pageable, HttpServletRequest request) {
         return ResponseModel.ok(request.getSession().getAttribute(SessionKey.LOGIN_USER));
     }
 

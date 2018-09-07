@@ -41,7 +41,7 @@ public class ResourceLabel {
 		act = request.getParameter("act");
 		table = request.getParameter("table");
 		scid = request.getParameter("scid");
-		category = request.getParameter("category");
+		category = request.getParameter("category_type");
 		
 //		compareScids = request.getParameterValues("compare_scids");
 //		time = request.getParameterValues("time");

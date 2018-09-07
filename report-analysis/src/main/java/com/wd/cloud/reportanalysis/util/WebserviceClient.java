@@ -17,8 +17,8 @@ public class WebserviceClient {
 	public void init(){
 		 JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
 //		 client = dcf.createClient("http://v4-test.api.hnlat.com/yunscholar/api/instAchievement?wsdl");
-	     client = dcf.createClient("http://v3-test.api.hnlat.com/api/instAchievement?wsdl");
-//		 client = dcf.createClient("http://localhost:8080/api/instAchievement?wsdl");
+//	     client = dcf.createClient("http://v3-test.api.hnlat.com/api/instAchievement?wsdl");
+		 client = dcf.createClient("http://localhost:8080/api/instAchievement?wsdl");
 	}
 
 	public Client getTransportClient() {

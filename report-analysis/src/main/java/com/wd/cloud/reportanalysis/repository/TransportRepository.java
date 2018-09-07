@@ -13,15 +13,11 @@ import org.springframework.stereotype.Component;
 public class TransportRepository {
 	
 	@Autowired
-	TransportClient client;
-	
-	public TransportClient getClient() {
-		return client;
-	}
+	TransportClient transportClient;
 	
 	
 	public SearchResponse query(QueryBuilder queryBuilder,QueryBuilder filterBuilder,AbstractAggregationBuilder aggregation,String type) {
-		SearchRequestBuilder searchRequest = client.prepareSearch("resource").setTypes(type);
+		SearchRequestBuilder searchRequest = transportClient.prepareSearch("resource").setTypes(type);
 		searchRequest.setSearchType(SearchType.DEFAULT);
 		if (null != queryBuilder && null != filterBuilder) {
 			searchRequest.setQuery(queryBuilder).setPostFilter(filterBuilder);

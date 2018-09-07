@@ -13,12 +13,12 @@ import com.wd.cloud.reportanalysis.util.WebserviceClient;
 public class CxfWebService implements CxfWebServiceI {
 	
 	@Autowired
-	private WebserviceClient client;
+	private WebserviceClient webserviceClient;
 	
 	public Map<String, Object> amount(String xml){
 		try {
 			Object[] objects = new Object[0];
-			objects = client.getTransportClient().invoke("compare", xml);
+			objects = webserviceClient.getTransportClient().invoke("compare", xml);
 			System.out.println("返回数据:" + objects[0]);
 			JSONObject json = JSONObject.fromObject(objects[0]);
 			Map map = (Map)json;

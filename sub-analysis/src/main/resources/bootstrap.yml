@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: sub-analysis
+  profiles:
+    active: dev
+  cloud:
+    config:
+      uri: http://192.168.1.7:8888
+      enabled: true

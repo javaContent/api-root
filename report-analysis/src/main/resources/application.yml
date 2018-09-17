@@ -1,0 +1,56 @@
+server:
+  port: 8083
+spring:
+  data:
+    elasticsearch:
+      # 192.168.1.75:8300,192.168.1.76:8300,192.168.1.77:8300,192.168.1.78:8300
+      cluster-nodes: 192.168.1.75:8300,192.168.1.76:8300,192.168.1.77:8300
+      # wdkj_test/wdkj
+      cluster-name: wdkj_test
+  jpa: 
+    database: MYSQL
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    hibernate: 
+      ddl-auto: update
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.1.31:3306/yun_v3?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8
+    username: api
+    password: api123
+    default-auto-commit: true
+    dbcp2:
+      max-open-prepared-statements: 20
+      pool-prepared-statements: true
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      validation-query: "select 'x'"
+      min-evictable-idle-time-millis: 300000
+      time-between-eviction-runs-millis: 60000
+      min-idle: 30
+      max-idle: 50
+      max-wait-millis: 1000
+      initial-size: 1
+      max-total: 200
+#swagger 配置
+swagger:
+  enabled: true
+  title: 数据可视化分析
+  description: 数据可视化分析API
+  version: 1.0
+  contact: 
+    name: yangshuaif
+    email: yangshuaif@hnwdkj.com
+eureka:
+  instance:
+    status-page-url: http://localhost:${server.port}/swagger-ui.html
+    prefer-ip-address: true
+    leaseRenewalIntervalInSeconds: 10  
+    leaseExpirationDurationInSeconds: 15
+    health-check-url-path: /actuator/health
+  client:
+    registryFetchIntervalSeconds: 5
+    service-url: 
+      defaultZone: http://192.168.1.101:8761/eureka/
+  

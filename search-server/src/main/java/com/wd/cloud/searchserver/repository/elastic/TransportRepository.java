@@ -44,17 +44,9 @@ import java.util.concurrent.ExecutionException;
 @Repository("transportRepository")
 public class TransportRepository implements ElasticRepository{
 
-	private static final Settings DEFAULT_SETTINGS = Settings.builder()
-			.put()
-			.build();
-	
 	@Autowired
-	TransportClient client;
-	
-	public TransportClient getClient() {
-		return client;
-	}
-	
+	TransportClient transportClient;
+
 	@Override
 	public ResponseModel createIndex(String index){
 		return createIndex(index,null,null,null);
@@ -80,26 +72,26 @@ public class TransportRepository implements ElasticRepository{
 		if (mapping != null){
 			createIndexRequest.mapping(type,mapping);
 		}
-		CreateIndexResponse response = client.admin().indices().create(createIndexRequest).actionGet(2000);
+		CreateIndexResponse response = transportClient.admin().indices().create(createIndexRequest).actionGet(2000);
 		return ResponseModel.ok(response);
 	}
 	
 	@Override
 	public ResponseModel<SearchResponse> matchAll(String index, String type) {
-		SearchResponse response = client.prepareSearch(index).setTypes(type).get();
+		SearchResponse response = transportClient.prepareSearch(index).setTypes(type).get();
 		return ResponseModel.ok(response);
 	}
 	
 	@Override
 	public ResponseModel<GetResponse> getDocById(String index, String type, String id) {
-		GetResponse response = client.prepareGet(index,type,id).get();
+		GetResponse response = transportClient.prepareGet(index,type,id).get();
 		return ResponseModel.ok(response);
 	}
 	
 	@Override
 	public ResponseModel updateFieldById(String index, String type, String id, Map<String,Object> fieldMap) {
 		try{
-			RestStatus response = client.prepareUpdate(index,type,id).setDoc(fieldMap).get().status();
+			RestStatus response = transportClient.prepareUpdate(index,type,id).setDoc(fieldMap).get().status();
 			return ResponseModel.ok(response);
 		}catch (DocumentMissingException e){
 			Console.log("Document：{}未找到",id);
@@ -111,7 +103,7 @@ public class TransportRepository implements ElasticRepository{
 	public ResponseModel<RestStatus> update(UpdateRequest updateRequest) {
 		ResponseModel responseModel = new ResponseModel();
 		try {
-			RestStatus restStatus = client.update(updateRequest).get().status();
+			RestStatus restStatus = transportClient.update(updateRequest).get().status();
 			responseModel = ResponseModel.ok(restStatus);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -125,7 +117,7 @@ public class TransportRepository implements ElasticRepository{
 	
 	@Override
 	public boolean isExistsById(String index, String type, String id) {
-		return client.prepareGet(index,type,id).get().isExists();
+		return transportClient.prepareGet(index,type,id).get().isExists();
 	}
 	
 	@Override
@@ -145,7 +137,7 @@ public class TransportRepository implements ElasticRepository{
 	
 	@Override
 	public ResponseModel<SearchResponse> scrollAll(String index, String type, long timeValue, int batchSize) {
-		SearchResponse response = client.prepareSearch(index).setTypes(type)
+		SearchResponse response = transportClient.prepareSearch(index).setTypes(type)
 			.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
 			.setScroll(TimeValue.timeValueMillis(timeValue))
 			.setSize(batchSize)
@@ -155,7 +147,7 @@ public class TransportRepository implements ElasticRepository{
 	
 	@Override
 	public ResponseModel<SearchResponse> scrollByQuery(String index, String type, QueryBuilder queryBuilder) {
-		SearchResponse response = client.prepareSearch(index).setTypes(type)
+		SearchResponse response = transportClient.prepareSearch(index).setTypes(type)
 			.setQuery(queryBuilder)
 			.setScroll(TimeValue.timeValueMillis(1000*60))
 			.get();
@@ -177,7 +169,7 @@ public class TransportRepository implements ElasticRepository{
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(queryBuilder).fetchSource(returnFields, null);
 		searchSourceBuilder.size(batchSize);
-		SearchResponse response = client.prepareSearch(index).setTypes(type)
+		SearchResponse response = transportClient.prepareSearch(index).setTypes(type)
 			.addSort(FieldSortBuilder.DOC_FIELD_NAME, SortOrder.ASC)
 			.setScroll(TimeValue.timeValueMillis(1000*60))
 			.setSource(searchSourceBuilder)
@@ -187,13 +179,13 @@ public class TransportRepository implements ElasticRepository{
 	
 	@Override
 	public ResponseModel<SearchResponse> scrollByScrollId(String scrollId, long scrollTime) {
-		SearchResponse response =  client.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMillis(scrollTime)).get();
+		SearchResponse response =  transportClient.prepareSearchScroll(scrollId).setScroll(TimeValue.timeValueMillis(scrollTime)).get();
 		return ResponseModel.ok(response);
 	}
 	
 	@Override
 	public ResponseModel<SearchResponse> query(String index, String type, QueryBuilder queryBuilder,QueryBuilder filterBuilder,SortBuilder sortBuilder,AbstractAggregationBuilder aggregation) {
-		SearchRequestBuilder searchRequest = client.prepareSearch(index).setTypes(type);
+		SearchRequestBuilder searchRequest = transportClient.prepareSearch(index).setTypes(type);
 		if (null != queryBuilder && null != filterBuilder) {
 			searchRequest.setQuery(queryBuilder).setPostFilter(filterBuilder);
 		} else if (null != queryBuilder) {
@@ -216,7 +208,7 @@ public class TransportRepository implements ElasticRepository{
 	
 	@Override
 	public ResponseModel<SearchResponse> query(String index, String type, QueryBuilder queryBuilder,QueryBuilder filterBuilder,SortBuilder sortBuilder,List<AbstractAggregationBuilder> aggregationList) {
-		SearchRequestBuilder searchRequest = client.prepareSearch(index).setTypes(type);
+		SearchRequestBuilder searchRequest = transportClient.prepareSearch(index).setTypes(type);
 		if (null != queryBuilder && null != filterBuilder) {
 			searchRequest.setQuery(queryBuilder).setPostFilter(filterBuilder);
 		} else if (null != queryBuilder) {

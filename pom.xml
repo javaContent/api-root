@@ -12,16 +12,16 @@
     <description>微服务根POM</description>
 
     <modules>
+        <module>commons</module><!--提取的公共方法和类-->
         <module>api-feign</module><!--内部互调接口定义-->
-        <module>api-gateway</module><!--api网关-->
         <module>config-server</module><!--配置中心-->
         <module>discovery</module><!--服务注册中心-->
-        <module>auth-server</module><!--鉴权服务-->
-        <module>doc-delivery</module><!--文献传递服务-->
-        <module>commons</module><!--提取的公共方法和类-->
+        <module>api-gateway</module><!--api网关-->
         <module>monitoring</module><!-- 监控模块 -->
-        <module>search-server</module><!-- 检索服务 -->
+        <module>auth-server</module><!--鉴权服务-->
         <module>resources-server</module><!--  文件（图片）资源服务 -->
+        <module>doc-delivery</module><!--文献传递服务-->
+        <module>search-server</module><!-- 检索服务 -->
         <module>org-server</module>
         <module>sub-analysis</module>
     </modules>

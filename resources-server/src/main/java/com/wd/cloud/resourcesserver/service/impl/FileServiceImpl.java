@@ -1,8 +1,12 @@
 package com.wd.cloud.resourcesserver.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.wd.cloud.resourcesserver.config.GlobalConfig;
+import com.wd.cloud.resourcesserver.entity.UploadRecord;
+import com.wd.cloud.resourcesserver.enums.TargetEnum;
 import com.wd.cloud.resourcesserver.model.FileObjModel;
 import com.wd.cloud.resourcesserver.model.HbaseObjModel;
+import com.wd.cloud.resourcesserver.repository.UploadRecordRepository;
 import com.wd.cloud.resourcesserver.service.FileService;
 import com.wd.cloud.resourcesserver.util.FileUtil;
 import org.apache.hadoop.hbase.Cell;
@@ -20,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author He Zhigang
@@ -36,8 +41,12 @@ public class FileServiceImpl implements FileService {
     @Autowired
     HbaseTemplate hbaseTemplate;
 
+    @Autowired
+    UploadRecordRepository uploadRecordRepository;
+
     @Override
     public boolean saveToDisk(String dir, String fileName, MultipartFile file) throws IOException {
+        boolean flag = true;
         //文件如果不存在，则保存
         if (!FileUtil.exist(new File(dir, fileName))) {
             try {
@@ -45,12 +54,13 @@ public class FileServiceImpl implements FileService {
                 File newFile = FileUtil.touch(dir, fileName);
                 //将文件流写入文件中
                 FileUtil.writeFromStream(file.getInputStream(), newFile);
+                flag = saveUploadRecord(TargetEnum.DISK,dir,fileName,file);
             } catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                flag = false;
             }
         }
-        return true;
+        return flag;
     }
 
     @Override
@@ -78,7 +88,7 @@ public class FileServiceImpl implements FileService {
                 Put put = new Put(hbaseObjModel.getRowKey());
                 put.addColumn(hbaseObjModel.getFamily(), hbaseObjModel.getQualifier(), hbaseObjModel.getValue());
                 hTableInterface.put(put);
-                flag = true;
+                flag = saveUploadRecord(TargetEnum.HBASE,tableName,fileName,file);;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -94,16 +104,29 @@ public class FileServiceImpl implements FileService {
                 FileObjModel fileObjModel = new FileObjModel();
                 List<Cell> cells = result.listCells();
                 if (cells != null) {
-                    Cell cell = result.listCells().stream().findFirst().orElseGet(null);
-                    byte[] hbaseFileByte = cell != null ? cell.getValueArray() : null;
-                    byte[] fileByte = Arrays.copyOfRange(hbaseFileByte, cell.getValueOffset(), hbaseFileByte.length);
+                    Cell cell = cells.stream().findFirst().get();
+                    byte[] fileByte = Arrays.copyOfRange(cell.getValueArray(), cell.getValueOffset(), cell.getValueLength());
                     log.info("读取文件：{}，size：{} byte", fileName, fileByte.length);
+                    File file = FileUtil.writeByteToDisk(globalConfig.getResources()+"/temp/",fileName,fileByte);
                     fileObjModel.setFileByte(fileByte);
+                    fileObjModel.setFile(file);
                 }
                 return fileObjModel;
             }
         }).setFileName(fileName);
     }
 
+
+    private boolean saveUploadRecord(TargetEnum target,String path,String fileName,MultipartFile file){
+        UploadRecord uploadRecord = uploadRecordRepository
+                .findByTargetAndPathAndFileNameAndFileSizeAndMissed(target.name(),path,fileName,file.getSize(),false)
+                .orElse(new UploadRecord());
+        uploadRecord.setTarget(target.name());
+        uploadRecord.setPath(path);
+        uploadRecord.setFileName(fileName);
+        uploadRecord.setFileType(StrUtil.subAfter(file.getOriginalFilename(), ".", true));
+        uploadRecord.setFileSize(file.getSize());
+        return !uploadRecordRepository.save(uploadRecord).isMissed();
+    }
 
 }

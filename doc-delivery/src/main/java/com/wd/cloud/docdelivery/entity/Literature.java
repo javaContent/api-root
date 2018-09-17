@@ -1,9 +1,11 @@
 package com.wd.cloud.docdelivery.entity;
 
+import cn.hutool.crypto.SecureUtil;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -12,25 +14,28 @@ import java.util.Set;
  * @Description: 文献元数据
  */
 @Entity
-@Table(name = "literature")
+@Table(name = "literature",uniqueConstraints = {@UniqueConstraint(columnNames = {"unid"})})
 public class Literature extends AbstractEntity {
 
     /**
      * 文献的链接地址
      */
-    @Column(name = "doc_href",length = 1000)
-    private String docHref;
+    @Column(name = "doc_href",length = 1000,columnDefinition = "default ''")
+    private String docHref = "";
     /**
      * 文献标题
      */
-    @Column(name = "doc_title",length = 1000)
-    private String docTitle;
+    @NotNull
+    @Column(name = "doc_title",length = 1000,columnDefinition = "default ''")
+    private String docTitle = "";
 
     @OneToMany(mappedBy = "literature")
     @OrderBy(value = "gmt_create desc")
     @Where(clause = "audit_status not in (0,2) or audit_status is null")
     private Set<DocFile> docFiles;
 
+    @Column(name = "unid")
+    private String unid;
     /**
      * 文献作者
      */
@@ -121,11 +126,31 @@ public class Literature extends AbstractEntity {
         this.reusing = reusing;
     }
 
+    public String getUnid() {
+        return unid;
+    }
+
+    public void setUnid(String unid) {
+        this.unid = unid;
+    }
+
+    @PrePersist
+    public void createUnid(){
+        this.unid = SecureUtil.md5(this.docTitle + this.docHref);
+    }
+
+    @PreUpdate
+    public void updateUnid(){
+        this.unid = SecureUtil.md5(this.docTitle + this.docHref);
+    }
+
+
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("docHref", docHref)
                 .append("docTitle", docTitle)
+                .append("unid",unid)
                 .append("docFiles", docFiles)
                 .append("authors", authors)
                 .append("yearOfPublication", yearOfPublication)

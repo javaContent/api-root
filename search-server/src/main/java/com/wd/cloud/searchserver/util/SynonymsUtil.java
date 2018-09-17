@@ -12,6 +12,7 @@ import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse.AnalyzeToken;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -21,13 +22,14 @@ public class SynonymsUtil {
 	
 	public static final String DEFAULT_INDEX = "journal";
 
+	private  static TransportClient transportClient = (TransportClient) SpringContextUtil.getBean("transportClient");
+
 	public Set<String> extendOrg(String word) {
-		TransportRepository transportRepository = (TransportRepository) SpringContextUtil.getBean("transportRepository");
 
 		Set<String> result = new HashSet<String>();
 		result.add(word);
 
-		SearchResponse searchResponse = transportRepository.getClient().prepareSearch(DEFAULT_INDEX).setTypes("orgextend").setSearchType(SearchType.QUERY_AND_FETCH).setPreference("_primary_first")
+		SearchResponse searchResponse = transportClient.prepareSearch(DEFAULT_INDEX).setTypes("orgextend").setSearchType(SearchType.QUERY_AND_FETCH).setPreference("_primary_first")
 				.setQuery(QueryBuilders.termQuery("org", word)).execute().actionGet();
 		SearchHits searchHits = searchResponse.getHits();
 		if (searchHits.getTotalHits() > 0) {
@@ -38,11 +40,10 @@ public class SynonymsUtil {
 	}
 
 	public static List<String> analyzer(String word, String analyzerName) {
-		TransportRepository transportRepository = (TransportRepository) SpringContextUtil.getBean("transportRepository");
 
 		List<String> result = new ArrayList<String>();
 
-		AnalyzeResponse analyzeResponse = transportRepository.getClient().admin().indices().prepareAnalyze(word).setIndex(DEFAULT_INDEX).setAnalyzer(analyzerName).execute().actionGet();
+		AnalyzeResponse analyzeResponse = transportClient.admin().indices().prepareAnalyze(word).setIndex(DEFAULT_INDEX).setAnalyzer(analyzerName).execute().actionGet();
 		Iterator<AnalyzeToken> iter = analyzeResponse.iterator();
 		while (iter.hasNext()) {
 			AnalyzeToken analyzeToken = iter.next();
@@ -57,12 +58,11 @@ public class SynonymsUtil {
 	}
 
 	private static Set<String> extendKeyword(String word, String type, String field) {
-		TransportRepository transportRepository = (TransportRepository) SpringContextUtil.getBean("transportRepository");
 
 		Set<String> result = new HashSet<String>();
 		result.add(word);
 
-		SearchResponse searchResponse = transportRepository.getClient().prepareSearch(DEFAULT_INDEX).setTypes(type).setSearchType(SearchType.QUERY_AND_FETCH).setPreference("_primary_first")
+		SearchResponse searchResponse = transportClient.prepareSearch(DEFAULT_INDEX).setTypes(type).setSearchType(SearchType.QUERY_AND_FETCH).setPreference("_primary_first")
 				.setQuery(QueryBuilders.termQuery(field, word)).execute().actionGet();
 		SearchHits searchHits = searchResponse.getHits();
 		if (searchHits.getTotalHits() > 0) {

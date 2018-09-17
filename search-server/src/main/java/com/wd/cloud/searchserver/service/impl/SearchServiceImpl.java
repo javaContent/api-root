@@ -46,6 +46,7 @@ public class SearchServiceImpl implements SearchServiceI {
 	/**
 	 * 主查询
 	 */
+	@Override
 	public SearchResult search(SearchCondition searchCondition) {
 		SearchResult searchResult = new SearchResult();
 		searchCondition.addDocTypeFieldLan();
@@ -68,6 +69,7 @@ public class SearchServiceImpl implements SearchServiceI {
 	 * @param searchCondition
 	 * @return
 	 */
+	@Override
 	public Map<String, Map<String, String>> searchDisciplineSystem(SearchCondition searchCondition) {
 		SearchCondition disciplineSystemFacetSearchCondition = new SearchCondition();
 		disciplineSystemFacetSearchCondition.setDocType(10);
@@ -90,6 +92,7 @@ public class SearchServiceImpl implements SearchServiceI {
 	}
 	
 	
+	@Override
 	public SearchResult searchSubjectSystem(SearchCondition searchCondition) {
 		SearchResult searchResult = new SearchResult();
 		searchCondition.getQueryCdt().add("docType_3_1_10");

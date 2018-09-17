@@ -22,8 +22,9 @@
         <module>resources-server</module><!--  文件（图片）资源服务 -->
         <module>doc-delivery</module><!--文献传递服务-->
         <module>search-server</module><!-- 检索服务 -->
-        <module>org-server</module>
-        <module>sub-analysis</module>
+        <module>report-analysis</module><!--分析报表服务-->
+        <module>org-server</module><!-- 机构管理服务-->
+        <module>sub-analysis</module><!--主题分析服务-->
     </modules>
 
     <parent>
@@ -59,6 +60,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-hadoop</artifactId>
                 <version>${spring.data.hadoop.version}</version>
@@ -73,13 +81,7 @@
                 <artifactId>spring-data-elasticsearch</artifactId>
                 <version>${spring.data.elastic}</version>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
+
             <dependency>
                 <groupId>de.codecentric</groupId>
                 <artifactId>spring-boot-admin-starter-server</artifactId>

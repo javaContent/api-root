@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,7 +72,7 @@ public class HbaseController {
             @ApiImplicitParam(name = "fileName", value = "文件名", dataType = "String", paramType = "query")
     })
     @GetMapping("/{tableName}")
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String tableName,
+    public ResponseEntity downloadFile(@PathVariable String tableName,
                                        @RequestParam String fileName,
                                        HttpServletRequest request) throws UnsupportedEncodingException {
         FileObjModel fileObjModel = fileService.getFileToHbase(tableName, fileName);

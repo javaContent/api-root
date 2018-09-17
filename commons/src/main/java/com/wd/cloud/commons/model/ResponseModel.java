@@ -66,11 +66,11 @@ public class ResponseModel<T> implements Serializable {
     /**
      * 请求成功
      *
-     * @param data
+     * @param body
      * @return
      */
-    public static<T> ResponseModel<T> ok(T data) {
-        return ResponseModel.ok(HttpStatus.HTTP_OK, data);
+    public static<T> ResponseModel<T> ok(T body) {
+        return ResponseModel.ok(HttpStatus.HTTP_OK, body);
     }
 
     public static<T> ResponseModel<T> ok(String msg) {
@@ -85,15 +85,19 @@ public class ResponseModel<T> implements Serializable {
      * 请求成功
      *
      * @param code
-     * @param data
+     * @param body
      * @return
      */
-    public static<T> ResponseModel<T> ok(int code, T data) {
-        return ResponseModel.ok(code, HttpMsg.OK, data);
+    public static<T> ResponseModel<T> ok(int code, T body) {
+        return ResponseModel.ok(code, HttpMsg.OK, body);
     }
 
-    public static<T> ResponseModel<T> ok(int code, String msg, T data) {
-        return new ResponseModel<T>(code, msg, data);
+    public static<T> ResponseModel<T> ok(String msg,T body){
+        return ResponseModel.ok(HttpStatus.HTTP_OK,msg,body);
+    }
+    
+    public static<T> ResponseModel<T> ok(int code, String msg, T body) {
+        return new ResponseModel<T>(code, msg, body);
     }
 
     /**

@@ -161,6 +161,9 @@ public class BackendServiceImpl implements BackendService {
         }
         docFile.setFileName(fileName);
         docFile.setLiterature(literature);
+        docFile.setAuditStatus(null);
+        docFile.setAuditorId(null);
+        docFile.setAuditorName(null);
         docFile = docFileRepository.save(docFile);
         return docFile;
     }

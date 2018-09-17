@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,9 @@ import java.util.List;
  * @date 2018/7/24
  * @Description:
  */
-@FeignClient(value = "resources-server", configuration = ResourcesServerApi.MultipartSupportConfig.class)
+@FeignClient(value = "resources-server",
+        configuration = ResourcesServerApi.MultipartSupportConfig.class,
+        fallback=ResourcesServerApi.HystrixCalculatorService.class)
 public interface ResourcesServerApi {
 
     /**
@@ -130,6 +133,43 @@ public interface ResourcesServerApi {
                     return httpMessageConverters;
                 }
             });
+        }
+    }
+
+    class HystrixCalculatorService implements ResourcesServerApi{
+
+        @Override
+        public ResponseModel<JSONObject> uploadFileToHf(String tableName, String fileName, boolean rename, MultipartFile file) {
+            return ResponseModel.serverErr("服务调用失败");
+        }
+
+        @Override
+        public ResponseEntity downloadFileToHf(String tableName, String fileName) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+        @Override
+        public ResponseModel<JSONObject> uploadFileToDf(String dir, String fileName, boolean rename, MultipartFile file) {
+            return ResponseModel.serverErr("服务调用失败");
+        }
+
+        @Override
+        public ResponseEntity downloadFileToDf(String dir, String fileName) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+        @Override
+        public ResponseModel<byte[]> getFileByteToHf(String tableName, String fileName) {
+            return ResponseModel.serverErr("服务调用失败");
+        }
+
+        @Override
+        public ResponseModel<byte[]> getFileByteToDf(String dir, String fileName) {
+            return ResponseModel.serverErr("服务调用失败");
         }
     }
 }

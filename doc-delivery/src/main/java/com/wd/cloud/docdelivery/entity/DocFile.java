@@ -13,7 +13,8 @@ import java.util.Objects;
  * @Description:
  */
 @Entity
-@Table(name = "doc_file")
+@Table(name = "doc_file",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"literature_id", "fileName"})})
 public class DocFile extends AbstractEntity {
 
     @NotNull
@@ -36,7 +37,7 @@ public class DocFile extends AbstractEntity {
     /**
      * 复用
      */
-    @Column(name = "is_reusing", columnDefinition = "tinyint default 0 COMMENT '0:未复用，1：已复用'")
+    @Column(name = "is_reusing", columnDefinition = "tinyint(1) default 0 COMMENT '0:未复用，1：已复用'")
     private boolean reusing;
 
     /**

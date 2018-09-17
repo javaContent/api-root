@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.hadoop.hbase.HbaseTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.inject.Singleton;
+
 @Component
 @Configuration
 @EnableConfigurationProperties(HBaseProperties.class)

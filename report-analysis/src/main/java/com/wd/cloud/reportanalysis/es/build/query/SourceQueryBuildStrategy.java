@@ -27,8 +27,13 @@ public class SourceQueryBuildStrategy implements QueryBuilderStrategyI{
 			boolQueryBuilder.should(QueryBuilders.termQuery("shoulu", "SSCI"));
 			boolQueryBuilder.should(QueryBuilders.termQuery("shoulu", "CPCI-S"));
 			return boolQueryBuilder;
+		} else {
+			BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+			boolQueryBuilder.should(QueryBuilders.termQuery("shoulu", value.trim().toLowerCase()));
+			boolQueryBuilder.should(QueryBuilders.termQuery("shoulu", value.trim().toUpperCase()));
+			return boolQueryBuilder;
 		}
-		return QueryBuilders.termQuery("shoulu", value.trim());
+//		return QueryBuilders.termQuery("shoulu", value.trim());
 	}
 
 	

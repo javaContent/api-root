@@ -29,7 +29,7 @@ public class TransportRepository {
 		if(null != aggregation) {
 			searchRequest.addAggregation(aggregation);
 		}
-		System.out.println(searchRequest.toString());
+//		System.out.println(searchRequest.toString());
 		SearchResponse response = searchRequest.get();
 		return response;
 	}

@@ -7,7 +7,6 @@ import com.wd.cloud.subanalysis.service.ZtfxServiceI;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -33,7 +32,7 @@ import java.util.*;
 public class ZtfxServiceImpl implements ZtfxServiceI {
 
     @Autowired
-    private TransportClient client;
+    private TransportClient transportClient;
 
     private static String cacheIndex = "wos_ztfx";
     private static String cacheType = "ztfx_cache";
@@ -43,7 +42,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
         JSONObject pageData = new JSONObject();
         String queryStr = "ztpc&" + jguid + "&" + startYear + "&" + endYear;
         String id = DigestUtils.md5Hex(queryStr);
-        GetResponse getResp = client.prepareGet(cacheIndex, cacheType, id).get();
+        GetResponse getResp = transportClient.prepareGet(cacheIndex, cacheType, id).get();
         if (getResp.isExists()) {
             List<Map<String, Object>> nodesData = (List<Map<String, Object>>) getResp.getSource().get("nodes");
             List<Map<String, Object>> edgesData = (List<Map<String, Object>>) getResp.getSource().get("edges");
@@ -73,7 +72,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
         JSONObject pageData = new JSONObject();
         String queryStr = "fwqs" + "&" + jguid + "&" + startYear + "&" + 2016;
         String id = DigestUtils.md5Hex(queryStr);
-        GetResponse getResp = client.prepareGet(cacheIndex, cacheType, id).get();
+        GetResponse getResp = transportClient.prepareGet(cacheIndex, cacheType, id).get();
         if (getResp.isExists()) {
             List<Map<String, Object>> lineDatas = (List<Map<String, Object>>) getResp.getSource().get("lineDatas");
             List<String> legends = new ArrayList<String>();
@@ -103,7 +102,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
 
         String queryStr = "fwqs" + "&" + jguid + "&" + startYear + "&" + 2016;
         String id = DigestUtils.md5Hex(queryStr);
-        GetResponse getResp = client.prepareGet(cacheIndex, cacheType, id).get();
+        GetResponse getResp = transportClient.prepareGet(cacheIndex, cacheType, id).get();
         if (getResp.isExists()) {
             List<Map<String, Object>> lineDatas = (List<Map<String, Object>>) getResp.getSource().get("lineDatas");
             List<Integer> years = (List<Integer>) getResp.getSource().get("xAxisData");
@@ -202,7 +201,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
 
         jguidAggs.subAggregation(journalAggs.subAggregation(lineDatas.subAggregation(keywordAggs.subAggregation(sumcountAggs))));
 
-        SearchResponse resp = client.prepareSearch(cacheIndex).setTypes(cacheType)
+        SearchResponse resp = transportClient.prepareSearch(cacheIndex).setTypes(cacheType)
                 .setQuery(queryBuilder)
                 .setSize(0)
                 .addAggregation(jguidAggs)
@@ -241,7 +240,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
                 .extendedBounds(startYear, endYear)
                 .minDocCount(0);
 
-        SearchResponse resp = client.prepareSearch("wos_source3.0").setTypes("periodical")
+        SearchResponse resp = transportClient.prepareSearch("wos_source3.0").setTypes("periodical")
                 .setQuery(queryBuilder)
                 .setSize(0)
                 .addAggregation(year)
@@ -283,7 +282,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
     @Override
     public boolean checkZtfxExists(String jguid) {
         QueryBuilder queryBuilder = QueryBuilders.termQuery("JGuid", jguid);
-        SearchResponse resp = client.prepareSearch(cacheIndex).setTypes(cacheType).setQuery(queryBuilder).get();
+        SearchResponse resp = transportClient.prepareSearch(cacheIndex).setTypes(cacheType).setQuery(queryBuilder).get();
         if (resp.getHits().getTotalHits() > 0) {
             return true;
         } else {
@@ -294,7 +293,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
     @Override
     public List<String> hotKeywords(String queryName){
         QueryBuilder queryBuilder = QueryBuilders.termsQuery("queryname.full",queryName+"&2012&2016");
-        SearchResponse resp = client.prepareSearch(cacheIndex).setTypes(cacheType).setQuery(queryBuilder).get();
+        SearchResponse resp = transportClient.prepareSearch(cacheIndex).setTypes(cacheType).setQuery(queryBuilder).get();
         if (resp.getHits().getTotalHits()>0){
             for (SearchHit hit:resp.getHits().getHits()){
                 List<String> legends = (List)hit.getSource().get("legend");
@@ -309,7 +308,7 @@ public class ZtfxServiceImpl implements ZtfxServiceI {
         List<DocForKeyword> docForKeywords = new ArrayList<DocForKeyword>();
         QueryBuilder queryBuilder = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("jguid.keyword", jguid))
                 .must(QueryBuilders.termQuery("keywordsDic.rootKeyword.normal", keyword));
-        SearchResponse resp = client.prepareSearch("wos_source3.0").setTypes("periodical").setQuery(queryBuilder)
+        SearchResponse resp = transportClient.prepareSearch("wos_source3.0").setTypes("periodical").setQuery(queryBuilder)
                 .setSize(5000).get();
         SearchHit[] hits = resp.getHits().getHits();
         if (hits != null){
